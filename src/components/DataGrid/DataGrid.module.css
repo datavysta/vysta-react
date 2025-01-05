@@ -1,0 +1,97 @@
+.title {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.toolbar {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.titleSection {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.badge {
+    background-color: #e0e0e0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.searchInput {
+    padding: 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.25rem;
+    min-width: 200px;
+}
+
+.grid {
+    flex: 1;
+    min-height: 0;
+}
+
+.createButton,
+.downloadButton,
+.deleteButton {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.createButton {
+    background-color: #4caf50;
+    color: white;
+}
+
+.createButton:hover {
+    background-color: #43a047;
+}
+
+.downloadButton {
+    background-color: #2196f3;
+    color: white;
+}
+
+.downloadButton:hover {
+    background-color: #1e88e5;
+}
+
+.deleteButton {
+    background-color: #f44336;
+    color: white;
+    padding: 0.25rem 0.5rem;
+}
+
+.deleteButton:hover {
+    background-color: #e53935;
+}
+
+.createButton:disabled,
+.downloadButton:disabled {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+} 
