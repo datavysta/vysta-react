@@ -1,16 +1,15 @@
 {
   "name": "@datavysta/vysta-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React components for Vysta - a backend as a service",
   "type": "module",
-  "main": "./dist/vysta-react.umd.js",
-  "module": "./dist/vysta-react.es.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/vysta-react.es.js",
-      "require": "./dist/vysta-react.umd.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
     "./style.css": "./dist/style.css"
   },
@@ -37,7 +36,7 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@datavysta/vysta-client": "^1.0.3"
+    "@datavysta/vysta-client": "^1.0.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
