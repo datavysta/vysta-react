@@ -9,15 +9,15 @@ import {
 	RowClassParams,
 	RowClickedEvent,
 	GetRowIdParams,
-	ColDefField
-} from 'ag-grid-community';
-import {IDataService, OrderBy, SortDirection} from '@datavysta/vysta-client';
-import styles from './DataGrid.module.css';
-
-import {
+	ColDefField,
 	ModuleRegistry,
 	InfiniteRowModelModule,
 } from 'ag-grid-community';
+import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
+import {IDataService, OrderBy, SortDirection} from '@datavysta/vysta-client';
+import styles from './DataGrid.module.css';
+
+
 
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
@@ -38,6 +38,7 @@ export interface DataGridProps<T extends object> {
 	getRowClass?: ((params: RowClassParams<T>) => string | string[] | undefined);
 	onRowClicked?: (event: RowClickedEvent<T>) => void;
 	getRowId: (data: T) => string;
+	theme?: Theme | 'legacy';
 	tick?: number;
 }
 
@@ -56,6 +57,7 @@ export function DataGrid<T extends object>({
 	                                           getRowClass,
 	                                           onRowClicked,
 	                                           getRowId,
+												theme,
 	                                           tick = 0,
                                            }: DataGridProps<T>) {
 	const gridApiRef = useRef<GridApi<T> | null>(null);
@@ -102,7 +104,7 @@ export function DataGrid<T extends object>({
 			cols.push({
 				headerName: '',
 				cellRenderer: 'actionsCellRenderer',
-				maxWidth: 100,
+				maxWidth: 110,
 				sortable: false,
 				filter: false,
 			});
@@ -220,6 +222,7 @@ export function DataGrid<T extends object>({
 				<AgGridReact
 					{...actualGridOptions}
 					onGridReady={onGridReady}
+					theme={theme}
 				/>
 			</div>
 		</div>

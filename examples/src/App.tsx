@@ -3,7 +3,7 @@ import { DataGrid } from '@datavysta/vysta-react';
 import { VystaClient } from '@datavysta/vysta-client';
 import { ProductService } from './services/ProductService';
 import { Product } from './types/Product';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, themeQuartz } from 'ag-grid-community';
 
 function App() {
     const [error, setError] = useState<string | null>(null);
@@ -25,6 +25,11 @@ function App() {
             }
         }
     }));
+
+    const myTheme = themeQuartz.withParams({
+        spacing: 12,
+        accentColor: "red",
+    });
 
     const login = useCallback(async () => {
         try {
@@ -102,6 +107,7 @@ function App() {
                 supportInsert={true}
                 supportRegularDownload={true}
                 tick={tick}
+                theme={myTheme}
             />
         </div>
     );
