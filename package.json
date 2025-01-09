@@ -9,10 +9,14 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./style.css": "./dist/style.css"
   },
+  "sideEffects": [
+    "**/*.css"
+  ],
   "homepage": "https://www.datavysta.com/",
   "bugs": {
     "url": "https://github.com/datavysta/vysta-react/issues"

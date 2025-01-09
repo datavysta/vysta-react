@@ -21,7 +21,14 @@ export default defineConfig({
       fileName: () => 'index.js',
     },
     rollupOptions: {
-      external: ['react', 'react-dom', '@datavysta/vysta-client', 'ag-grid-react', 'ag-grid-community'],
+      external: [
+        'react',
+        'react/jsx-runtime',
+        'react-dom',
+        '@datavysta/vysta-client',
+        'ag-grid-react',
+        'ag-grid-community'
+      ],
       output: {
         preserveModules: true,
         preserveModulesRoot: 'src',
@@ -33,6 +40,7 @@ export default defineConfig({
       },
     },
     cssCodeSplit: false,
+    target: 'esnext',
   },
   css: {
     modules: {
