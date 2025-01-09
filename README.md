@@ -10,6 +10,14 @@ npm install @datavysta/vysta-react @datavysta/vysta-client ag-grid-community ag-
 
 ## Basic Usage
 
+First, import the styles:
+
+```tsx
+import '@datavysta/vysta-react/style.css';
+```
+
+Then use the components in your app:
+
 ```tsx
 import { DataGrid } from '@datavysta/vysta-react';
 import { VystaClient, VystaService } from '@datavysta/vysta-client';
@@ -82,6 +90,7 @@ function ProductList() {
 | `getRowClass` | `(params: RowClassParams<T>) => string \| string[] \| undefined` | `undefined` | Custom row CSS classes |
 | `onRowClicked` | `(event: RowClickedEvent<T>) => void` | `undefined` | Row click handler |
 | `tick` | `number` | `0` | Trigger grid refresh when incremented |
+| `theme` | `Theme \| 'legacy'` | `undefined` | AG Grid theme configuration |
 
 ### Features
 
