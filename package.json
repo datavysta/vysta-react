@@ -1,6 +1,6 @@
 {
   "name": "@datavysta/vysta-react",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "React components for Vysta - a backend as a service",
   "type": "module",
   "main": "./dist/index.js",
@@ -40,7 +40,7 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@datavysta/vysta-client": "^1.0.5"
+    "@datavysta/vysta-client": "^1.0.6"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
