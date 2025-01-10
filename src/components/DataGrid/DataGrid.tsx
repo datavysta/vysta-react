@@ -15,13 +15,28 @@ import {
 } from 'ag-grid-community';
 import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
 import {IDataService, OrderBy, SortDirection} from '@datavysta/vysta-client';
-import styles from './DataGrid.module.css';
+import moduleStyles from './DataGrid.module.css';
 
 
 
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
 ]);
+
+export interface DataGridStyles {
+	root?: React.CSSProperties;
+	container?: React.CSSProperties;
+	toolbar?: React.CSSProperties;
+	titleSection?: React.CSSProperties;
+	title?: React.CSSProperties;
+	badge?: React.CSSProperties;
+	actions?: React.CSSProperties;
+	searchInput?: React.CSSProperties;
+	grid?: React.CSSProperties;
+	createButton?: React.CSSProperties;
+	downloadButton?: React.CSSProperties;
+	deleteButton?: React.CSSProperties;
+}
 
 export interface DataGridProps<T extends object> {
 	title: string;
@@ -40,6 +55,7 @@ export interface DataGridProps<T extends object> {
 	getRowId: (data: T) => string;
 	theme?: Theme | 'legacy';
 	tick?: number;
+	styles?: DataGridStyles;
 }
 
 export function DataGrid<T extends object>({
@@ -59,6 +75,7 @@ export function DataGrid<T extends object>({
 	                                           getRowId,
 												theme,
 	                                           tick = 0,
+	                                           styles = {},
                                            }: DataGridProps<T>) {
 	const gridApiRef = useRef<GridApi<T> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
@@ -77,7 +94,7 @@ export function DataGrid<T extends object>({
 		return (
 			<button
 				onClick={() => handleDelete(rowId)}
-				className={styles.deleteButton}
+				style={styles.deleteButton}
 			>
 				Delete
 			</button>
@@ -196,33 +213,33 @@ export function DataGrid<T extends object>({
 	};
 
 	return (
-		<div className={styles.container}>
-			<div className={styles.toolbar}>
-				<div className={styles.titleSection}>
-					<p className={styles.title}>{title}</p>
+		<div className={moduleStyles.container} style={styles.container}>
+			<div className={moduleStyles.toolbar} style={styles.toolbar}>
+				<div className={moduleStyles.titleSection} style={styles.titleSection}>
+					<p className={moduleStyles.title} style={styles.title}>{title}</p>
 					{lastKnownRowCount >= 0 && (
-						<span className={styles.badge}>{lastKnownRowCount}</span>
+						<span className={moduleStyles.badge} style={styles.badge}>{lastKnownRowCount}</span>
 					)}
 				</div>
-				<div className={styles.actions}>
+				<div className={moduleStyles.actions} style={styles.actions}>
 					{toolbarItems}
 					{supportInsert && (
-						<button className={styles.createButton} disabled>
+						<button className={moduleStyles.createButton} style={styles.createButton} disabled>
 							New {noun}
 						</button>
 					)}
 					{supportRegularDownload && (
-						<button className={styles.downloadButton} disabled>
+						<button className={moduleStyles.downloadButton} style={styles.downloadButton} disabled>
 							Download
 						</button>
 					)}
 				</div>
 			</div>
-			<div className={styles.grid}>
+			<div className={moduleStyles.grid} style={styles.grid}>
 				<AgGridReact
 					{...actualGridOptions}
 					onGridReady={onGridReady}
-					theme={theme}
+						theme={theme}
 				/>
 			</div>
 		</div>

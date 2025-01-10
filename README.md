@@ -91,6 +91,36 @@ function ProductList() {
 | `onRowClicked` | `(event: RowClickedEvent<T>) => void` | `undefined` | Row click handler |
 | `tick` | `number` | `0` | Trigger grid refresh when incremented |
 | `theme` | `Theme \| 'legacy'` | `undefined` | AG Grid theme configuration |
+| `styles` | `DataGridStyles` | `{}` | Custom styles for grid elements |
+
+### Styling
+
+You can customize the appearance of individual grid elements using the `styles` prop:
+
+```tsx
+<DataGrid<Product>
+  // ... other props ...
+  styles={{
+    container: { backgroundColor: '#f5f5f5' },
+    title: { color: 'blue', fontSize: '1.2rem' },
+    badge: { backgroundColor: 'red', color: 'white' },
+    createButton: { backgroundColor: 'green' },
+    // ... other style overrides
+  }}
+/>
+```
+
+Available style targets:
+- `container`: The main grid container
+- `toolbar`: The top toolbar section
+- `titleSection`: The title and badge container
+- `title`: The grid title text
+- `badge`: The count badge
+- `actions`: The actions container (buttons)
+- `createButton`: The "New" button
+- `downloadButton`: The download button
+- `deleteButton`: The delete button in rows
+- `grid`: The AG Grid container
 
 ### Features
 
