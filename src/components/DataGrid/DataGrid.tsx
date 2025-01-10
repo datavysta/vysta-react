@@ -94,6 +94,7 @@ export function DataGrid<T extends object>({
 		return (
 			<button
 				onClick={() => handleDelete(rowId)}
+				className={moduleStyles.deleteButton}
 				style={styles.deleteButton}
 			>
 				Delete
@@ -202,10 +203,8 @@ export function DataGrid<T extends object>({
 	}), [modifiedColDefs, defaultColDef, gridOptions, getRowClass, onRowClicked, getRowIdHandler]);
 
 	useEffect(() => {
-		if (gridApiRef.current && tick > 0) {
-			gridApiRef.current.updateGridOptions({datasource: dataSource});
-		}
-	}, [filters, tick]);
+		gridApiRef.current?.updateGridOptions({datasource: dataSource});
+	}, [tick, filters]);
 
 	const onGridReady = (params: any) => {
 		gridApiRef.current = params.api;
