@@ -238,7 +238,7 @@ export function DataGrid<T extends object>({
 				<AgGridReact
 					{...actualGridOptions}
 					onGridReady={onGridReady}
-						theme={theme}
+					theme={theme}
 				/>
 			</div>
 		</div>

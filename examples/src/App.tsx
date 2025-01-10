@@ -69,7 +69,8 @@ function App() {
         { 
             field: 'productId',
             headerName: 'ID',
-            width: 100
+            width: 100,
+            initialSort: 'asc'
         },
         { 
             field: 'productName',
