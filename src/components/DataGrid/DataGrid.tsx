@@ -9,15 +9,12 @@ import {
 	RowClassParams,
 	RowClickedEvent,
 	GetRowIdParams,
-	ColDefField,
 	ModuleRegistry,
 	InfiniteRowModelModule,
 } from 'ag-grid-community';
 import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
-import {IDataService, OrderBy, SortDirection} from '@datavysta/vysta-client';
+import {OrderBy, SortDirection, IReadonlyDataService, IDataService} from '@datavysta/vysta-client';
 import moduleStyles from './DataGrid.module.css';
-
-
 
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
@@ -38,27 +35,27 @@ export interface DataGridStyles {
 	deleteButton?: React.CSSProperties;
 }
 
-export interface DataGridProps<T extends object> {
+export interface DataGridProps<T extends object, U extends T = T> {
 	title: string;
 	noun: string;
-	repository: IDataService<T>;
-	columnDefs: ColDef<T>[];
-	gridOptions?: GridOptions<T>;
+	repository: IReadonlyDataService<T, U>;
+	columnDefs: ColDef<U>[];
+	gridOptions?: GridOptions<U>;
 	supportRegularDownload?: boolean;
 	supportInsert?: boolean;
 	supportDelete?: boolean;
 	filters?: { [K in keyof T]?: any };
 	toolbarItems?: React.ReactNode;
-	onDataFirstLoaded?: (gridApi: GridApi<T>) => void;
-	getRowClass?: ((params: RowClassParams<T>) => string | string[] | undefined);
-	onRowClicked?: (event: RowClickedEvent<T>) => void;
+	onDataFirstLoaded?: (gridApi: GridApi<U>) => void;
+	getRowClass?: ((params: RowClassParams<U>) => string | string[] | undefined);
+	onRowClicked?: (event: RowClickedEvent<U>) => void;
 	getRowId: (data: T) => string;
 	theme?: Theme | 'legacy';
 	tick?: number;
 	styles?: DataGridStyles;
 }
 
-export function DataGrid<T extends object>({
+export function DataGrid<T extends object, U extends T = T>({
 	                                           title,
 	                                           noun,
 	                                           repository,
@@ -76,8 +73,8 @@ export function DataGrid<T extends object>({
 												theme,
 	                                           tick = 0,
 	                                           styles = {},
-                                           }: DataGridProps<T>) {
-	const gridApiRef = useRef<GridApi<T> | null>(null);
+                                           }: DataGridProps<T, U>) {
+	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
 	const [dataFirstLoaded, setDataFirstLoaded] = useState(false);
 
@@ -87,7 +84,7 @@ export function DataGrid<T extends object>({
 		flex: 1,
 	}), []);
 
-	const actionsCellRenderer = useCallback((params: ICellRendererParams<T>) => {
+	const actionsCellRenderer = useCallback((params: ICellRendererParams<U>) => {
 		if (!supportDelete || !params.data) return null;
 
 		const rowId = getRowId(params.data);
@@ -105,8 +102,14 @@ export function DataGrid<T extends object>({
 	const handleDelete = async (id: string) => {
 		if (!id) return;
 
+		// Type guard to ensure repository has delete capability
+		if (!('delete' in repository)) {
+			console.error('Repository does not support delete operations');
+			return;
+		}
+
 		try {
-			await repository.delete(id);
+			await (repository as IDataService<T, U>).delete(id);
 			if (gridApiRef.current) {
 				gridApiRef.current.updateGridOptions({datasource: dataSource});
 			}
@@ -116,7 +119,11 @@ export function DataGrid<T extends object>({
 	};
 
 	const modifiedColDefs = useMemo(() => {
-		const cols = [...columnDefs];
+		const cols = columnDefs.map(col => ({
+			...col,
+			// Disable sorting for computed fields (starting with underscore)
+			sortable: col.field?.startsWith('_') ? false : col.sortable ?? true
+		}));
 
 		if (supportDelete) {
 			cols.push({
@@ -139,17 +146,15 @@ export function DataGrid<T extends object>({
 			try {
 				const order: OrderBy<T> = {};
 				if (sortModel?.length > 0) {
-					sortModel.forEach(sort => {
-						const colId = sort.colId as keyof T;
-						order[colId] = sort.sort.toLowerCase() as SortDirection;
-					});
+					for (const sort of sortModel) {
+						const key = sort.colId;
+						order[key as keyof T] = sort.sort.toLowerCase() as SortDirection;
+					}
 				}
 
 				const select = columnDefs
-					.filter((col): col is ColDef<T> & { field: ColDefField<T> } =>
-						col.field !== undefined
-					)
-					.map(col => col.field as keyof T);
+					.filter(col => col.field && !col.field.startsWith('_'))
+					.map(col => String(col.field) as keyof T);
 
 				const primaryKey = (repository as any).primaryKey as keyof T;
 				if (primaryKey && !select.includes(primaryKey)) {
@@ -183,11 +188,11 @@ export function DataGrid<T extends object>({
 		}
 	};
 
-	const getRowIdHandler = useCallback((params: GetRowIdParams<T>) => {
+	const getRowIdHandler = useCallback((params: GetRowIdParams<U>) => {
 		return params.data ? getRowId(params.data) : '';
 	}, [getRowId]);
 
-	const actualGridOptions = useMemo<GridOptions<T>>(() => ({
+	const actualGridOptions = useMemo<GridOptions<U>>(() => ({
 		columnDefs: modifiedColDefs,
 		rowModelType: 'infinite',
 		cacheBlockSize: 50,
