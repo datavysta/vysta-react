@@ -103,7 +103,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		if (!id) return;
 
 		// Type guard to ensure repository has delete capability
-		if (!('delete' in repository)) {
+		if (!('delete' in repository) || typeof (repository as any).delete !== 'function') {
 			console.error('Repository does not support delete operations');
 			return;
 		}
