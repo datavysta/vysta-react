@@ -2,12 +2,15 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { VystaClient } from '@datavysta/vysta-client';
 import { ProductGrid } from './components/ProductGrid';
 import { CustomerGrid } from './components/CustomerGrid';
+import { OrderGrid } from './components/OrderGrid';
+
+type View = 'products' | 'customers' | 'orders';
 
 function App() {
     const [error, setError] = useState<string | null>(null);
     const [tick, setTick] = useState(0);
     const [isAuthenticated, setIsAuthenticated] = useState(true);
-    const [showCustomers, setShowCustomers] = useState(false);
+    const [view, setView] = useState<View>('products');
     const wasAuthenticated = useRef(true);
     
     const clientRef = useRef(new VystaClient({ 
@@ -65,17 +68,34 @@ function App() {
         return <div style={{ padding: '20px', color: 'red' }}>{error}</div>;
     }
 
+    const showProducts = useCallback(() => setView('products'), []);
+    const showCustomers = useCallback(() => setView('customers'), []);
+    const showOrders = useCallback(() => setView('orders'), []);
+
     return (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            {showCustomers ? (
-                <CustomerGrid 
-                    client={clientRef.current} 
-                    onShowProducts={() => setShowCustomers(false)} 
-                />
-            ) : (
+            {view === 'products' && (
                 <ProductGrid 
                     client={clientRef.current} 
-                    onShowCustomers={() => setShowCustomers(true)} 
+                    onShowCustomers={showCustomers}
+                    onShowOrders={showOrders}
+                    tick={tick}
+                />
+            )}
+            {view === 'customers' && (
+                <CustomerGrid 
+                    client={clientRef.current} 
+                    onShowProducts={showProducts}
+                    onShowOrders={showOrders}
+                    tick={tick}
+                />
+            )}
+            {view === 'orders' && (
+                <OrderGrid 
+                    client={clientRef.current}
+                    onShowProducts={showProducts}
+                    onShowCustomers={showCustomers}
+                    tick={tick}
                 />
             )}
         </div>

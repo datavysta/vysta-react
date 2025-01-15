@@ -8,9 +8,11 @@ import { ColDef } from 'ag-grid-community';
 interface ProductGridProps {
     client: VystaClient;
     onShowCustomers: () => void;
+    onShowOrders: () => void;
+    tick: number;
 }
 
-export function ProductGrid({ client, onShowCustomers }: ProductGridProps) {
+export function ProductGrid({ client, onShowCustomers, onShowOrders, tick }: ProductGridProps) {
     const [showInStock, setShowInStock] = useState<boolean | null>(null);
     const products = useMemo(() => new ProductService(client), [client]);
 
@@ -69,8 +71,9 @@ export function ProductGrid({ client, onShowCustomers }: ProductGridProps) {
 
     return (
         <>
-            <div style={{ padding: '8px' }}>
+            <div style={{ padding: '8px', display: 'flex', gap: '8px' }}>
                 <button onClick={onShowCustomers} style={{ marginBottom: '8px' }}>Show Customers</button>
+                <button onClick={onShowOrders} style={{ marginBottom: '8px' }}>Show Orders</button>
             </div>
             <DataGrid<Product>
                 title="Products"
@@ -94,6 +97,7 @@ export function ProductGrid({ client, onShowCustomers }: ProductGridProps) {
                         padding: '4px 12px'
                     }
                 }}
+                tick={tick}
             />
         </>
     );
