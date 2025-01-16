@@ -219,6 +219,7 @@ export function DataGrid<T extends object, U extends T = T>({
 
 		if (typeof gridOptions?.onGridReady === 'function') {
 			gridOptions.onGridReady(params);
+		}
 	};
 
 	return (
