@@ -216,6 +216,9 @@ export function DataGrid<T extends object, U extends T = T>({
 	const onGridReady = (params: any) => {
 		gridApiRef.current = params.api;
 		params.api.updateGridOptions({datasource: dataSource});
+
+		if (typeof gridOptions?.onGridReady === 'function') {
+			gridOptions.onGridReady(params);
 	};
 
 	return (
