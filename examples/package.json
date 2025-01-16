@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@datavysta/vysta-client": "^1.0.8",
+    "@datavysta/vysta-client": "^1.0.9",
     "@datavysta/vysta-react": "file:..",
     "ag-grid-community": "^33.0.3",
     "ag-grid-react": "^33.0.3",

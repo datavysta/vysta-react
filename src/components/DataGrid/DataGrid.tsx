@@ -152,9 +152,11 @@ export function DataGrid<T extends object, U extends T = T>({
 					}
 				}
 
-				const select = columnDefs
-					.filter(col => col.field && !col.field.startsWith('_'))
-					.map(col => String(col.field) as keyof T);
+				const select = [...new Set(
+					columnDefs
+						.filter(col => col.field && !col.field.startsWith('_'))
+						.map(col => String(col.field) as keyof T)
+				)];
 
 				const primaryKey = (repository as any).primaryKey as keyof T;
 				if (primaryKey && !select.includes(primaryKey)) {
