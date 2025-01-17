@@ -1,62 +1,33 @@
-import { ChangeEvent, FC, Fragment } from 'react';
-import { withTranslation } from 'react-i18next';
+import { FC, ChangeEvent } from 'react';
 import { TextInput } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import useFocus from "../../../hooks/useFocus.ts";
+import { useTranslationContext } from '../../Filter/TranslationContext';
 
-const getLabel = (label: string | undefined, primary: boolean | undefined) => {
+const TextComponent: FC<IFieldProperty> = ({
+	readOnly,
+	disabled,
+	error,
+	value,
+	label,
+	onChange
+}) => {
+	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+		onChange && onChange(e.target.value);
+	};
+
+	if (readOnly) {
+		return <>{value}</>;
+	}
+
 	return (
-		<>
-			{label}
-			{primary && <span>🔑</span>}
-		</>
+		<TextInput
+			disabled={disabled}
+			error={error}
+			value={value || ''}
+			label={label}
+			onChange={handleChange}
+		/>
 	);
 };
 
-const TextComponent: FC<IFieldProperty> = ({
-	name,
-	readOnly,
-	className,
-	disabled,
-	placeholder,
-	error,
-	required,
-	value,
-	label,
-	description,
-	id,
-	primary,
-	onChange,
-	onBlur,
-	onFocus,
-	focusTick
-}: IFieldProperty) => {
-	const inputRef = useFocus<HTMLInputElement>(focusTick);
-
-	return readOnly ? (
-		<Fragment>{value}</Fragment>
-	) : (
-		<TextInput
-			ref={inputRef}
-			readOnly={readOnly}
-			id={id ? id : undefined}
-			key={name}
-			disabled={disabled}
-			required={required}
-			label={getLabel(label, primary)}
-			error={error}
-			placeholder={placeholder}
-			description={description}
-			value={value ? value : ''}
-			className={className}
-			onChange={(event: ChangeEvent<HTMLInputElement>) =>
-				onChange && onChange(event.target.value)
-			}
-			onBlur={onBlur}
-			onFocus={onFocus}
-		/>
-	);
-}
-
-
-export default withTranslation()(TextComponent);
+export default TextComponent;

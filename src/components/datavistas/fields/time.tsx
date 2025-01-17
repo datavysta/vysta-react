@@ -1,10 +1,9 @@
-import { Fragment, ChangeEvent } from 'react';
-import { withTranslation } from 'react-i18next';
+import { Fragment, ChangeEvent, FC } from 'react';
 import dayjs from 'dayjs';
 import { TimeInput } from '@mantine/dates';
 import IFieldProperty from '../../Models/public/fieldproperty';
 
-const TimeComponent = ({
+const TimeComponent: FC<IFieldProperty> = ({
 	readOnly,
 	disabled,
 	error,
@@ -12,7 +11,7 @@ const TimeComponent = ({
 	dataType,
 	label,
 	onChange,
-}: IFieldProperty) => {
+}) => {
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		onChange && onChange(`${e.target.value}:00`);
 	};
@@ -40,4 +39,4 @@ const TimeComponent = ({
 	);
 };
 
-export default withTranslation()(TimeComponent);
+export default TimeComponent;

@@ -1,104 +1,50 @@
-import { FC, useState, useEffect } from 'react';
-import { withTranslation } from 'react-i18next';
+import { FC, useState } from 'react';
 import { Autocomplete } from '@mantine/core';
 import { FaSpinner } from 'react-icons/fa';
-import IDataItem from '../../Models/public/dataitem';
-import OrderByDirection from '../../Models/OrderByDirection';
+import IFieldProperty from '../../Models/public/fieldproperty';
+import { useTranslationContext } from '../../Filter/TranslationContext';
 
-interface IProps {
-	items: IDataItem[];
-	readOnly: boolean;
-	name: string;
-	required: boolean;
-	label: string;
-	loading: boolean;
-	placeholder: string;
-	description: string;
-	value: string;
-	multiple: boolean | undefined;
-	onSearch: (condition: ISearchCondition) => void;
-	onChange: (data: string) => void;
-}
-
-interface ISearchCondition {
-	keywords: string | null;
-	limit: number | null;
-	offSet: number | null;
-	orderBy: string;
-	recordCount?: boolean;
-	orderByPropertyNames: string[];
-	tags: string[];
-}
-
-const searchCondition: ISearchCondition = {
-	keywords: null,
-	limit: null,
-	offSet: null,
-	orderBy: OrderByDirection.ASC,
-	recordCount: true,
-	orderByPropertyNames: [],
-	tags: [],
-};
-
-const AutoCompleteComponent: FC<IProps> = ({
+const AutocompleteComponent: FC<IFieldProperty> = ({
 	readOnly,
-	name,
-	onSearch,
-	onChange,
-	required,
-	label,
-	loading,
-	placeholder,
-	description,
+	disabled,
+	error,
 	value,
-	items,
-	multiple,
-}: IProps) => {
-	const [data, setData] = useState<any>([]);
+	label,
+	data,
+	onChange,
+	onSearch
+}) => {
+	const [loading, setLoading] = useState(false);
+	const [options, setOptions] = useState(data || []);
 
-	useEffect(() => {
-		setItemsData();
-	}, [onSearch]);
-
-	const setItemsData = () => {
-		const options = items
-			? items.map(({ value, label }) => ({ value, label }))
-			: [{ value, label: value }];
-		setData(options);
+	const handleSearch = async (query: string) => {
+		if (!onSearch) return;
+		
+		setLoading(true);
+		try {
+			const results = await onSearch({ keywords: query });
+			setOptions(results);
+		} finally {
+			setLoading(false);
+		}
 	};
 
-	// const filter = (options: string, search: IDataItem): OptionsFilter => {
-	// 	const splittedSearch = search.value.toLowerCase().trim().split(' ');
-	// 	return (options as ComboboxItem[]).filter((option) => {
-	// 		const words = option.label.toLowerCase().trim().split(' ');
-	// 		return splittedSearch.every((searchWord) => words.some((word) => word.includes(searchWord)));
-	// 	});
-	// };
+	if (readOnly) {
+		return <>{value}</>;
+	}
+
 	return (
-		<>
-			{!readOnly ? (
-				<Autocomplete
-					data={data}
-					// itemComponent={AutoCompleteItem}
-					readOnly={readOnly}
-					key={name}
-					required={required}
-					label={label}
-					placeholder={placeholder}
-					description={description}
-					multiple={multiple}
-					onChange={(value) => onChange(value)}
-					// filter={filter}
-					value={value ? value : ''}
-					// dropdownPosition="bottom"
-					onDropdownOpen={() => onSearch && onSearch(searchCondition)}
-					rightSection={loading && <FaSpinner />}
-				/>
-			) : (
-				<>{value}</>
-			)}
-		</>
+		<Autocomplete
+			data={options}
+			value={value || ''}
+			onChange={value => onChange && onChange(value)}
+			label={label}
+			error={error}
+			disabled={disabled}
+			rightSection={loading ? <FaSpinner className="spin" /> : null}
+			onSearchChange={handleSearch}
+		/>
 	);
 };
 
-export default withTranslation()(AutoCompleteComponent);
+export default AutocompleteComponent;

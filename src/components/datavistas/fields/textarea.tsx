@@ -1,54 +1,32 @@
-import { ChangeEvent } from 'react';
+import { FC, ChangeEvent } from 'react';
 import { Textarea } from '@mantine/core';
-import { withTranslation } from 'react-i18next';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import useFocus from "../../../hooks/useFocus.ts";
 
-const TextAreaComponent = ({
-	name,
+const TextareaComponent: FC<IFieldProperty> = ({
 	readOnly,
 	disabled,
-	placeholder,
 	error,
-	required,
 	value,
 	label,
-	description,
-	className,
-	id,
-	onBlur,
-	onFocus,
-	onChange,
-	focusTick
-}: IFieldProperty) => {
-	const inputRef = useFocus<HTMLTextAreaElement>(focusTick);
+	onChange
+}) => {
+	const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+		onChange && onChange(e.target.value);
+	};
 
-	return readOnly ? (
-		<>{value}</>
-	) : (
+	if (readOnly) {
+		return <>{value}</>;
+	}
+
+	return (
 		<Textarea
-			ref={inputRef}
-			readOnly={readOnly}
-			key={name}
-			id={id ? id : undefined}
-			required={required}
 			disabled={disabled}
-			autosize
-			maxRows={1}
 			error={error}
+			value={value}
 			label={label}
-			placeholder={placeholder}
-			description={description}
-			className={className}
-			value={value || ''}
-			onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
-				onChange && onChange(event.target.value)
-			}
-			onBlur={onBlur}
-			onFocus={onFocus}
+			onChange={handleChange}
 		/>
 	);
-}
+};
 
-
-export default withTranslation()(TextAreaComponent);
+export default TextareaComponent;

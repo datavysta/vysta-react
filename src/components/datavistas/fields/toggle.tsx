@@ -1,60 +1,31 @@
-import React, { ChangeEvent } from 'react';
+import { FC } from 'react';
 import { Switch } from '@mantine/core';
-import { withTranslation } from 'react-i18next';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import defaultFieldProperty from '../../Models/public/defaultfieldproperty';
+import {useTranslationContext} from "../../Filter/TranslationContext";
 
-class ToggleComponent extends React.Component<IFieldProperty> {
-	public static defaultProps = defaultFieldProperty;
+const ToggleComponent: FC<IFieldProperty> = ({
+	readOnly,
+	disabled,
+	value,
+	label,
+	onChange
+}) => {
+	const { t } = useTranslationContext();
 
-	constructor(props: IFieldProperty) {
-		super(props);
-		this.onChange = this.onChange.bind(this);
-	}
+	const handleChange = (checked: boolean) => {
+		onChange && onChange(checked);
+	};
 
-	private onChange(event: ChangeEvent<any>): void {
-		const { onChange } = this.props;
-		if (!onChange) {
-			return;
-		}
+	return readOnly ? (
+		<>{value ? t('Yes') : t('No')}</>
+	) : (
+		<Switch
+			disabled={disabled}
+			checked={value}
+			label={label}
+			onChange={(event) => handleChange(event.currentTarget.checked)}
+		/>
+	);
+};
 
-		onChange(`${event.target.checked}`);
-	}
-
-	render() {
-		const { readOnly, disabled, value, label, t } = this.props;
-		if (readOnly) {
-			if (value === undefined || value === null) {
-				return;
-			}
-
-			let converted = `${value}`.toLowerCase();
-			if (converted === 'true') {
-				converted = 'Yes';
-			} else if (converted === 'false') {
-				converted = 'No';
-			}
-
-			return <span>{t(converted)}</span>;
-		}
-
-		let checked: boolean | undefined = undefined;
-		const strValue = `${value}`.toLowerCase();
-		if (strValue === 'true') {
-			checked = true;
-		} else if (strValue === 'false') {
-			checked = false;
-		}
-
-		return (
-			<Switch
-				disabled={disabled}
-				label={label ? label : ''}
-				checked={checked}
-				onClick={this.onChange}
-			/>
-		);
-	}
-}
-
-export default withTranslation()(ToggleComponent);
+export default ToggleComponent;

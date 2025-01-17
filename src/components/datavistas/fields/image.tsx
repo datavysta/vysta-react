@@ -1,45 +1,25 @@
-import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { FC } from 'react';
 import { Image } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import defaultFieldProperty from '../../Models/public/defaultfieldproperty';
-import DataType from '../../Models/DataType';
+import { useTranslationContext } from '../../Filter/TranslationContext';
 
-class ImageComponent extends React.Component<IFieldProperty> {
-	public static defaultProps = defaultFieldProperty;
+const ImageComponent: FC<IFieldProperty> = ({
+	readOnly,
+	value,
+	width,
+	height,
+	fit = 'contain'
+}) => {
+	if (!value) return null;
 
-	private getContentType(): string {
-		const { fileName } = this.props;
-		if (!fileName) {
-			return 'image/png';
-		}
+	return (
+		<Image
+			src={value}
+			width={width}
+			height={height}
+			fit={fit}
+		/>
+	);
+};
 
-		const parts = fileName.toLowerCase().split('.');
-		const extension = parts[parts.length - 1];
-		return `image/${extension}`;
-	}
-
-	render() {
-		const { readOnly, dataType, value } = this.props;
-
-		if (!value) {
-			return <></>;
-		}
-
-		if (readOnly) {
-			let src = value;
-
-			if (dataType === DataType.Binary) {
-				const contentType = this.getContentType();
-
-				src = `data:${contentType};base64,${value}`;
-			}
-
-			return <Image src={src} />;
-		}
-
-		return <>{value}</>;
-	}
-}
-
-export default withTranslation()(ImageComponent);
+export default ImageComponent;

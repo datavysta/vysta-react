@@ -1,67 +1,42 @@
-import { ChangeEvent, Fragment } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { withTranslation } from 'react-i18next';
+import { FC, ChangeEvent } from 'react';
 import { Anchor, TextInput } from '@mantine/core';
 import { FaPlus } from 'react-icons/fa';
-import IFieldProperty from "../../Models/public/fieldproperty";
+import IFieldProperty from '../../Models/public/fieldproperty';
 
-const getLabel = (label: string | undefined, primary: boolean | undefined) => {
-	return (
-		<>
-			{label}
-			{primary && <span>🔑</span>}
-		</>
-	);
-};
-
-const UUIDComponent = ({
-	name,
+const UuidComponent: FC<IFieldProperty> = ({
 	readOnly,
 	disabled,
 	error,
-	placeholder,
-	required,
 	value,
-	onBlur,
-	onFocus,
-	onChange,
 	label,
-	description,
-	className,
-	isFilterComponent,
-	primary,
-}: IFieldProperty) => {
-	const renderRightSection = () =>
-		!isFilterComponent ? (
-			<Anchor
-				onClick={() => onChange && onChange(uuidv4().toLowerCase())}
-			>
-				<FaPlus />
-			</Anchor>
-		) : null;
+	onChange
+}) => {
+	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+		onChange && onChange(e.target.value);
+	};
 
-	return readOnly ? (
-		<Fragment>{value}</Fragment>
-	) : (
+	const handleGenerateUuid = () => {
+		onChange && onChange(crypto.randomUUID());
+	};
+
+	if (readOnly) {
+		return <>{value}</>;
+	}
+
+	return (
 		<TextInput
-			readOnly={readOnly}
-			key={name}
 			disabled={disabled}
-			required={required}
-			label={getLabel(label, primary)}
 			error={error}
-			placeholder={placeholder}
-			description={description}
-			value={value ? value : ''}
-			className={className}
-			onChange={(event: ChangeEvent<HTMLInputElement>) =>
-				onChange && onChange(event.currentTarget.value)
+			value={value || ''}
+			label={label}
+			onChange={handleChange}
+			rightSection={
+				<Anchor onClick={handleGenerateUuid}>
+					<FaPlus />
+				</Anchor>
 			}
-			onBlur={onBlur}
-			onFocus={onFocus}
-			rightSection={onChange && renderRightSection()}
 		/>
 	);
 };
 
-export default withTranslation()(UUIDComponent);
+export default UuidComponent;

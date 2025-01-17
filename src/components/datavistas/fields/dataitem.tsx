@@ -1,16 +1,21 @@
-import React from 'react';
-import IDataItem from '../../Models/public/dataitem';
+import { FC } from 'react';
+import IFieldProperty from '../../Models/public/fieldproperty';
+import { useTranslationContext } from '../../Filter/TranslationContext';
 
-class DataItemComponent extends React.Component<IDataItemProperties> {
-	render() {
-		const { value } = this.props;
-
-		return <>{value.label ? value.label : value.value}</>;
-	}
+interface IDataItemProperties extends IFieldProperty {
+	value: string;
+	label: string;
 }
 
-interface IDataItemProperties {
-	value: IDataItem;
-}
+const DataItemComponent: FC<IDataItemProperties> = ({
+	value,
+	label
+}) => {
+	return (
+		<div>
+			<strong>{label}:</strong> {value}
+		</div>
+	);
+};
 
 export default DataItemComponent;

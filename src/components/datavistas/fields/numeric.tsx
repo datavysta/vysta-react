@@ -1,90 +1,32 @@
-import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { FC, ChangeEvent } from 'react';
 import { NumberInput } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import defaultFieldProperty from '../../Models/public/defaultfieldproperty';
 
-class NumericComponent extends React.Component<IFieldProperty> {
-	public static defaultProps = defaultFieldProperty;
+const NumericComponent: FC<IFieldProperty> = ({
+	readOnly,
+	disabled,
+	error,
+	value,
+	label,
+	onChange
+}) => {
+	const handleChange = (value: number | string) => {
+		onChange && onChange(value.toString());
+	};
 
-	constructor(props: IFieldProperty) {
-		super(props);
-
-		this.onChange = this.onChange.bind(this);
+	if (readOnly) {
+		return <>{value}</>;
 	}
 
-	private onChange(value: string) {
-		const { onChange } = this.props;
-		if (!onChange) {
-			return;
-		}
+	return (
+		<NumberInput
+			disabled={disabled}
+			error={error}
+			value={value ? parseFloat(value) : undefined}
+			label={label}
+			onChange={handleChange}
+		/>
+	);
+};
 
-		onChange(value);
-	}
-
-	render() {
-		const {
-			name,
-			error,
-			readOnly,
-			description,
-			disabled,
-			required,
-			label,
-			value,
-			precision,
-			minValue,
-			maxValue,
-			onFocus,
-			onBlur,
-			className,
-		} = this.props;
-
-		if (readOnly) {
-			if (value !== undefined && value !== null && value !== '') {
-				return <>{value}</>;
-			}
-
-			return <></>;
-		}
-
-		let num: Number | null = null;
-		if (value !== undefined && value !== null && value !== '') {
-			num = Number(value);
-		}
-
-		let min: number | null = null;
-		if (minValue) {
-			min = Number(minValue).valueOf();
-		}
-
-		let max: number | null = null;
-		if (maxValue) {
-			max = Number(maxValue).valueOf();
-		}
-
-		const props: any = {
-			key: name,
-			label,
-			error,
-			required,
-			disabled,
-			value: num !== undefined && num !== null ? num : undefined,
-			min: min !== undefined && min !== null ? min : undefined,
-			max: max !== undefined && max !== null ? max : undefined,
-			precision:
-				precision !== undefined && precision !== null
-					? precision
-					: undefined,
-			description,
-			onFocus,
-			onBlur,
-			onChange: this.onChange,
-			className: className,
-		};
-
-		return <NumberInput {...props} />;
-	}
-}
-
-export default withTranslation()(NumericComponent);
+export default NumericComponent;
