@@ -45,6 +45,9 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	supportInsert?: boolean;
 	supportDelete?: boolean;
 	filters?: { [K in keyof T]?: any };
+	inputProperties?: {
+		[key: string]: string;
+	};
 	toolbarItems?: React.ReactNode;
 	onDataFirstLoaded?: (gridApi: GridApi<U>) => void;
 	getRowClass?: ((params: RowClassParams<U>) => string | string[] | undefined);
@@ -65,6 +68,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	                                           supportInsert = false,
 	                                           supportDelete = false,
 	                                           filters = {},
+	                                           inputProperties = {},
 	                                           toolbarItems,
 	                                           onDataFirstLoaded,
 	                                           getRowClass,
@@ -169,6 +173,7 @@ export function DataGrid<T extends object, U extends T = T>({
 					offset: startRow,
 					order,
 					filters,
+					inputProperties,
 					recordCount: startRow === 0
 				});
 
