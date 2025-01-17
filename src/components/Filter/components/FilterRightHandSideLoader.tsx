@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import ExpressionCondition from '../../Models/ExpressionCondition';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from '../TranslationContext';
 import { FilterDefinitionWrapper } from '../FilterDefinitionsByField';
 import { ComboboxItem, Select } from '@mantine/core';
 import { ConditionMode } from '../ConditionMode';
@@ -26,7 +26,7 @@ const FilterRightHandSideLoader: FC<IFilterProps> = ({
 }: IFilterProps) => {
 	const [focusTick, setFocusTick] = useState(-1);
 	const inputRef = useFocus<HTMLInputElement>(focusTick);
-	const { t } = useTranslation();
+	const { t } = useTranslationContext();
 	const [options, setOptions] = useState<ComboboxItem[]>([]);
 	const [tempData, setTempData] = useState<ComboboxItem[]>([]);
 	const [searchOptions, setSearchOptions] = useState<ComboboxItem[]>([]);

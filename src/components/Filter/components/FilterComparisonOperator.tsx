@@ -1,6 +1,6 @@
 import {FC, useEffect, useState} from 'react';
 import {Select, ComboboxItem, Image} from '@mantine/core';
-import {useTranslation} from 'react-i18next';
+import {useTranslationContext} from '../TranslationContext';
 import DataType from '../../Models/DataType';
 import ComparisonOperator from '../../Models/ComparisonOperator';
 import Service from '../services/bql-service';
@@ -21,7 +21,7 @@ const FilterComparisonOperator: FC<IFilterComparisonOperatorProps> = ({
 	                                                                      label,
 	                                                                      onChange,
                                                                       }: IFilterComparisonOperatorProps) => {
-	const {t} = useTranslation();
+	const { t } = useTranslationContext();
 	const [operators, setOperators] = useState<ComboboxItem[]>([]);
 
 	useEffect(() => {

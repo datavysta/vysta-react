@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Button, Flex, Group } from '@mantine/core';
 import FilterConditionRow from './components/FilterConditionRow';
 import { FaPlus } from 'react-icons/fa';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from './TranslationContext';
 import FilterGroup from './components/FilterGroup';
 import Condition from '../Models/Condition';
 import GroupCondition from '../Models/GroupCondition';
@@ -35,7 +35,7 @@ const Filter: FC<IFilterProps> = ({
 	firstRowRequired,
 	filterDefinitions
 }: IFilterProps) => {
-	const { t } = useTranslation();
+	const { t } = useTranslationContext();
 
 	const isExpression = (conditionType: ConditionType) =>
 		conditionType === ConditionType.Expression;

@@ -1,5 +1,5 @@
 import {FC, useCallback, useMemo, useState} from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from './TranslationContext';
 import { Group, Button, Flex, Box } from '@mantine/core';
 import Condition from '../Models/Condition';
 import ExpressionCondition from '../Models/ExpressionCondition';
@@ -49,7 +49,7 @@ const FilterPanel: FC<IFilterProps> = ({
 	hideClear = true,
 	onClose,
 }: IFilterProps) => {
-	const { t } = useTranslation();
+	const { t } = useTranslationContext();
 
 	const validateConditions = useCallback(async (conditions: Condition[]): Promise<Condition[]> => {
 		if (!filterDefinitions) {

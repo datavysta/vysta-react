@@ -5,7 +5,6 @@ import ComponentFactory from '../../datavistas/componentfactory';
 import {DataTypeComponentFactory} from '../../datavistas/datatypecomponentfactory';
 import ComparisonOperator from '../../Models/ComparisonOperator';
 import {ConditionMode} from '../ConditionMode';
-import {useTranslation, WithTranslation} from "react-i18next";
 import IFieldProperty from "../../Models/public/fieldproperty";
 import isNil from '../../../utils/isNil';
 import useUpdateEffect from "../../../hooks/useUpdateEffect";
@@ -17,7 +16,7 @@ interface IFilterProps {
 	label?: string;
 }
 
-interface IBaseFieldProperty extends WithTranslation {
+interface IBaseFieldProperty {
 	label?: string;
 	focusTick: number;
 	isFilterComponent: boolean;
@@ -36,7 +35,6 @@ const FilterRightHandSide: FC<IFilterProps> = ({
 	                                               expressionCondition,
                                                }: IFilterProps) => {
 	const [focusTick, setFocusTick] = useState(-1);
-	const { i18n, t } = useTranslation();
 
 	useUpdateEffect(() => {
 		// Only run after the first load
@@ -65,9 +63,6 @@ const FilterRightHandSide: FC<IFilterProps> = ({
 	};
 
 	const baseFieldProperty: IBaseFieldProperty = {
-		t,
-		tReady: true,
-		i18n,
 		label,
 		focusTick,
 		isFilterComponent: true,

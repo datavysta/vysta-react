@@ -1,12 +1,12 @@
 import {ActionIcon, Button, Flex, Text, TextInput} from '@mantine/core';
-import {useTranslation} from 'react-i18next';
+import {useTranslationContext} from '../TranslationContext';
 import {filterButtonStyle} from '../FilterPanel';
 import {useState, useRef, useEffect} from 'react';
 import {IoCheckmarkCircleOutline, IoClose} from 'react-icons/io5';
 import {CheckIcon} from '@mantine/core';
 
 function SaveFilterButton() {
-	const {t} = useTranslation();
+	const {t} = useTranslationContext();
 	const [isClicked, setIsClicked] = useState(false);
 	const [filterName, setFilterName] = useState('');
 	const [filterSaved, setFilterSaved] = useState(false);

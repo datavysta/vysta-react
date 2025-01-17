@@ -1,6 +1,6 @@
 import {FC, ReactNode} from 'react';
 import {Box, Flex, Group} from '@mantine/core';
-import {useTranslation} from 'react-i18next';
+import {useTranslationContext} from '../TranslationContext';
 import FilterOperator from './FilterOperator';
 import {AiOutlinePlus} from 'react-icons/ai';
 import Condition from '../../Models/Condition';
@@ -22,7 +22,7 @@ const FilterGroup: FC<IFilterProps> = ({
 	                                       onChange,
 	                                       showNestedConditionButton,
                                        }: IFilterProps) => {
-	const {t} = useTranslation();
+	const { t } = useTranslationContext();
 
 	return (
 		<>

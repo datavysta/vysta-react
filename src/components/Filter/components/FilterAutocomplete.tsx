@@ -1,6 +1,6 @@
 import {FC, ReactNode, useState} from 'react';
 import {Box, Select, Highlight, Flex, ComboboxItem, ComboboxLikeRenderOptionInput} from '@mantine/core';
-import {useTranslation} from 'react-i18next';
+import {useTranslationContext} from '../TranslationContext';
 import DataType from '../../Models/DataType';
 import angleDown from "../../../assets/svg/angle-down.svg?react";
 import {SvgIcon} from "../../SvgIcon.tsx";
@@ -64,7 +64,7 @@ const FilterAutocomplete: FC<IFilterProps> = ({
 	                                              initialValue,
 	                                              onChange,
                                               }: IFilterProps) => {
-	const {t} = useTranslation();
+	const { t } = useTranslationContext();
 	const [value, setValue] = useState(initialValue || '');
 	const [searchValue, setSearchValue] = useState("");
 

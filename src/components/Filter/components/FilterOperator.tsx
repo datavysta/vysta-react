@@ -1,5 +1,5 @@
 import {FC, useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import {useTranslationContext} from '../TranslationContext';
 import LogicalOperator from '../../Models/LogicalOperator';
 import {Select} from '@mantine/core';
 
@@ -14,7 +14,7 @@ const FilterOperator: FC<IFilterProps> = ({
 	                                          isOutsideAGroup,
 	                                          onChange,
                                           }: IFilterProps) => {
-	const {t} = useTranslation();
+	const { t } = useTranslationContext();
 	const [value, setValue] = useState<LogicalOperator>(
 		initialValue ? initialValue : LogicalOperator.AND
 	);

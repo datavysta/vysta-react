@@ -7,6 +7,7 @@ import ComparisonOperator from '../../Models/ComparisonOperator';
 import {ConditionMode} from '../ConditionMode';
 import DataType from '../../Models/DataType';
 import isNil from '../../../utils/isNil';
+import { useTranslationContext } from '../TranslationContext';
 
 interface IFilterProps {
 	expressionCondition: ExpressionCondition;
@@ -21,6 +22,7 @@ const FilterExpressionRightHandSide: FC<IFilterProps> = ({
 	                                                         data,
 	                                                         expressionCondition,
                                                          }: IFilterProps) => {
+	const { t } = useTranslationContext();
 	const {comparisonOperator} = expressionCondition;
 
 	const isComparisonOperatorBetweenOrNotBetween =
