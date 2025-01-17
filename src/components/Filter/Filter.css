@@ -1,0 +1,44 @@
+.filter-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+}
+
+.filter-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+}
+
+.filter-footer {
+    padding-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.filter-button {
+    border: 1px solid var(--border-color, #e9ecef);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-color, #000);
+    padding: 8px 12px;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 4px;
+}
+
+.filter-button:hover {
+    background: var(--hover-color, #f8f9fa);
+}
+
+/* When there are no conditions, make the button filled */
+.filter-container:empty + .filter-footer .filter-button {
+    background: var(--accent-color, #228be6);
+    color: white;
+    border-color: var(--accent-color, #228be6);
+} 

@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { Button, Flex, Group } from '@mantine/core';
 import FilterConditionRow from './components/FilterConditionRow';
 import { FaPlus } from 'react-icons/fa';
 import { useTranslationContext } from './TranslationContext';
@@ -9,8 +8,8 @@ import GroupCondition from '../Models/GroupCondition';
 import ConditionType from '../Models/ConditionType';
 import ExpressionCondition from '../Models/ExpressionCondition';
 import { ConditionMode } from './ConditionMode';
-import { filterButtonStyle } from './FilterPanel';
-import {FilterDefinitionsByField} from "./FilterDefinitionsByField";
+import { FilterDefinitionsByField } from "./FilterDefinitionsByField";
+import './Filter.css';
 
 interface IFilterProps {
 	conditions: Condition[];
@@ -40,10 +39,6 @@ const Filter: FC<IFilterProps> = ({
 	const isExpression = (conditionType: ConditionType) =>
 		conditionType === ConditionType.Expression;
 
-	// const shouldShowNestedConditionBttn = (condition: Condition) =>
-	// 	condition.children[condition.children.length - 1].values.length > 0 &&
-	// 	condition.children[condition.children.length - 1].values[0] !== '';
-
 	const createNewCondition = (parent?: GroupCondition) => {
 		if (parent) {
 			onAddCondition(new ExpressionCondition(), parent);
@@ -60,7 +55,7 @@ const Filter: FC<IFilterProps> = ({
 		firstConditionGroup: boolean = true
 	) => {
 		return children?.map((condition, index) => (
-			<Flex key={condition.id} w={'100%'} direction={'column'} gap={8}>
+			<div key={condition.id} className="filter-row">
 				{isExpression(condition.type) ? (
 					<FilterConditionRow
 						filterDefinitions={filterDefinitions}
@@ -93,26 +88,25 @@ const Filter: FC<IFilterProps> = ({
 						showNestedConditionButton={true}
 					/>
 				)}
-			</Flex>
+			</div>
 		));
 	};
 
 	return (
-		<Flex direction={'column'} w={'100%'} gap={8}>
+		<div className="filter-container">
 			{renderChildren(conditions)}
 			{showAddConditionButton && (
-				<Group pt={10} style={{ gap: 10 }}>
-					<Button
-						style={filterButtonStyle}
-						variant={conditions.length ? 'outline' : 'filled'}
-						leftSection={<FaPlus />}
+				<div className="filter-footer">
+					<button
+						className="filter-button"
 						onClick={() => createNewCondition()}
 					>
+						<FaPlus />
 						{t('Add Condition')}
-					</Button>
-				</Group>
+					</button>
+				</div>
 			)}
-		</Flex>
+		</div>
 	);
 };
 
