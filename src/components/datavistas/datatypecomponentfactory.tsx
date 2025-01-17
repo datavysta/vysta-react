@@ -1,8 +1,8 @@
-import IComponentFactory from '../../public/componentfactory';
-import IFieldProperty from '../../public/fieldproperty';
 import { ReactElement } from 'react';
 import Fields from './fields';
 import DataType from '../Models/DataType';
+import IFieldProperty from "../Models/public/fieldproperty";
+import IComponentFactory from "../Models/public/componentfactory";
 
 export interface IDataTypeComponentFactory {
 	getFieldTypeByDataType(

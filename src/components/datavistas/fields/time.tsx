@@ -1,6 +1,6 @@
-import { Fragment, ChangeEvent, FC } from 'react';
-import dayjs from 'dayjs';
+import { FC } from 'react';
 import { TimeInput } from '@mantine/dates';
+import { formatTime, parseTimeWithBaseDate, toUTC } from '../../../utils/dateTime';
 import IFieldProperty from '../../Models/public/fieldproperty';
 
 const TimeComponent: FC<IFieldProperty> = ({
@@ -8,35 +8,33 @@ const TimeComponent: FC<IFieldProperty> = ({
 	disabled,
 	error,
 	value,
-	dataType,
 	label,
 	onChange,
+	utc
 }) => {
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		onChange && onChange(`${e.target.value}:00`);
+	const handleChange = (date: Date | null) => {
+		if (!date || !onChange) return;
+		const hours = padZero(date.getHours());
+		const minutes = padZero(date.getMinutes());
+		onChange(`${hours}:${minutes}`);
 	};
 
-	const renderReadOnlyField = () => {
-		return value ? (
-			<Fragment>
-				{dataType === 'TimeUtc'
-					? dayjs(`1970-01-01T ${value}`).utc().format('hh:mm A')
-					: dayjs(`1970-01-01T ${value}`).format('hh:mm A')}
-			</Fragment>
-		) : null;
-	};
+	if (readOnly && value) {
+		const date = parseTimeWithBaseDate(value);
+		return <>{utc ? formatTime(toUTC(date)) : formatTime(date)}</>;
+	}
 
-	return readOnly ? (
-		renderReadOnlyField()
-	) : (
+	return (
 		<TimeInput
 			disabled={disabled}
 			error={error}
-			defaultValue={value}
+			value={value ? parseTimeWithBaseDate(value) : null}
 			label={label}
 			onChange={handleChange}
 		/>
 	);
 };
+
+const padZero = (num: number): string => num.toString().padStart(2, '0');
 
 export default TimeComponent;

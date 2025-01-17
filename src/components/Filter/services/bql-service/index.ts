@@ -4,6 +4,7 @@ import ComparisonOperator from '../../../Models/ComparisonOperator';
 import DataType from '../../../Models/DataType';
 import DataTypeCategory from '../../../Models/DataTypeCategory';
 import ObjectRef from '../../../Models/ObjectRef';
+import { formatDate, formatDateTime, parseDate, toUTC, fromUTC } from '../../../../utils/dateTime';
 
 export default class Service {
 	private getComparisonOperatorsByBoolean(): ComparisonOperator[] {
@@ -116,30 +117,27 @@ export default class Service {
 	}
 
 	toDate(value: string): Date {
-		return dayjs(value).toDate();
+		return parseDate(value);
 	}
 
 	fromDate(value: Date): string {
-		return dayjs(value).format('YYYY-MM-DD');
+		return formatDate(value);
 	}
 
 	toDateTime(value: string): Date {
-		let dateTime = dayjs(value + '-00:00', 'YYYY-MM-DDTHH:mm:ssZ');
-		dateTime = dateTime.add(-dateTime.utcOffset(), 'minutes');
-
-		return dateTime.toDate();
+		return parseDate(value);
 	}
 
 	fromDateTime(value: Date): string {
-		return dayjs(value).format('YYYY-MM-DDTHH:mm:ss');
+		return formatDateTime(value);
 	}
 
 	toDateTimeUtc(value: string): Date {
-		return dayjs(value, 'YYYY-MM-DDTHH:mm:ssZ').utc().toDate();
+		return toUTC(parseDate(value));
 	}
 
 	fromDateTimeUtc(value: Date): string {
-		return dayjs(value).utc().format('YYYY-MM-DDTHH:mm:ssZ');
+		return formatDateTime(fromUTC(value));
 	}
 
 	toObjectRef(identifier: string): ObjectRef {

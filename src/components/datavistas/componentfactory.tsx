@@ -1,6 +1,4 @@
 import { ReactElement } from 'react';
-import IComponentFactory from '../../public/componentfactory';
-import IFieldProperty from '../../public/fieldproperty';
 import BQLComponent from './fields/bql';
 import TimeComponent from './fields/time';
 import DateComponent from './fields/date';
@@ -14,6 +12,8 @@ import ToggleComponent from './fields/toggle';
 import SelectComponent from './fields/select';
 import Fields from './fields';
 import UUIDComponent from './fields/uuid';
+import IComponentFactory from "../Models/public/componentfactory";
+import IFieldProperty from "../Models/public/fieldproperty";
 
 class ComponentFactory implements IComponentFactory {
 	createField(typeName: string, properties: IFieldProperty): ReactElement {

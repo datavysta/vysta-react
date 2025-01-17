@@ -1,6 +1,6 @@
 import { FC } from 'react';
-import dayjs from 'dayjs';
 import { DatePickerInput } from '@mantine/dates';
+import { formatDate, formatDateUS, parseDate } from '../../../utils/dateTime';
 import IFieldProperty from '../../Models/public/fieldproperty';
 
 const DateComponent: FC<IFieldProperty> = ({
@@ -12,18 +12,18 @@ const DateComponent: FC<IFieldProperty> = ({
 	onChange
 }) => {
 	const handleChange = (date: Date | null) => {
-		onChange && onChange(date ? dayjs(date).format('YYYY-MM-DD') : '');
+		onChange && onChange(date ? formatDate(date) : '');
 	};
 
 	if (readOnly) {
-		return <>{value ? dayjs(value).format('MM/DD/YYYY') : null}</>;
+		return <>{value ? formatDateUS(parseDate(value)) : null}</>;
 	}
 
 	return (
 		<DatePickerInput
 			disabled={disabled}
 			error={error}
-			value={value ? dayjs(value).toDate() : null}
+			value={value ? parseDate(value) : null}
 			label={label}
 			onChange={handleChange}
 		/>
