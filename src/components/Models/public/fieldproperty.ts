@@ -1,0 +1,52 @@
+import IDataItem from './dataitem';
+import IProperty from './property';
+import ISearchCondition from './searchcondition';
+import Size from './size';
+
+interface IFieldProperty extends IProperty {
+	name?: string;
+	placeholder?: string;
+	readOnly?: boolean;
+	disabled?: boolean;
+	required?: boolean;
+	searchable?: boolean;
+	loading?: boolean;
+	multiple?: boolean;
+	error?: string;
+	warning?: string;
+	success?: string;
+	content?: string;
+	label?: string;
+	description?: string;
+	value?: string;
+	minValue?: string;
+	maxValue?: string;
+	displayValue?: string;
+	dataType?: string;
+	length?: number;
+	precision?: number;
+	scale?: number;
+	encrypted?: boolean;
+	fileName?: string;
+	translate?: boolean;
+	primary?: boolean;
+	secondary?: boolean;
+	basic?: boolean;
+	color?: string;
+	icon?: string;
+	maxRows?: number;
+	className?: string;
+	size?: Size;
+	items?: IDataItem[] | null;
+	id?: string;
+	isFilterComponent?: boolean;
+	collapsed?: number | boolean;
+	onSearch?(condition: ISearchCondition): Promise<IDataItem[]>;
+	onChange?(data: string): void;
+	onClick?(): void;
+	onBlur?(): void;
+	onFocus?(): void;
+	focusTick?: number;
+}
+
+export default IFieldProperty;

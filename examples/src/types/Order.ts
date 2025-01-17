@@ -5,7 +5,7 @@ interface OrderDetail {
 }
 
 export interface Order {
-    orderId: number;
+    orderId: number; // [ Currency ], default: 0
     orderDate: string;
     shipName: string;
     shipCountry: string;
