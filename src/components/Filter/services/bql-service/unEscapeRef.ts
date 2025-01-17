@@ -1,9 +1,9 @@
-import split from 'split-string';
+import splitString from '../../../../utils/splitString';
 import unEscapeIdentifier from './unEscapeIdentifier';
 import ObjectRef from '../../../Models/ObjectRef';
 
 const unEscapeRef = (tableName: string): ObjectRef => {
-	const parts = split(tableName, { quotes: ['"'], separator: '.' });
+	const parts = splitString(tableName, { quotes: ['"'], separator: '.' });
 
 	const newParts = parts.map((part) => unEscapeIdentifier(part));
 
