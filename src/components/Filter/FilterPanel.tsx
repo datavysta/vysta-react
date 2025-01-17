@@ -1,24 +1,22 @@
-import {FC, useCallback, useMemo, useState} from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { useTranslationContext } from './TranslationContext';
-import { Group, Button, Flex, Box } from '@mantine/core';
 import Condition from '../Models/Condition';
 import ExpressionCondition from '../Models/ExpressionCondition';
 import GroupCondition from '../Models/GroupCondition';
 import Filter from './Filter';
 import { AiOutlinePlus } from 'react-icons/ai';
+import { BsChevronDown } from 'react-icons/bs';
 import filterNestedConditions from '../../utils/filterNestedConditions';
 import filterEmptyGroups from '../../utils/filterEmptyGroups';
 import updateNestedCondition from '../../utils/updateNestedCondition';
 import { ConditionMode } from './ConditionMode';
-import { Text } from '@mantine/core';
-import { Select } from '@mantine/core';
-import { BsChevronDown } from 'react-icons/bs';
 import SaveFilterButton from './components/SaveFilterButton';
-import {FilterDefinitionsByField} from "./FilterDefinitionsByField";
+import { FilterDefinitionsByField } from "./FilterDefinitionsByField";
 import DataType from "../Models/DataType";
-import {ColDef} from "ag-grid-community";
+import { ColDef } from "ag-grid-community";
 import ConditionType from '../Models/ConditionType';
-import CustomCloseButton from '../CloseButton.tsx';
+import CloseButton from '../CloseButton';
+import './FilterPanel.css';
 
 interface IFilterProps {
 	conditions: Condition[];
@@ -28,16 +26,9 @@ interface IFilterProps {
 	asideTitle?: string;
 	onApply?(conditions: Condition[]): void;
 	onChange?(conditions: Condition[]): void;
-	hideClear?:boolean;
+	hideClear?: boolean;
 	onClose?: () => void;
 }
-
-export const filterButtonStyle = {
-	border: '1px solid var(--mantine-color-dark-18)',
-	fontSize: '12px',
-	fontWeight: 400,
-	color: 'var(--mantine-color-default-color)',
-};
 
 const FilterPanel: FC<IFilterProps> = ({
 	conditions,
@@ -45,7 +36,7 @@ const FilterPanel: FC<IFilterProps> = ({
 	asideTitle,
 	onApply,
 	onChange,
-    filterDefinitions,
+	filterDefinitions,
 	hideClear = true,
 	onClose,
 }: IFilterProps) => {
@@ -102,8 +93,6 @@ const FilterPanel: FC<IFilterProps> = ({
 			.map((column) => ({
 				targetFieldName: column.field || "",
 				label: column.headerName || "",
-
-				// Can be set
 				dataType: (column as { dataType?: DataType }).dataType
 			}));
 	}, [filterDefinitions, colDef]);
@@ -129,7 +118,6 @@ const FilterPanel: FC<IFilterProps> = ({
 		if (conditions.length > 0 && conditions[0].children[0]?.propertyName) {
 			return conditions;
 		}
-
 		return [getPreparedGroup()];
 	});
 
@@ -149,10 +137,8 @@ const FilterPanel: FC<IFilterProps> = ({
 					}
 					return cond;
 				});
-
 				return updatedParent;
 			}
-
 			return [...prevConditions, condition];
 		});
 	}, []);
@@ -177,7 +163,6 @@ const FilterPanel: FC<IFilterProps> = ({
 	const isFirstConditionValid = useCallback(() => {
 		const firstCondition = currentConditions[0]
 			?.children[0] as ExpressionCondition;
-
 		return (
 			firstCondition.propertyName &&
 			firstCondition.comparisonOperator &&
@@ -201,112 +186,81 @@ const FilterPanel: FC<IFilterProps> = ({
 	}, [getPreparedGroup, handleOnChange]);
 
 	return (
-		<Box px={'sm'} py={'xs'} className="filterPanel">
+		<div className="filter-panel">
 			{asideTitle ? (
-				<Flex
-					justify={'space-between'}
-					w={'100%'}
-					pb={'sm'}
-					mb={'sm'}
-					style={{
-						borderBottom: '1px solid var(--mantine-color-gray-3)',
-					}}
-				>
-					<Text c={'var(--mantine-color-default-color'}>
-						{asideTitle}
-					</Text>
-
-					<Button
-						style={filterButtonStyle}
-						variant={'outline'}
-						leftSection={<AiOutlinePlus />}
+				<div className="filter-header with-border">
+					<span className="filter-title">{asideTitle}</span>
+					<button
+						className="filter-button"
 						onClick={() => handleAddCondition(getPreparedGroup())}
 					>
+						<AiOutlinePlus />
 						{t('Add Filter Group')}
-					</Button>
-				</Flex>
+					</button>
+				</div>
 			) : (
-				<Flex justify={'space-between'} w={'100%'} mb={20} align={"center"}>
-					<Text c={'var(--mantine-color-default-color'}>Filters</Text>
-					<Flex direction={'row'} gap={12} align={'center'}>
-						<Text
-							c={'var(--mantine-color-gray-20)'}
-							fz={'12px'}
-							fw={500}
-							variant={'transparent'}
-							onClick={() =>
-								setCurrentConditions([getPreparedGroup()])
-							}
-							style={{ cursor: 'pointer' }}
+				<div className="filter-header">
+					<span className="filter-title">Filters</span>
+					<div className="filter-actions">
+						<button
+							className="clear-button"
+							onClick={() => setCurrentConditions([getPreparedGroup()])}
 						>
 							{t('Clear All Filters')}
-						</Text>
-						<Select
-							size="xs"
-							w={125}
-							placeholder="Saved Filters"
-							rightSection={<BsChevronDown size={12} />}
-						/>
-						{onClose && (
-  							<CustomCloseButton onClickAction={onClose} />
-						)}
-					</Flex>
-				</Flex>
+						</button>
+						<div className="select-wrapper">
+							<select className="filter-select">
+								<option value="">{t('Saved Filters')}</option>
+							</select>
+							<BsChevronDown className="select-icon" />
+						</div>
+						{onClose && <CloseButton onClickAction={onClose} />}
+					</div>
+				</div>
 			)}
-			<Filter
-				conditions={currentConditions}
-				filterDefinitions={filterDefinitionParameter}
-				onChange={handleConditionChange}
-				onAddCondition={handleAddCondition}
-				onDelete={handleDeleteCondition}
-				conditionMode={ConditionMode.ValueBased}
-				showAddConditionButton={false}
-				showWhereLabel={true}
-				firstRowRequired={false}
-			/>
 
-			<Flex
-				pt={20}
-				justify={asideTitle ? 'flex-end' : 'space-between'}
-				w="100%"
-				align={'center'}
-			>
+			<div className="filter-content">
+				<Filter
+					conditions={currentConditions}
+					filterDefinitions={filterDefinitionParameter}
+					onChange={handleConditionChange}
+					onAddCondition={handleAddCondition}
+					onDelete={handleDeleteCondition}
+					conditionMode={ConditionMode.ValueBased}
+					showAddConditionButton={false}
+					showWhereLabel={true}
+					firstRowRequired={false}
+				/>
+			</div>
+
+			<div className="filter-footer">
+				{!hideClear && (
+					<button
+						className="clear-button"
+						onClick={handleClear}
+					>
+						{t('Clear')}
+					</button>
+				)}
 				{!asideTitle && (
-					<Button
-						size={'xs'}
-						style={filterButtonStyle}
-						variant={'outline'}
-						leftSection={<AiOutlinePlus />}
+					<button
+						className="filter-button"
 						onClick={() => handleAddCondition(getPreparedGroup())}
 					>
+						<AiOutlinePlus />
 						{t('Add Filter Group')}
-					</Button>
+					</button>
 				)}
-				<Group justify="right">
-					{!hideClear && (
-						<Button
-							size={'xs'}
-							variant={"subtle"}
-							onClick={handleClear}
-						>
-							{t('Clear')}
-						</Button>
-					)}
-					{!asideTitle && <SaveFilterButton />}
-					{onApply && (
-						<Button
-							disabled={getIsApplyDisabled}
-							size={'xs'}
-							style={{ ...filterButtonStyle, borderColor: !getIsApplyDisabled ? 'var(--mantine-color-Accent-4)' : undefined }}
-							color={'var(--mantine-color-Accent-3)'}
-							onClick={handleApply}
-						>
-							{t('Apply Filter')}
-						</Button>
-					)}
-				</Group>
-			</Flex>
-		</Box>
+				<button
+					className="apply-button"
+					onClick={handleApply}
+					disabled={getIsApplyDisabled}
+				>
+					{t('Apply')}
+				</button>
+				{!asideTitle && <SaveFilterButton />}
+			</div>
+		</div>
 	);
 };
 

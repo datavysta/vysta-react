@@ -1,0 +1,122 @@
+.filter-panel {
+    padding: 12px 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.filter-header.with-border {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color, #e9ecef);
+}
+
+.filter-title {
+    color: var(--text-color, #000);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.filter-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+}
+
+.filter-button {
+    border: 1px solid var(--border-color, #e9ecef);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-color, #000);
+    padding: 8px 12px;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 4px;
+}
+
+.filter-button:hover {
+    background: var(--hover-color, #f8f9fa);
+}
+
+.clear-button {
+    color: var(--gray-color, #868e96);
+    font-size: 12px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.clear-button:hover {
+    color: var(--gray-dark-color, #495057);
+}
+
+.select-wrapper {
+    position: relative;
+    width: 125px;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 4px 24px 4px 8px;
+    font-size: 12px;
+    border: 1px solid var(--border-color, #e9ecef);
+    border-radius: 4px;
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+}
+
+.select-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-color, #000);
+    font-size: 12px;
+}
+
+.filter-content {
+    margin: 16px 0;
+}
+
+.filter-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.apply-button {
+    border: 1px solid var(--accent-color, #228be6);
+    color: var(--accent-color, #228be6);
+    background: transparent;
+    padding: 8px 16px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.apply-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--border-color, #e9ecef);
+    color: var(--gray-color, #868e96);
+}
+
+.apply-button:not(:disabled):hover {
+    background: var(--accent-hover-color, #e7f5ff);
+} 

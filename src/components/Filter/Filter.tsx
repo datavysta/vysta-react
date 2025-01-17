@@ -10,7 +10,7 @@ import ConditionType from '../Models/ConditionType';
 import ExpressionCondition from '../Models/ExpressionCondition';
 import { ConditionMode } from './ConditionMode';
 import { filterButtonStyle } from './FilterPanel';
-import {FilterDefinitionsByField} from "./FilterDefinitionsByField.ts";
+import {FilterDefinitionsByField} from "./FilterDefinitionsByField";
 
 interface IFilterProps {
 	conditions: Condition[];

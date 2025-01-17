@@ -1,0 +1,20 @@
+.close-button {
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--text-color, #000);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.close-button:hover {
+    opacity: 1;
+}
+
+.close-button:focus {
+    outline: none;
+    opacity: 1;
+} 
