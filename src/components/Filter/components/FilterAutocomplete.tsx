@@ -1,9 +1,9 @@
-import {FC, ReactNode, useState} from 'react';
-import {Box, Select, Highlight, Flex, ComboboxItem, ComboboxLikeRenderOptionInput} from '@mantine/core';
+import {FC, ReactNode, useState, useRef, useEffect} from 'react';
 import {useTranslationContext} from '../TranslationContext';
 import DataType from '../../Models/DataType';
 import angleDown from "../../../assets/svg/angle-down.svg?react";
 import {SvgIcon} from "../../SvgIcon.tsx";
+import './FilterAutocomplete.css';
 
 interface IFilterProps {
 	data: FilterAutocompleteOption[];
@@ -13,77 +13,53 @@ interface IFilterProps {
 	onChange: (value: string) => void;
 }
 
-export interface FilterAutocompleteOption extends ComboboxItem {
+export interface FilterAutocompleteOption {
 	datatype: DataType;
 	description?: string;
 	group?: string;
 	icon?: ReactNode;
-	system: boolean;
+	system?: boolean;
 	value: string;
 	label: string;
-	items: FilterAutocompleteOption[];
+	items?: FilterAutocompleteOption[];
 }
 
-const renderOption = (
-	searchValue: string,
-	{option, checked}: ComboboxLikeRenderOptionInput<ComboboxItem>
-	) => {
-	const castOption = option as FilterAutocompleteOption;
-	return (
-		<Flex justify={'space-between'} align={'center'}>
-			<Highlight
-				fz={12}
-				highlight={searchValue}
-				highlightStyles={() => ({
-					backgroundColor: '#F8EE00',
-				})}
-			>
-				{castOption.label || castOption.value}
-			</Highlight>
-			<Box style={{opacity: checked ? 1 : 0.5}}>
-				{castOption.icon}
-			</Box>
-			{castOption.description && (
-				<Highlight
-					fz={10}
-					highlight={searchValue}
-					highlightStyles={() => ({
-						backgroundColor: '#F8EE00',
-					})}
-				>
-					{castOption.description}
-				</Highlight>
-			)}
-		</Flex>
-	);
-};
-
 const FilterAutocomplete: FC<IFilterProps> = ({
-	                                              data,
-	                                              label,
-	                                              initialValue,
-	                                              onChange,
-                                              }: IFilterProps) => {
+	data,
+	label,
+	initialValue,
+	onChange,
+}: IFilterProps) => {
 	const { t } = useTranslationContext();
 	const [value, setValue] = useState(initialValue || '');
 	const [searchValue, setSearchValue] = useState("");
+	const [isOpen, setIsOpen] = useState(false);
+	const wrapperRef = useRef<HTMLDivElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
 
-	const handleChange = (value: string | null) => {
-		if (!value) {
-			return;
-		}
-		setValue(value);
-		onChange(value);
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+				setIsOpen(false);
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
+
+	const handleChange = (newValue: string) => {
+		setValue(newValue);
+		onChange(newValue);
+		setIsOpen(false);
+		setSearchValue("");
 	};
 
 	const cleanData = (data: FilterAutocompleteOption[]): void => {
 		data.forEach((item) => {
-			// Remove undefined groups
 			if (!item.group) {
 				delete item.group;
 			}
-
-			// If there are sub-items, recursively clean them
 			if (item.items) {
 				cleanData(item.items);
 			}
@@ -91,30 +67,91 @@ const FilterAutocomplete: FC<IFilterProps> = ({
 	};
 	cleanData(data);
 
-	return (
-		<Box pos={'relative'}>
-			<Select
-				data={data || []}
-				value={value}
-				onChange={handleChange}
-				label={label}
-				placeholder={t('Select')}
-				searchable
-				onSearchChange={setSearchValue}
-				renderOption={((item: ComboboxLikeRenderOptionInput<ComboboxItem>) =>
-					renderOption(searchValue, item))}
+	const getFilteredOptions = () => {
+		if (!searchValue) return data;
+		return data.filter(option => 
+			option.label.toLowerCase().includes(searchValue.toLowerCase()) ||
+			option.value.toLowerCase().includes(searchValue.toLowerCase()) ||
+			(option.description && option.description.toLowerCase().includes(searchValue.toLowerCase()))
+		);
+	};
 
-				rightSection={<SvgIcon
-					Icon={angleDown}
-					size={18}
-					style={{
-						color: 'var(--mantine-color-Gray-25)',
+	const highlightText = (text: string) => {
+		if (!searchValue) return text;
+		const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
+		return parts.map((part, i) => 
+			part.toLowerCase() === searchValue.toLowerCase() ? 
+				<mark key={i} className="filter-autocomplete-highlight">{part}</mark> : 
+				<span key={i}>{part}</span>
+		);
+	};
+
+	const selectedOption = data.find(opt => opt.value === value);
+
+	return (
+		<div className="filter-autocomplete-wrapper" ref={wrapperRef}>
+			{label && <label className="filter-autocomplete-label">{label}</label>}
+			<div className="filter-autocomplete-input-wrapper">
+				<input
+					ref={inputRef}
+					type="text"
+					className="filter-autocomplete-input"
+					value={isOpen ? searchValue : (selectedOption?.label || '')}
+					onChange={(e) => {
+						setSearchValue(e.target.value);
+						setIsOpen(true);
 					}}
-					/>}
-				rightSectionProps={{style: {pointerEvents: 'none'}}}
-				style={{cursor: 'pointer'}}
-			/>
-		</Box>
+					onFocus={() => setIsOpen(true)}
+					placeholder={t('Select')}
+				/>
+				<button 
+					className="filter-autocomplete-toggle"
+					onClick={() => {
+						setIsOpen(!isOpen);
+						if (!isOpen) {
+							inputRef.current?.focus();
+						}
+					}}
+				>
+					<SvgIcon
+						Icon={angleDown}
+						size={18}
+						style={{
+							color: 'var(--mantine-color-Gray-25)',
+							transform: isOpen ? 'rotate(180deg)' : 'none',
+							transition: 'transform 0.2s ease'
+						}}
+					/>
+				</button>
+			</div>
+			{isOpen && (
+				<div className="filter-autocomplete-dropdown">
+					{getFilteredOptions().map((option) => (
+						<button
+							key={option.value}
+							className="filter-autocomplete-option"
+							onClick={() => handleChange(option.value)}
+						>
+							<div className="filter-autocomplete-option-content">
+								<div className="filter-autocomplete-option-label">
+									{highlightText(option.label || option.value)}
+								</div>
+								{option.icon && (
+									<div className="filter-autocomplete-option-icon" style={{opacity: option.value === value ? 1 : 0.5}}>
+										{option.icon}
+									</div>
+								)}
+								{option.description && (
+									<div className="filter-autocomplete-option-description">
+										{highlightText(option.description)}
+									</div>
+								)}
+							</div>
+						</button>
+					))}
+				</div>
+			)}
+		</div>
 	);
 };
 

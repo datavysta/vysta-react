@@ -1,28 +1,31 @@
 import {FC, useEffect, useState} from 'react';
-import {Select, ComboboxItem, Image} from '@mantine/core';
 import {useTranslationContext} from '../TranslationContext';
 import DataType from '../../Models/DataType';
 import ComparisonOperator from '../../Models/ComparisonOperator';
 import Service from '../services/bql-service';
-import SelectArrow from "../../../assets/svg/selectArrow.svg";
+import './FilterComparisonOperator.css';
 
 interface IFilterComparisonOperatorProps {
 	value: ComparisonOperator;
 	dataType?: DataType;
 	label?: string;
-	onChange: (value: any) => void;
+	onChange: (value: ComparisonOperator) => void;
 }
 
-const service = new Service(); // Instantiate the Service
+const service = new Service();
 
 const FilterComparisonOperator: FC<IFilterComparisonOperatorProps> = ({
-	                                                                      dataType,
-	                                                                      value,
-	                                                                      label,
-	                                                                      onChange,
-                                                                      }: IFilterComparisonOperatorProps) => {
+	dataType,
+	value,
+	label,
+	onChange,
+}: IFilterComparisonOperatorProps) => {
 	const { t } = useTranslationContext();
-	const [operators, setOperators] = useState<ComboboxItem[]>([]);
+	const [operators, setOperators] = useState<Array<{
+		value: ComparisonOperator;
+		label: string;
+		key: string;
+	}>>([]);
 
 	useEffect(() => {
 		const operators = getAllOperators();
@@ -32,16 +35,16 @@ const FilterComparisonOperator: FC<IFilterComparisonOperatorProps> = ({
 	}, [dataType]);
 
 	const getAllOperators = () =>
-		Object.values(ComparisonOperator).filter(_ => _ != ComparisonOperator.Equal && _ != ComparisonOperator.NotEqual).map((key: string) => {
-			return {
+		Object.values(ComparisonOperator)
+			.filter(_ => _ != ComparisonOperator.Equal && _ != ComparisonOperator.NotEqual)
+			.map((key: string) => ({
 				value: key as ComparisonOperator,
 				label: t(key),
 				key: key,
-			};
-		});
+			}));
 
 	const setDataTypeOperators = (
-		operators: ComboboxItem[],
+		operators: Array<{value: ComparisonOperator; label: string; key: string}>,
 		dataType: DataType
 	) => {
 		const supported = service.getComparisonOperatorsByDataType(dataType);
@@ -52,20 +55,20 @@ const FilterComparisonOperator: FC<IFilterComparisonOperatorProps> = ({
 	};
 
 	return (
-		<Select
-			data={operators}
-			onChange={onChange}
-			value={value}
-			label={label}
-			rightSection={
-				<Image
-					src={SelectArrow}
-					width={18}
-					height={18}
-					style={{pointerEvents: 'none'}}
-				/>
-			}
-		/>
+		<div className="filter-comparison-operator-wrapper">
+			{label && <label className="filter-comparison-operator-label">{label}</label>}
+			<select
+				className="filter-comparison-operator-select"
+				value={value}
+				onChange={(e) => onChange(e.target.value as ComparisonOperator)}
+			>
+				{operators.map(option => (
+					<option key={option.key} value={option.value}>
+						{option.label}
+					</option>
+				))}
+			</select>
+		</div>
 	);
 };
 

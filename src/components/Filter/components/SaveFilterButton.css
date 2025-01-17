@@ -1,0 +1,93 @@
+.save-filter-container {
+  display: flex;
+  align-items: center;
+}
+
+.save-filter-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.save-filter-input {
+  height: 28px;
+  padding: 0 64px 0 12px;
+  border: 1px solid var(--mantine-color-gray-4);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--mantine-color-dark-9);
+  width: 200px;
+}
+
+.save-filter-input:focus {
+  outline: none;
+  border-color: var(--mantine-color-blue-5);
+}
+
+.save-filter-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
+.save-filter-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--mantine-color-gray-7);
+}
+
+.save-filter-action-button:hover {
+  color: var(--mantine-color-gray-8);
+}
+
+.save-filter-confirm {
+  color: var(--mantine-color-Accent2-3);
+  border-radius: 0 2.75px 2.75px 0;
+}
+
+.save-filter-button-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.save-filter-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-filter-success-icon {
+  color: var(--mantine-color-Accent-1);
+}
+
+.save-filter-success-text {
+  font-size: 12px;
+  color: var(--mantine-color-Accent-1);
+}
+
+.save-filter-button {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--mantine-color-gray-4);
+  border-radius: 4px;
+  background: white;
+  font-size: 12px;
+  color: var(--mantine-color-dark-9);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.save-filter-button:hover {
+  background-color: var(--mantine-color-gray-0);
+} 

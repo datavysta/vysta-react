@@ -1,5 +1,4 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { Grid, ThemeIcon } from '@mantine/core';
 import FilterAutocomplete, {
 	FilterAutocompleteOption,
 } from './FilterAutocomplete';
@@ -20,6 +19,7 @@ import {
 import FilterRightHandSideLoader from './FilterRightHandSideLoader';
 import useUpdateEffect from '../../../hooks/useUpdateEffect';
 import isEmpty from "../../../utils/isEmpty";
+import './FilterConditionRow.css';
 
 interface IFilterProps {
 	condition: Condition;
@@ -39,7 +39,6 @@ const FilterConditionRow: FC<IFilterProps> = ({
 	index,
 	onDelete,
 	onChange,
-	firstConditionRendered,
 	onlyConditionInGroup,
 	conditionMode,
 	firstRowRequired,
@@ -247,76 +246,49 @@ const FilterConditionRow: FC<IFilterProps> = ({
 	};
 
 	return (
-		<Grid columns={12} justify="start" align="start">
-			{!onlyConditionInGroup &&
-				!firstConditionRendered &&
-				!isFirstElement && (
-					<Grid.Col
-						span={1.75}
-						display={'flex'}
-						style={{ justifyContent: 'flex-end' }}
-					>
-						<FilterOperator
+		<div className="filter-condition-row">
+			<div className="filter-condition-content">
+				{!isFirstElement && !onlyConditionInGroup && (
+					<div className="filter-operator-col">
+						<FilterOperator 
 							initialValue={expressionCondition.operator}
-							onChange={(value) =>
-								setExpressionCondition({
-									...expressionCondition,
-									operator: value,
-								})
-							}
+							onChange={(value) => setExpressionCondition({
+								...expressionCondition,
+								operator: value,
+							})} 
 						/>
-					</Grid.Col>
+					</div>
 				)}
-			<Grid.Col span={4}>
-				<FilterAutocomplete
-					data={leftSideListOptions}
-					dataType={dataType}
-					onChange={handleLeftSideChange}
-					initialValue={
-						conditionMode === ConditionMode.ValueBased
-							? expressionCondition.propertyName
-							: expressionCondition.leftExpression
-					}
-				/>
-			</Grid.Col>
-			<Grid.Col span={'auto'}>
-				{dataType && (
-					<Grid columns={12} justify="start" align="start">
-						<Grid.Col span={5}>
-							<FilterComparisonOperator
-								dataType={
-									conditionMode ===
-									ConditionMode.ExpressionBased
-										? undefined
-										: dataType
-								}
-								value={
-									expressionCondition.comparisonOperator as ComparisonOperator
-								}
-								onChange={(value) =>
-									setExpressionCondition({
-										...expressionCondition,
-										comparisonOperator: value,
-									})
-								}
-							/>
-						</Grid.Col>
-						<Grid.Col span={7}>{renderRightHandSide()}</Grid.Col>
-					</Grid>
-				)}
-			</Grid.Col>
-			<Grid.Col span={0.75} pt={12}>
+				<div className="filter-left-side-col">
+					<FilterAutocomplete
+						data={leftSideListOptions}
+						initialValue={conditionMode === ConditionMode.ExpressionBased ? expressionCondition.leftExpression : expressionCondition.propertyName}
+						onChange={handleLeftSideChange}
+						dataType={dataType}
+					/>
+				</div>
+				<div className="filter-comparison-col">
+					<FilterComparisonOperator
+						value={expressionCondition.comparisonOperator as ComparisonOperator}
+						onChange={(value) => setExpressionCondition({
+							...expressionCondition,
+							comparisonOperator: value,
+						})}
+						dataType={conditionMode === ConditionMode.ExpressionBased ? undefined : dataType}
+					/>
+				</div>
+				<div className="filter-right-side-col">
+					{renderRightHandSide()}
+				</div>
 				{isDeleteRowVisible() && (
-					<ThemeIcon
-						variant="subtle"
-						onClick={onDelete}
-						c={'var(--mantine-color-gray-7)'}
-					>
-						<FiMinusCircle cursor="pointer" />
-					</ThemeIcon>
+					<div className="filter-delete-col">
+						<button className="filter-delete-button" onClick={onDelete}>
+							<FiMinusCircle className="filter-delete-icon" />
+						</button>
+					</div>
 				)}
-			</Grid.Col>
-		</Grid>
+			</div>
+		</div>
 	);
 };
 

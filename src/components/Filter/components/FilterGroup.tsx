@@ -1,9 +1,9 @@
 import {FC, ReactNode} from 'react';
-import {Box, Flex, Group} from '@mantine/core';
 import {useTranslationContext} from '../TranslationContext';
 import FilterOperator from './FilterOperator';
 import {AiOutlinePlus} from 'react-icons/ai';
 import Condition from '../../Models/Condition';
+import './FilterGroup.css';
 
 interface IFilterProps {
 	condition: Condition;
@@ -15,56 +15,45 @@ interface IFilterProps {
 }
 
 const FilterGroup: FC<IFilterProps> = ({
-	                                       condition,
-	                                       onAddCondition,
-	                                       children,
-	                                       index,
-	                                       onChange,
-	                                       showNestedConditionButton,
-                                       }: IFilterProps) => {
+	condition,
+	onAddCondition,
+	children,
+	index,
+	onChange,
+	showNestedConditionButton,
+}: IFilterProps) => {
 	const { t } = useTranslationContext();
 
 	return (
 		<>
 			{index !== 0 && (
-				<Box w={'100'} my={4}>
+				<div className="filter-operator-wrapper">
 					<FilterOperator
 						isOutsideAGroup={true}
 						initialValue={condition.operator}
 						onChange={(value) =>
-							onChange({...condition, operator: value})
+							onChange({ ...condition, operator: value })
 						}
 					/>
-				</Box>
+				</div>
 			)}
-			<Flex
+			<div
 				key={condition.id}
-				direction={'column'}
-				bg={'var(--mantine-color-gray-19)'}
-				style={{
-					borderRadius: 8,
-				}}
-				py={16}
-				px={16}
-				gap={16}
+				className="filter-group"
 			>
 				{children}
 				{showNestedConditionButton && (
-					<Group>
-						<Flex
-							c={'var(--mantine-color-gray-20)'}
+					<div className="filter-group-footer">
+						<button
+							className="add-filter-button"
 							onClick={onAddCondition}
-							align={'center'}
-							gap={6}
-							fz={'12px'}
-							style={{cursor: 'pointer'}}
 						>
-							<AiOutlinePlus/>
+							<AiOutlinePlus />
 							{t('Add Filter')}
-						</Flex>
-					</Group>
+						</button>
+					</div>
 				)}
-			</Flex>
+			</div>
 		</>
 	);
 };

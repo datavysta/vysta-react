@@ -1,6 +1,6 @@
 import { FC, ChangeEvent } from 'react';
-import { Textarea } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
+import './textarea.css';
 
 const TextareaComponent: FC<IFieldProperty> = ({
 	readOnly,
@@ -15,17 +15,23 @@ const TextareaComponent: FC<IFieldProperty> = ({
 	};
 
 	if (readOnly) {
-		return <>{value}</>;
+		return <span className="textarea-field-readonly">{value}</span>;
 	}
 
 	return (
-		<Textarea
-			disabled={disabled}
-			error={error}
-			value={value}
-			label={label}
-			onChange={handleChange}
-		/>
+		<div className="textarea-field-wrapper">
+			{label && <label className="textarea-field-label">{label}</label>}
+			<textarea
+				className={`textarea-field-input ${error ? 'textarea-field-error' : ''}`}
+				disabled={disabled}
+				value={value || ''}
+				onChange={handleChange}
+				aria-invalid={!!error}
+				aria-errormessage={error?.toString()}
+				rows={4}
+			/>
+			{error && <div className="textarea-field-error-message">{error}</div>}
+		</div>
 	);
 };
 

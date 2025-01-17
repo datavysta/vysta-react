@@ -1,7 +1,7 @@
-import {FC, useState} from 'react';
-import {useTranslationContext} from '../TranslationContext';
+import { FC, useState } from 'react';
+import { useTranslationContext } from '../TranslationContext';
 import LogicalOperator from '../../Models/LogicalOperator';
-import {Select} from '@mantine/core';
+import './FilterOperator.css';
 
 interface IFilterProps {
 	initialValue?: LogicalOperator;
@@ -10,18 +10,18 @@ interface IFilterProps {
 }
 
 const FilterOperator: FC<IFilterProps> = ({
-	                                          initialValue,
-	                                          isOutsideAGroup,
-	                                          onChange,
-                                          }: IFilterProps) => {
+	initialValue,
+	isOutsideAGroup,
+	onChange,
+}: IFilterProps) => {
 	const { t } = useTranslationContext();
 	const [value, setValue] = useState<LogicalOperator>(
 		initialValue ? initialValue : LogicalOperator.AND
 	);
 
 	const data = [
-		{label: t('AND'), value: LogicalOperator.AND},
-		{label: t('OR'), value: LogicalOperator.OR},
+		{ label: t('AND'), value: LogicalOperator.AND },
+		{ label: t('OR'), value: LogicalOperator.OR },
 	];
 
 	const handleChange = (value: LogicalOperator) => {
@@ -30,15 +30,17 @@ const FilterOperator: FC<IFilterProps> = ({
 	};
 
 	return (
-		<Select
-			data={data}
+		<select
+			className={`filter-operator ${isOutsideAGroup ? 'small' : 'medium'}`}
 			value={value}
-			onChange={(value) => handleChange(value as LogicalOperator)}
-			size={isOutsideAGroup ? 'xs' : 'sm'}
-			style={{
-				borderRadius: 6,
-			}}
-		/>
+			onChange={(e) => handleChange(e.target.value as LogicalOperator)}
+		>
+			{data.map(option => (
+				<option key={option.value} value={option.value}>
+					{option.label}
+				</option>
+			))}
+		</select>
 	);
 };
 

@@ -1,0 +1,32 @@
+.filter-comparison-operator-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.filter-comparison-operator-label {
+  font-size: 14px;
+  color: var(--mantine-color-gray-7);
+}
+
+.filter-comparison-operator-select {
+  width: 100%;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--mantine-color-gray-4);
+  border-radius: 4px;
+  background: white;
+  font-size: 14px;
+  color: var(--mantine-color-dark-9);
+  cursor: pointer;
+}
+
+.filter-comparison-operator-select:hover {
+  border-color: var(--mantine-color-gray-6);
+}
+
+.filter-comparison-operator-select:focus {
+  outline: none;
+  border-color: var(--mantine-color-blue-5);
+} 

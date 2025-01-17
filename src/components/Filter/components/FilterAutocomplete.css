@@ -1,0 +1,102 @@
+.filter-autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.filter-autocomplete-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: var(--mantine-color-gray-7);
+}
+
+.filter-autocomplete-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.filter-autocomplete-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 36px 0 12px;
+  border: 1px solid var(--mantine-color-gray-4);
+  border-radius: 4px;
+  background: white;
+  font-size: 14px;
+  color: var(--mantine-color-dark-9);
+  cursor: pointer;
+}
+
+.filter-autocomplete-input:hover {
+  border-color: var(--mantine-color-gray-6);
+}
+
+.filter-autocomplete-input:focus {
+  outline: none;
+  border-color: var(--mantine-color-blue-5);
+}
+
+.filter-autocomplete-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--mantine-color-gray-4);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.filter-autocomplete-option {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filter-autocomplete-option:hover {
+  background-color: var(--mantine-color-gray-0);
+}
+
+.filter-autocomplete-option-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.filter-autocomplete-option-label {
+  font-size: 12px;
+  flex: 1;
+}
+
+.filter-autocomplete-option-description {
+  font-size: 10px;
+  color: var(--mantine-color-gray-6);
+}
+
+.filter-autocomplete-highlight {
+  background-color: #F8EE00;
+  padding: 0 2px;
+  border-radius: 2px;
+} 

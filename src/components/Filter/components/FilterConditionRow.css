@@ -1,0 +1,49 @@
+.filter-condition-row {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.filter-condition-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.filter-operator-col {
+  width: 80px;
+}
+
+.filter-left-side-col {
+  width: 300px;
+}
+
+.filter-comparison-col {
+  width: 200px;
+}
+
+.filter-right-side-col {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-delete-col {
+  width: 32px;
+  padding-top: 12px;
+}
+
+.filter-delete-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--mantine-color-gray-7);
+}
+
+.filter-delete-button:hover {
+  color: var(--mantine-color-gray-8);
+}
+
+.filter-delete-icon {
+  width: 20px;
+  height: 20px;
+} 

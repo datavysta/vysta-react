@@ -1,9 +1,7 @@
-import {ActionIcon, Button, Flex, Text, TextInput} from '@mantine/core';
 import {useTranslationContext} from '../TranslationContext';
-import {filterButtonStyle} from '../FilterPanel';
 import {useState, useRef, useEffect} from 'react';
 import {IoCheckmarkCircleOutline, IoClose} from 'react-icons/io5';
-import {CheckIcon} from '@mantine/core';
+import './SaveFilterButton.css';
 
 function SaveFilterButton() {
 	const {t} = useTranslationContext();
@@ -11,27 +9,6 @@ function SaveFilterButton() {
 	const [filterName, setFilterName] = useState('');
 	const [filterSaved, setFilterSaved] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
-
-	const rightSectionSave = (
-		<Flex w={'auto'}>
-			<ActionIcon
-				variant="transparent"
-				onMouseDown={(e) => e.preventDefault()}
-				onClick={() => setFilterName('')}
-				style={{cursor: 'pointer'}}
-			>
-				<IoClose size={14} color={'#000'}/>
-			</ActionIcon>
-			<ActionIcon
-				color={'var(--mantine-color-Accent2-3)'}
-				style={{borderRadius: '0 2.75px 2.75px 0px'}}
-				onMouseDown={(e) => e.preventDefault()}
-				onClick={() => handleSave()}
-			>
-				<CheckIcon size={10}/>
-			</ActionIcon>
-		</Flex>
-	);
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
 		if (!event.currentTarget.contains(event.relatedTarget as Node)) {
@@ -45,6 +22,7 @@ function SaveFilterButton() {
 		setFilterName('');
 		setTimeout(() => setFilterSaved(false), 3000);
 	};
+
 	useEffect(() => {
 		if (isClicked && inputRef.current) {
 			inputRef.current.focus();
@@ -52,45 +30,54 @@ function SaveFilterButton() {
 	}, [isClicked]);
 
 	return (
-		<div>
+		<div className="save-filter-container">
 			{isClicked ? (
-				<TextInput
-					ref={inputRef}
-					size="xs"
-					placeholder={'Filter Name'}
-					value={filterName}
-					onChange={(event) =>
-						setFilterName(event.currentTarget.value)
-					}
-					rightSection={rightSectionSave}
-					onBlur={handleBlur}
-					styles={{section: {width: 'auto'}}}
-					className="saveFilterInput"
-				/>
+				<div className="save-filter-input-wrapper">
+					<input
+						ref={inputRef}
+						type="text"
+						className="save-filter-input"
+						placeholder="Filter Name"
+						value={filterName}
+						onChange={(event) => setFilterName(event.currentTarget.value)}
+						onBlur={handleBlur}
+					/>
+					<div className="save-filter-actions">
+						<button
+							className="save-filter-action-button"
+							onClick={() => setFilterName('')}
+							onMouseDown={(e) => e.preventDefault()}
+						>
+							<IoClose size={14} color="#000"/>
+						</button>
+						<button
+							className="save-filter-action-button save-filter-confirm"
+							onClick={() => handleSave()}
+							onMouseDown={(e) => e.preventDefault()}
+						>
+							<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M8.5 2.5L3.5 7.5L1 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+							</svg>
+						</button>
+					</div>
+				</div>
 			) : (
-				<Flex align={'center'} gap={12}>
+				<div className="save-filter-button-wrapper">
 					{filterSaved && (
-						<Flex align={'center'} gap={8}>
-							<IoCheckmarkCircleOutline
-								color={'var(--mantine-color-Accent-1)'}
-							/>
-							<Text
-								fz={'12px'}
-								c={'var(--mantine-color-Accent-1)'}
-							>
+						<div className="save-filter-success">
+							<IoCheckmarkCircleOutline className="save-filter-success-icon" />
+							<span className="save-filter-success-text">
 								Filter Saved
-							</Text>
-						</Flex>
+							</span>
+						</div>
 					)}
-					<Button
-						variant={'outline'}
-						size={'xs'}
-						style={filterButtonStyle}
+					<button
+						className="save-filter-button"
 						onClick={() => setIsClicked(true)}
 					>
 						{t('Save')}
-					</Button>
-				</Flex>
+					</button>
+				</div>
 			)}
 		</div>
 	);
