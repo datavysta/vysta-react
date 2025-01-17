@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { Image } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import { useTranslationContext } from '../../Filter/TranslationContext';
 
 const ImageComponent: FC<IFieldProperty> = ({
 	readOnly,

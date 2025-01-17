@@ -14,8 +14,8 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { CiSearch } from 'react-icons/ci';
 import '../components/css/MultiSelectCustom.css';
-import { FilterAutocompleteOption } from './FilterAutocomplete.tsx';
-import { FilterDefinitionWrapper } from '../FilterDefinitionsByField.ts';
+import { FilterAutocompleteOption } from './FilterAutocomplete';
+import { FilterDefinitionWrapper } from '../FilterDefinitionsByField';
 
 interface IProps {
 	data: FilterAutocompleteOption[];

@@ -1,4 +1,3 @@
-import formatDataType from './formatDataType';
 import unEscapeRef from './unEscapeRef';
 import escapeIdentifier from './escapeIdentifier';
 import ComparisonOperator from '../../../Models/ComparisonOperator';

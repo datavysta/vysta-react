@@ -1,7 +1,6 @@
 import { FC, ChangeEvent } from 'react';
 import { TextInput } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import { useTranslationContext } from '../../Filter/TranslationContext';
 
 const TextComponent: FC<IFieldProperty> = ({
 	readOnly,

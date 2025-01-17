@@ -1,10 +1,7 @@
 import { FC } from 'react';
 import { DateTimePicker } from '@mantine/dates';
-import { Anchor } from '@mantine/core';
-import { FaPlus } from 'react-icons/fa';
 import dayjs from 'dayjs';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import { useTranslationContext } from '../../Filter/TranslationContext';
 
 const DateTimeComponent: FC<IFieldProperty> = ({
 	readOnly,

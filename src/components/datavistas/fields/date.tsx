@@ -1,10 +1,7 @@
 import { FC } from 'react';
 import dayjs from 'dayjs';
 import { DatePickerInput } from '@mantine/dates';
-import { Anchor } from '@mantine/core';
-import { FaPlus } from 'react-icons/fa';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import { useTranslationContext } from '../../Filter/TranslationContext';
 
 const DateComponent: FC<IFieldProperty> = ({
 	readOnly,
@@ -14,8 +11,6 @@ const DateComponent: FC<IFieldProperty> = ({
 	label,
 	onChange
 }) => {
-	const { t } = useTranslationContext();
-
 	const handleChange = (date: Date | null) => {
 		onChange && onChange(date ? dayjs(date).format('YYYY-MM-DD') : '');
 	};

@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { Select } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import { useTranslationContext } from '../../Filter/TranslationContext';
 
 const SelectComponent: FC<IFieldProperty> = ({
 	readOnly,
@@ -12,8 +11,6 @@ const SelectComponent: FC<IFieldProperty> = ({
 	data,
 	onChange
 }) => {
-	const { t } = useTranslationContext();
-
 	const handleChange = (value: string | null) => {
 		onChange && onChange(value || '');
 	};

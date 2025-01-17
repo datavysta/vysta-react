@@ -2,18 +2,14 @@ import { FC, useRef } from 'react';
 import AceEditor from 'react-ace';
 import { Card } from '@mantine/core';
 import { FaTimesCircle } from 'react-icons/fa';
-import { useTranslationContext } from '../../Filter/TranslationContext';
 import IFieldProperty from '../../Models/public/fieldproperty';
 
 const BQLComponent: FC<IFieldProperty> = ({
 	readOnly,
-	disabled,
 	error,
 	value,
-	label,
 	onChange
 }) => {
-	const { t } = useTranslationContext();
 	const editorRef = useRef<AceEditor>(null);
 
 	const handleChange = (value: string) => {

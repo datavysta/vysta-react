@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import { useTranslationContext } from '../../Filter/TranslationContext';
 
 interface IDataItemProperties extends IFieldProperty {
 	value: string;

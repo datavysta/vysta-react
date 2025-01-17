@@ -2,7 +2,6 @@ import { FC, useState } from 'react';
 import { Autocomplete } from '@mantine/core';
 import { FaSpinner } from 'react-icons/fa';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import { useTranslationContext } from '../../Filter/TranslationContext';
 
 const AutocompleteComponent: FC<IFieldProperty> = ({
 	readOnly,
