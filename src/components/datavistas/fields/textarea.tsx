@@ -1,7 +1,7 @@
 import { ChangeEvent } from 'react';
 import { Textarea } from '@mantine/core';
 import { withTranslation } from 'react-i18next';
-import IFieldProperty from '../../../public/fieldproperty';
+import IFieldProperty from '../../Models/public/fieldproperty';
 import useFocus from "../../../hooks/useFocus.ts";
 
 const TextAreaComponent = ({

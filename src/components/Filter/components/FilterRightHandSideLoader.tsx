@@ -2,16 +2,16 @@ import { FC, useEffect, useState } from 'react';
 import ExpressionCondition from '../../Models/ExpressionCondition';
 
 import { useTranslation } from 'react-i18next';
-import { FilterDefinitionWrapper } from '../FilterDefinitionsByField.ts';
+import { FilterDefinitionWrapper } from '../FilterDefinitionsByField';
 import { ComboboxItem, Select } from '@mantine/core';
-import { ConditionMode } from '../ConditionMode.tsx';
-import { OrderByDirection } from '../../../services/common/RestRepository.ts';
-import useFocus from '../../../hooks/useFocus.ts';
-import useUpdateEffect from '../../../hooks/useUpdateEffect.ts';
-import ComparisonOperator from '../../Models/ComparisonOperator.ts';
-import MultiSelectCustom from './MultiSelectCustom.tsx';
-import { FilterAutocompleteOption } from './FilterAutocomplete.tsx';
-import { newCondition } from '../../Models/Condition.ts';
+import { ConditionMode } from '../ConditionMode';
+import useUpdateEffect from '../../../hooks/useUpdateEffect';
+import ComparisonOperator from '../../Models/ComparisonOperator';
+import MultiSelectCustom from './MultiSelectCustom';
+import { FilterAutocompleteOption } from './FilterAutocomplete';
+import { newCondition } from '../../Models/Condition';
+import useFocus from "../../../hooks/useFocus";
+import OrderByDirection from "../../Models/OrderByDirection";
 
 interface IFilterProps {
 	filterDefinition: FilterDefinitionWrapper;
@@ -140,7 +140,7 @@ const FilterRightHandSideLoader: FC<IFilterProps> = ({
 		}
 
 		const dataToAttach = await filterDefinition.loader({
-			conditions: [newCondition('id', values)],
+			filters: [newCondition('id', values)],
 		});
 
 		const filteredData = dataToAttach.data.filter((e: any) => e.description || e.userName || e.code);

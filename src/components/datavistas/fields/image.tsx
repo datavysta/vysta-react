@@ -1,8 +1,8 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { Image } from '@mantine/core';
-import IFieldProperty from '../../../public/fieldproperty';
-import defaultFieldProperty from '../../../public/defaultfieldproperty';
+import IFieldProperty from '../../Models/public/fieldproperty';
+import defaultFieldProperty from '../../Models/public/defaultfieldproperty';
 import DataType from '../../Models/DataType';
 
 class ImageComponent extends React.Component<IFieldProperty> {

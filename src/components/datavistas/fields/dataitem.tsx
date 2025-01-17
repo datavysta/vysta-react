@@ -1,5 +1,5 @@
 import React from 'react';
-import IDataItem from '../../../public/dataitem';
+import IDataItem from '../../Models/public/dataitem';
 
 class DataItemComponent extends React.Component<IDataItemProperties> {
 	render() {

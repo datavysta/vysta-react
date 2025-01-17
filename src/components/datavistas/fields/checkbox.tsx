@@ -1,7 +1,7 @@
 import React from 'react';
 import { Checkbox } from '@mantine/core';
-import IFieldProperty from '../../../public/fieldproperty';
-import defaultFieldProperty from '../../../public/defaultfieldproperty';
+import IFieldProperty from "../../Models/public/fieldproperty";
+import defaultFieldProperty from '../../Models/public/defaultfieldproperty';
 
 class CheckboxComponent extends React.Component<IFieldProperty> {
 	public static defaultProps = defaultFieldProperty;

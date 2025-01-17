@@ -1,8 +1,8 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { NumberInput } from '@mantine/core';
-import IFieldProperty from '../../../public/fieldproperty';
-import defaultFieldProperty from '../../../public/defaultfieldproperty';
+import IFieldProperty from '../../Models/public/fieldproperty';
+import defaultFieldProperty from '../../Models/public/defaultfieldproperty';
 
 class NumericComponent extends React.Component<IFieldProperty> {
 	public static defaultProps = defaultFieldProperty;

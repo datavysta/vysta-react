@@ -4,7 +4,7 @@ import { DateTimePicker } from '@mantine/dates';
 import { Anchor } from '@mantine/core';
 import { FaPlus } from 'react-icons/fa';
 import dayjs from 'dayjs';
-import IFieldProperty from '../../../public/fieldproperty';
+import IFieldProperty from '../../Models/public/fieldproperty';
 import Service from '../../Filter/services/bql-service';
 
 const DATE_TIME_UTC = 'DateTimeUtc';

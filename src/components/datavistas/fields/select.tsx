@@ -1,8 +1,8 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { Select } from '@mantine/core';
-import IFieldProperty from '../../../public/fieldproperty';
-import DefaultFieldProperty from '../../../public/defaultfieldproperty';
+import IFieldProperty from '../../Models/public/fieldproperty';
+import DefaultFieldProperty from '../../Models/public/defaultfieldproperty';
 import SearchCondition from '../../Filter/searchcondition';
 
 class SelectComponent extends React.Component<IFieldProperty> {

@@ -4,9 +4,9 @@ import dayjs from 'dayjs';
 import { DatePickerInput } from '@mantine/dates';
 import { Anchor } from '@mantine/core';
 import { FaPlus } from 'react-icons/fa';
-import IFieldProperty from '../../../public/fieldproperty';
+import IFieldProperty from '../../Models/public/fieldproperty';
 import Service from '../../Filter/services/bql-service';
-import useFocus from "../../../hooks/useFocus.ts";
+import useFocus from "../../../hooks/useFocus";
 
 const DateComponent: FC<IFieldProperty> = ({
 	name,

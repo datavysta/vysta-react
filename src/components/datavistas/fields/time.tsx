@@ -2,7 +2,7 @@ import { Fragment, ChangeEvent } from 'react';
 import { withTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import { TimeInput } from '@mantine/dates';
-import IFieldProperty from '../../../public/fieldproperty';
+import IFieldProperty from '../../Models/public/fieldproperty';
 
 const TimeComponent = ({
 	readOnly,

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { withTranslation } from 'react-i18next';
 import { Anchor, TextInput } from '@mantine/core';
 import { FaPlus } from 'react-icons/fa';
-import IFieldProperty from '../../../public/fieldproperty';
+import IFieldProperty from "../../Models/public/fieldproperty";
 
 const getLabel = (label: string | undefined, primary: boolean | undefined) => {
 	return (

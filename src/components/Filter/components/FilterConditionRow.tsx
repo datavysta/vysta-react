@@ -16,9 +16,10 @@ import FilterExpressionRightHandSide from './FilterExpressionRightHandside';
 import {
 	FilterDefinitionsByField,
 	FilterDefinitionWrapper,
-} from '../FilterDefinitionsByField.ts';
-import FilterRightHandSideLoader from './FilterRightHandSideLoader.tsx';
-import useUpdateEffect from '../../../hooks/useUpdateEffect.ts';
+} from '../FilterDefinitionsByField';
+import FilterRightHandSideLoader from './FilterRightHandSideLoader';
+import useUpdateEffect from '../../../hooks/useUpdateEffect';
+import isEmpty from "../../../utils/isEmpty";
 
 interface IFilterProps {
 	condition: Condition;
@@ -145,7 +146,7 @@ const FilterConditionRow: FC<IFilterProps> = ({
 	const checkIsValid = (): boolean => {
 		if (conditionMode === ConditionMode.ExpressionBased) {
 			return (
-				!_.isEmpty(expressionCondition.leftExpression) &&
+				!isEmpty(expressionCondition.leftExpression) &&
 				checkRightExpression()
 			);
 		}
@@ -163,11 +164,11 @@ const FilterConditionRow: FC<IFilterProps> = ({
 			comparisonOperator === ComparisonOperator.IsNull
 		) {
 			return conditionMode === ConditionMode.ExpressionBased
-				? _.isEmpty(expressionCondition.rightExpression)
+				? isEmpty(expressionCondition.rightExpression)
 				: values.length === 0;
 		} else {
 			return conditionMode === ConditionMode.ExpressionBased
-				? !_.isEmpty(expressionCondition.rightExpression)
+				? !isEmpty(expressionCondition.rightExpression)
 				: values.length > 0;
 		}
 	};

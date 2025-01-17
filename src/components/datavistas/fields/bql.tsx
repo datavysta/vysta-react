@@ -6,8 +6,8 @@ import { FaTimesCircle } from 'react-icons/fa';
 import { Card } from '@mantine/core';
 import 'ace-builds/src-noconflict/mode-sql';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import IFieldProperty from '../../../public/fieldproperty';
-import defaultFieldProperty from '../../../public/defaultfieldproperty';
+import IFieldProperty from '../../Models/public/fieldproperty';
+import defaultFieldProperty from '../../Models/public/defaultfieldproperty';
 import SearchCondition from '../../Filter/searchcondition';
 
 class BQLComponent extends React.Component<IFieldProperty> {

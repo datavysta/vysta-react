@@ -1,7 +1,7 @@
 import { ChangeEvent, FC, Fragment } from 'react';
 import { withTranslation } from 'react-i18next';
 import { TextInput } from '@mantine/core';
-import IFieldProperty from '../../../public/fieldproperty';
+import IFieldProperty from '../../Models/public/fieldproperty';
 import useFocus from "../../../hooks/useFocus.ts";
 
 const getLabel = (label: string | undefined, primary: boolean | undefined) => {

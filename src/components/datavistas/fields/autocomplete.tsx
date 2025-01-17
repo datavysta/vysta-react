@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
 import { Autocomplete } from '@mantine/core';
 import { FaSpinner } from 'react-icons/fa';
-import IDataItem from '../../../public/dataitem';
+import IDataItem from '../../Models/public/dataitem';
 import OrderByDirection from '../../Models/OrderByDirection';
 
 interface IProps {
