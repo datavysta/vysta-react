@@ -3,8 +3,9 @@ import { VystaClient } from '@datavysta/vysta-client';
 import { ProductGrid } from './components/ProductGrid';
 import { CustomerGrid } from './components/CustomerGrid';
 import { OrderGrid } from './components/OrderGrid';
+import { FilterExample } from './components/FilterExample';
 
-type View = 'products' | 'customers' | 'orders';
+type View = 'products' | 'customers' | 'orders' | 'filter';
 
 function App() {
     const [error, setError] = useState<string | null>(null);
@@ -71,6 +72,7 @@ function App() {
     const showProducts = useCallback(() => setView('products'), []);
     const showCustomers = useCallback(() => setView('customers'), []);
     const showOrders = useCallback(() => setView('orders'), []);
+    const showFilter = useCallback(() => setView('filter'), []);
 
     return (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -79,6 +81,7 @@ function App() {
                     client={clientRef.current} 
                     onShowCustomers={showCustomers}
                     onShowOrders={showOrders}
+                    onShowFilter={showFilter}
                     tick={tick}
                 />
             )}
@@ -87,6 +90,7 @@ function App() {
                     client={clientRef.current} 
                     onShowProducts={showProducts}
                     onShowOrders={showOrders}
+                    onShowFilter={showFilter}
                     tick={tick}
                 />
             )}
@@ -95,6 +99,16 @@ function App() {
                     client={clientRef.current}
                     onShowProducts={showProducts}
                     onShowCustomers={showCustomers}
+                    onShowFilter={showFilter}
+                    tick={tick}
+                />
+            )}
+            {view === 'filter' && (
+                <FilterExample 
+                    client={clientRef.current}
+                    onShowProducts={showProducts}
+                    onShowCustomers={showCustomers}
+                    onShowOrders={showOrders}
                     tick={tick}
                 />
             )}

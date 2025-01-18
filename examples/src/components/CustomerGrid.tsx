@@ -2,25 +2,28 @@ import React, { useMemo } from 'react';
 import { DataGrid } from '@datavysta/vysta-react';
 import { VystaClient } from '@datavysta/vysta-client';
 import { CustomerService } from '../services/CustomerService';
-import { CustomerWithFullName } from '../types/Customer';
+import { Customer } from '../types/Customer';
 import { ColDef } from 'ag-grid-community';
+import { ExampleToolbar } from './ExampleToolbar';
+import './CustomerGrid.css';
 
 interface CustomerGridProps {
     client: VystaClient;
     onShowProducts: () => void;
     onShowOrders: () => void;
+    onShowFilter: () => void;
     tick: number;
 }
 
-export function CustomerGrid({ client, onShowProducts, onShowOrders, tick }: CustomerGridProps) {
+export function CustomerGrid({ client, onShowProducts, onShowOrders, onShowFilter, tick }: CustomerGridProps) {
     const customers = useMemo(() => new CustomerService(client), [client]);
 
-    const columnDefs: ColDef<CustomerWithFullName>[] = [
+    const columnDefs: ColDef<Customer>[] = [
         { 
             field: 'customerId',
             headerName: 'ID',
             width: 100,
-            sort: 'desc'
+            initialSort: 'asc'
         },
         { 
             field: 'companyName',
@@ -29,46 +32,51 @@ export function CustomerGrid({ client, onShowProducts, onShowOrders, tick }: Cus
         },
         { 
             field: 'contactName',
-            headerName: 'Contact Name',
+            headerName: 'Contact',
             flex: 1
         },
         { 
-            field: 'contactTitle',
-            headerName: 'Title',
-            flex: 1
+            field: 'country',
+            headerName: 'Country',
+            width: 120
         },
         { 
-            field: '_contact',
-            headerName: 'Contact Info',
-            flex: 2
+            field: 'phone',
+            headerName: 'Phone',
+            flex: 1
         }
     ];
 
     return (
-        <>
-            <div style={{ padding: '8px', display: 'flex', gap: '8px' }}>
-                <button onClick={onShowProducts} style={{ marginBottom: '8px' }}>Show Products</button>
-                <button onClick={onShowOrders} style={{ marginBottom: '8px' }}>Show Orders</button>
-            </div>
-            <DataGrid<CustomerWithFullName>
-                title="Customers"
-                noun="Customer"
-                repository={customers}
-                columnDefs={columnDefs}
-                getRowId={(customer) => customer.customerId.toString()}
-                gridOptions={{
-                    alwaysShowVerticalScroll: true,
-                }}
-                styles={{
-                    badge: {
-                        backgroundColor: '#007bff',
-                        color: 'white',
-                        borderRadius: '12px',
-                        padding: '4px 12px'
-                    }
-                }}
-                tick={tick}
+        <div className="example-container">
+            <ExampleToolbar 
+                onShowProducts={onShowProducts}
+                onShowCustomers={() => {}}
+                onShowOrders={onShowOrders}
+                onShowFilter={onShowFilter}
+                currentView="customers"
             />
-        </>
+            <div className="grid-container">
+                <DataGrid<Customer>
+                    title="Customers"
+                    noun="Customer"
+                    repository={customers}
+                    columnDefs={columnDefs}
+                    getRowId={(customer) => customer.customerId.toString()}
+                    gridOptions={{
+                        alwaysShowVerticalScroll: true,
+                    }}
+                    styles={{
+                        badge: {
+                            backgroundColor: '#007bff',
+                            color: 'white',
+                            borderRadius: '12px',
+                            padding: '4px 12px'
+                        }
+                    }}
+                    tick={tick}
+                />
+            </div>
+        </div>
     );
 } 

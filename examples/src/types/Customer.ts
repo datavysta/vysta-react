@@ -3,6 +3,8 @@ export interface Customer {
     companyName: string;
     contactName: string;
     contactTitle: string;
+    country: string;
+    phone: string;
 }
 
 export interface CustomerWithFullName extends Customer {

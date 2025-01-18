@@ -1,0 +1,47 @@
+.example-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.filter-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.filter-content h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.filter-content h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.filter-panel-container {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.json-output {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.json-output pre {
+    margin: 10px 0 0 0;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 14px;
+    color: #333;
+} 
