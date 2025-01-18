@@ -1,8 +1,9 @@
 import escapeRef from '../Filter/services/bql-service/escapeRef';
-import ObjectRef from './ObjectRef';
 import ObjectType from './ObjectType';
+import ObjectRef from './ObjectRef';
 
-export default class ColumnRef extends ObjectRef {
+export default class ColumnRef {
+	private objectRef: ObjectRef;
 	columnName: string | null = null;
 
 	constructor(
@@ -12,15 +13,34 @@ export default class ColumnRef extends ObjectRef {
 		objectName: string | null,
 		columnName: string
 	) {
-		super(
+		this.objectRef = new ObjectRef(
 			ObjectType.Column,
 			serverName,
 			databaseName,
 			schemaName,
 			objectName
 		);
-
 		this.columnName = columnName;
+	}
+
+	get serverName(): string | null {
+		return this.objectRef.serverName;
+	}
+
+	get databaseName(): string | null {
+		return this.objectRef.databaseName;
+	}
+
+	get schemaName(): string | null {
+		return this.objectRef.schemaName;
+	}
+
+	get objectName(): string | null {
+		return this.objectRef.objectName;
+	}
+
+	get objectType(): ObjectType | null {
+		return this.objectRef.objectType;
 	}
 
 	toBql(): string {
