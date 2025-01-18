@@ -1,7 +1,6 @@
 import { FC, ChangeEvent } from 'react';
-import { Checkbox } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import {useTranslationContext} from "../../Filter/TranslationContext";
+import { useTranslationContext } from "../../Filter/TranslationContext";
 
 const CheckboxComponent: FC<IFieldProperty> = ({
 	readOnly,
@@ -22,13 +21,19 @@ const CheckboxComponent: FC<IFieldProperty> = ({
 	}
 
 	return (
-		<Checkbox
-			disabled={disabled}
-			error={error}
-			checked={value === 'true'}
-			label={label}
-			onChange={handleChange}
-		/>
+		<div className="vysta-checkbox-wrapper">
+			<label className="vysta-checkbox-label">
+				<input
+					type="checkbox"
+					className={`vysta-checkbox ${error ? 'vysta-checkbox--error' : ''}`}
+					disabled={disabled}
+					checked={value === 'true'}
+					onChange={handleChange}
+					aria-invalid={error ? 'true' : 'false'}
+				/>
+				<span className="vysta-checkbox-text">{label}</span>
+			</label>
+		</div>
 	);
 };
 

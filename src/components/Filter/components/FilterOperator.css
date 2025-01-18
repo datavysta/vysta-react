@@ -1,7 +1,7 @@
 .filter-operator {
-    border: 1px solid var(--border-color, #e9ecef);
+    border: 1px solid var(--vysta-border-color);
     border-radius: 6px;
-    background: white;
+    background: var(--vysta-bg-primary);
     cursor: pointer;
 }
 
@@ -17,5 +17,5 @@
 
 .filter-operator:focus {
     outline: none;
-    border-color: var(--focus-color, #228be6);
+    border-color: var(--vysta-border-color-focus);
 } 

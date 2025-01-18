@@ -1,7 +1,6 @@
 import { FC } from 'react';
-import { Switch } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
-import {useTranslationContext} from "../../Filter/TranslationContext";
+import { useTranslationContext } from "../../Filter/TranslationContext";
 
 const ToggleComponent: FC<IFieldProperty> = ({
 	readOnly,
@@ -19,12 +18,20 @@ const ToggleComponent: FC<IFieldProperty> = ({
 	return readOnly ? (
 		<>{value ? t('Yes') : t('No')}</>
 	) : (
-		<Switch
-			disabled={disabled}
-			checked={value}
-			label={label}
-			onChange={(event) => handleChange(event.currentTarget.checked)}
-		/>
+		<div className="vysta-toggle-wrapper">
+			<label className="vysta-toggle">
+				<input
+					type="checkbox"
+					className="vysta-toggle-input"
+					disabled={disabled}
+					checked={value}
+					onChange={(event) => handleChange(event.target.checked)}
+					aria-label={label}
+				/>
+				<span className="vysta-toggle-slider"></span>
+				{label && <span className="vysta-toggle-label">{label}</span>}
+			</label>
+		</div>
 	);
 };
 

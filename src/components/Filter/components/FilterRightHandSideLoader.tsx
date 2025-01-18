@@ -1,9 +1,7 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useRef } from 'react';
 import ExpressionCondition from '../../Models/ExpressionCondition';
-
 import { useTranslationContext } from '../TranslationContext';
 import { FilterDefinitionWrapper } from '../FilterDefinitionsByField';
-import { ComboboxItem, Select } from '@mantine/core';
 import { ConditionMode } from '../ConditionMode';
 import useUpdateEffect from '../../../hooks/useUpdateEffect';
 import ComparisonOperator from '../../Models/ComparisonOperator';
@@ -12,11 +10,19 @@ import { FilterAutocompleteOption } from './FilterAutocomplete';
 import { newCondition } from '../../Models/Condition';
 import useFocus from "../../../hooks/useFocus";
 import OrderByDirection from "../../Models/OrderByDirection";
+import './FilterRightHandSideLoader.css';
 
 interface IFilterProps {
 	filterDefinition: FilterDefinitionWrapper;
 	expressionCondition: ExpressionCondition;
 	onChange: (expressionCondition: ExpressionCondition) => void;
+}
+
+interface ComboboxItem {
+	value: string;
+	label: string;
+	group?: string;
+	description?: string;
 }
 
 const FilterRightHandSideLoader: FC<IFilterProps> = ({
@@ -25,7 +31,7 @@ const FilterRightHandSideLoader: FC<IFilterProps> = ({
 	expressionCondition,
 }: IFilterProps) => {
 	const [focusTick, setFocusTick] = useState(-1);
-	const inputRef = useFocus<HTMLInputElement>(focusTick);
+	const inputRef = useFocus<HTMLSelectElement>(focusTick);
 	const { t } = useTranslationContext();
 	const [options, setOptions] = useState<ComboboxItem[]>([]);
 	const [tempData, setTempData] = useState<ComboboxItem[]>([]);
@@ -60,7 +66,6 @@ const FilterRightHandSideLoader: FC<IFilterProps> = ({
       setMoreDataExists(true)
 	},[expressionCondition])
 
-
 	const loadOptions = async (incremental: boolean) => {
 		if (filterDefinition.staticData && incremental) {
 			return;
@@ -76,12 +81,8 @@ const FilterRightHandSideLoader: FC<IFilterProps> = ({
 		const useOffset = incremental ? offset : 0;
 		const selectColumns = filterDefinition.loaderColumns || ["id", "name"];
 
-	
 		if (moreDataExists) {
 			let result: any = await getResult(incremental, selectColumns);
-
-			//ValuesToAttach - previously selected , to be shown in input from tempData
-			//ValuesToFilterOut - values that need to be filtered out from tempData since we are getting them in result
 
 			let valuesToAttach: string[] = [];
 			let valuesToFilterOut: string[] = [];
@@ -112,11 +113,9 @@ const FilterRightHandSideLoader: FC<IFilterProps> = ({
 			setOptions([
 				...(incremental ? adjustedOptions : []),
 				...mapValues(result.data)
-
 			]);
 
 			setOffset(useOffset + limit);
-
 			setMoreDataExists(result.data.length > 0);
 		}
 
@@ -239,25 +238,23 @@ const FilterRightHandSideLoader: FC<IFilterProps> = ({
 		);
 	}
 
-	// Extract common props
-	const commonProps = {
-		ref: inputRef,
-		data: options,
-		searchable: true,
-		onScroll: handleScroll,
-		scrollAreaProps: {
-			onScrollCapture: handleScroll,
-		},
-		withScrollArea: true,
-		nothingFoundMessage: loading ? t('Loading...') : t('No options'),
-	};
-
 	return (
-		<Select
-			{...commonProps} // Spread common props
-			value={expressionCondition.values[0]} // Select expects a single string
-			onChange={handleOnChange} // Correct handler for single select
-		/>
+		<div className="vysta-select-wrapper">
+			<select
+				ref={inputRef}
+				className="vysta-select"
+				value={expressionCondition.values[0] || ''}
+				onChange={(e) => handleOnChange(e.target.value)}
+				onScroll={handleScroll}
+			>
+				<option value="">{loading ? t('Loading...') : t('Select an option')}</option>
+				{options.map((option) => (
+					<option key={option.value} value={option.value}>
+						{option.label}
+					</option>
+				))}
+			</select>
+		</div>
 	);
 };
 

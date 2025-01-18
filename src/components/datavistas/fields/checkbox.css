@@ -1,0 +1,74 @@
+.vysta-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vysta-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.vysta-checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.vysta-checkbox-box {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--vysta-border-color);
+  border-radius: 4px;
+  background: var(--vysta-bg-primary);
+  transition: all 0.2s ease;
+}
+
+.vysta-checkbox-box::after {
+  content: '';
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.vysta-checkbox-input:checked + .vysta-checkbox-box {
+  background: var(--vysta-color-primary);
+  border-color: var(--vysta-color-primary);
+}
+
+.vysta-checkbox-input:checked + .vysta-checkbox-box::after {
+  display: block;
+}
+
+.vysta-checkbox-input:disabled + .vysta-checkbox-box {
+  background: var(--vysta-bg-disabled);
+  border-color: var(--vysta-border-color);
+  cursor: not-allowed;
+}
+
+.vysta-checkbox-label {
+  font-size: 14px;
+  color: var(--vysta-text-primary);
+}
+
+.vysta-checkbox-input:disabled ~ .vysta-checkbox-label {
+  color: var(--vysta-text-disabled);
+  cursor: not-allowed;
+}
+
+.vysta-checkbox-error {
+  font-size: 12px;
+  color: var(--vysta-color-error);
+  margin-top: 4px;
+} 

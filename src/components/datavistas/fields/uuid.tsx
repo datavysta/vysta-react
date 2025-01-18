@@ -1,5 +1,4 @@
 import { FC, ChangeEvent } from 'react';
-import { Anchor, TextInput } from '@mantine/core';
 import { FaPlus } from 'react-icons/fa';
 import IFieldProperty from '../../Models/public/fieldproperty';
 
@@ -24,18 +23,33 @@ const UuidComponent: FC<IFieldProperty> = ({
 	}
 
 	return (
-		<TextInput
-			disabled={disabled}
-			error={error}
-			value={value || ''}
-			label={label}
-			onChange={handleChange}
-			rightSection={
-				<Anchor onClick={handleGenerateUuid}>
+		<div className="vysta-field-wrapper">
+			{label && (
+				<label className="vysta-field-label" htmlFor="uuid-input">
+					{label}
+				</label>
+			)}
+			<div className="vysta-field-input-wrapper">
+				<input
+					id="uuid-input"
+					type="text"
+					className={`vysta-field-input ${error ? 'vysta-field-input-error' : ''}`}
+					disabled={disabled}
+					value={value || ''}
+					onChange={handleChange}
+					aria-invalid={error ? 'true' : 'false'}
+				/>
+				<button
+					type="button"
+					className="vysta-field-action-button"
+					onClick={handleGenerateUuid}
+					aria-label="Generate UUID"
+				>
 					<FaPlus />
-				</Anchor>
-			}
-		/>
+				</button>
+			</div>
+			{error && <span className="vysta-field-error">{error}</span>}
+		</div>
 	);
 };
 

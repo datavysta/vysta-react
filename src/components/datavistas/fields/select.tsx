@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { Select } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
 
 const SelectComponent: FC<IFieldProperty> = ({
@@ -11,8 +10,8 @@ const SelectComponent: FC<IFieldProperty> = ({
 	data,
 	onChange
 }) => {
-	const handleChange = (value: string | null) => {
-		onChange && onChange(value || '');
+	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		onChange && onChange(event.target.value);
 	};
 
 	if (readOnly) {
@@ -22,14 +21,32 @@ const SelectComponent: FC<IFieldProperty> = ({
 	}
 
 	return (
-		<Select
-			data={data || []}
-			value={value}
-			onChange={handleChange}
-			label={label}
-			error={error}
-			disabled={disabled}
-		/>
+		<div className="vysta-field-wrapper">
+			{label && (
+				<label 
+					className="vysta-field-label" 
+					htmlFor="vysta-select"
+				>
+					{label}
+				</label>
+			)}
+			<select
+				id="vysta-select"
+				className={`vysta-select ${error ? 'vysta-select--error' : ''}`}
+				value={value}
+				onChange={handleChange}
+				disabled={disabled}
+				aria-invalid={!!error}
+				aria-label={label}
+			>
+				{data?.map((item) => (
+					<option key={item.value} value={item.value}>
+						{item.label}
+					</option>
+				))}
+			</select>
+			{error && <span className="vysta-field-error">{error}</span>}
+		</div>
 	);
 };
 

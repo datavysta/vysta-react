@@ -1,0 +1,20 @@
+.vysta-image-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--vysta-bg-secondary);
+}
+
+.vysta-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.vysta-image:hover {
+  transform: scale(1.02);
+} 

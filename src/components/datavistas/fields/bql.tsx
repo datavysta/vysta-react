@@ -1,6 +1,5 @@
 import { FC, useRef } from 'react';
 import AceEditor from 'react-ace';
-import { Card } from '@mantine/core';
 import { FaTimesCircle } from 'react-icons/fa';
 import IFieldProperty from '../../Models/public/fieldproperty';
 
@@ -21,7 +20,7 @@ const BQLComponent: FC<IFieldProperty> = ({
 	}
 
 	return (
-		<Card>
+		<div className="vysta-card">
 			<AceEditor
 				ref={editorRef}
 				mode="sql"
@@ -41,11 +40,11 @@ const BQLComponent: FC<IFieldProperty> = ({
 				}}
 			/>
 			{error && (
-				<div style={{ color: 'red', marginTop: '8px' }}>
+				<div className="vysta-error-message">
 					<FaTimesCircle /> {error}
 				</div>
 			)}
-		</Card>
+		</div>
 	);
 };
 

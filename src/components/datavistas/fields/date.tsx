@@ -1,7 +1,6 @@
 import { FC } from 'react';
-import { DatePickerInput } from '@mantine/dates';
-import { formatDate, formatDateUS, parseDate } from '../../../utils/dateTime';
 import IFieldProperty from '../../Models/public/fieldproperty';
+import { formatDate, formatDateUS, parseDate } from '../../../utils/dateTime';
 
 const DateComponent: FC<IFieldProperty> = ({
 	readOnly,
@@ -11,8 +10,8 @@ const DateComponent: FC<IFieldProperty> = ({
 	label,
 	onChange
 }) => {
-	const handleChange = (date: Date | null) => {
-		onChange && onChange(date ? formatDate(date) : '');
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		onChange && onChange(event.target.value ? formatDate(new Date(event.target.value)) : '');
 	};
 
 	if (readOnly) {
@@ -20,13 +19,24 @@ const DateComponent: FC<IFieldProperty> = ({
 	}
 
 	return (
-		<DatePickerInput
-			disabled={disabled}
-			error={error}
-			value={value ? parseDate(value) : null}
-			label={label}
-			onChange={handleChange}
-		/>
+		<div className="vysta-field-wrapper">
+			{label && (
+				<label className="vysta-label" htmlFor="date-input">
+					{label}
+				</label>
+			)}
+			<input
+				id="date-input"
+				type="date"
+				className={`vysta-input ${error ? 'vysta-input--error' : ''}`}
+				disabled={disabled}
+				value={value ? parseDate(value).toISOString().split('T')[0] : ''}
+				onChange={handleChange}
+				aria-invalid={error ? 'true' : 'false'}
+				aria-label={label}
+			/>
+			{error && <span className="vysta-error-text">{error}</span>}
+		</div>
 	);
 };
 

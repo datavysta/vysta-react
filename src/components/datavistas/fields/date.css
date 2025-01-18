@@ -1,0 +1,107 @@
+.vysta-date-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vysta-date-label {
+  font-size: 14px;
+  color: var(--vysta-text-primary);
+}
+
+.vysta-date-input {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--vysta-border-color);
+  border-radius: 4px;
+  background: var(--vysta-bg-primary);
+  color: var(--vysta-text-primary);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.vysta-date-input:hover:not(:disabled) {
+  border-color: var(--vysta-border-hover);
+}
+
+.vysta-date-input:focus {
+  outline: none;
+  border-color: var(--vysta-color-primary);
+  box-shadow: 0 0 0 2px var(--vysta-color-primary-light);
+}
+
+.vysta-date-input:disabled {
+  background: var(--vysta-bg-disabled);
+  color: var(--vysta-text-disabled);
+  cursor: not-allowed;
+}
+
+.vysta-date-input--error {
+  border-color: var(--vysta-color-error);
+}
+
+.vysta-date-input--error:hover,
+.vysta-date-input--error:focus {
+  border-color: var(--vysta-color-error);
+  box-shadow: 0 0 0 2px var(--vysta-color-error-light);
+}
+
+.vysta-date-error {
+  font-size: 12px;
+  color: var(--vysta-color-error);
+  margin-top: 4px;
+}
+
+/* Calendar popup styles */
+.vysta-date-calendar {
+  position: absolute;
+  z-index: 1000;
+  background: var(--vysta-bg-primary);
+  border: 1px solid var(--vysta-border-color);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  margin-top: 4px;
+}
+
+.vysta-date-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.vysta-date-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.vysta-date-calendar-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vysta-date-calendar-day:hover {
+  background: var(--vysta-bg-hover);
+}
+
+.vysta-date-calendar-day--selected {
+  background: var(--vysta-color-primary);
+  color: white;
+}
+
+.vysta-date-calendar-day--today {
+  font-weight: bold;
+}
+
+.vysta-date-calendar-day--disabled {
+  color: var(--vysta-text-disabled);
+  cursor: not-allowed;
+} 

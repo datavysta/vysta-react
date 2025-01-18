@@ -12,16 +12,16 @@
 .save-filter-input {
   height: 28px;
   padding: 0 64px 0 12px;
-  border: 1px solid var(--mantine-color-gray-4);
+  border: 1px solid var(--vysta-border-color);
   border-radius: 4px;
   font-size: 12px;
-  color: var(--mantine-color-dark-9);
+  color: var(--vysta-text-primary);
   width: 200px;
 }
 
 .save-filter-input:focus {
   outline: none;
-  border-color: var(--mantine-color-blue-5);
+  border-color: var(--vysta-border-color-focus);
 }
 
 .save-filter-actions {
@@ -43,15 +43,15 @@
   border: none;
   background: none;
   cursor: pointer;
-  color: var(--mantine-color-gray-7);
+  color: var(--vysta-text-secondary);
 }
 
 .save-filter-action-button:hover {
-  color: var(--mantine-color-gray-8);
+  color: var(--vysta-text-primary);
 }
 
 .save-filter-confirm {
-  color: var(--mantine-color-Accent2-3);
+  color: var(--vysta-color-accent2);
   border-radius: 0 2.75px 2.75px 0;
 }
 
@@ -68,26 +68,26 @@
 }
 
 .save-filter-success-icon {
-  color: var(--mantine-color-Accent-1);
+  color: var(--vysta-color-accent);
 }
 
 .save-filter-success-text {
   font-size: 12px;
-  color: var(--mantine-color-Accent-1);
+  color: var(--vysta-color-accent);
 }
 
 .save-filter-button {
   height: 28px;
   padding: 0 12px;
-  border: 1px solid var(--mantine-color-gray-4);
+  border: 1px solid var(--vysta-border-color);
   border-radius: 4px;
-  background: white;
+  background: var(--vysta-bg-primary);
   font-size: 12px;
-  color: var(--mantine-color-dark-9);
+  color: var(--vysta-text-primary);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .save-filter-button:hover {
-  background-color: var(--mantine-color-gray-0);
+  background-color: var(--vysta-bg-secondary);
 } 

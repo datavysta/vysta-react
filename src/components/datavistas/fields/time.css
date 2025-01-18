@@ -1,60 +1,51 @@
-.textarea-field-wrapper {
+.vysta-field-wrapper {
   display: flex;
   flex-direction: column;
   gap: 4px;
   width: 100%;
 }
 
-.textarea-field-label {
+.vysta-field-label {
   font-size: 14px;
   color: var(--vysta-text-secondary);
 }
 
-.textarea-field-input {
-  min-height: 80px;
-  padding: 8px 12px;
+.vysta-field-input {
+  height: 36px;
+  padding: 0 12px;
   border: 1px solid var(--vysta-border-color);
   border-radius: 4px;
   background: var(--vysta-bg-primary);
   font-size: 14px;
   color: var(--vysta-text-primary);
   transition: border-color 0.2s ease;
-  resize: vertical;
-  font-family: inherit;
-  line-height: 1.4;
 }
 
-.textarea-field-input:hover {
+.vysta-field-input:hover {
   border-color: var(--vysta-border-color-hover);
 }
 
-.textarea-field-input:focus {
+.vysta-field-input:focus {
   outline: none;
   border-color: var(--vysta-border-color-focus);
 }
 
-.textarea-field-input:disabled {
+.vysta-field-input:disabled {
   background-color: var(--vysta-bg-disabled);
   color: var(--vysta-text-disabled);
   cursor: not-allowed;
 }
 
-.textarea-field-error {
+.vysta-field-error {
   border-color: var(--vysta-color-error);
 }
 
-.textarea-field-error:hover,
-.textarea-field-error:focus {
+.vysta-field-error:hover,
+.vysta-field-error:focus {
   border-color: var(--vysta-color-error-hover);
 }
 
-.textarea-field-error-message {
+.vysta-field-error-text {
   font-size: 12px;
   color: var(--vysta-color-error);
-}
-
-.textarea-field-readonly {
-  font-size: 14px;
-  color: var(--vysta-text-primary);
-  white-space: pre-wrap;
 } 

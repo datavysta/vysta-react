@@ -1,0 +1,122 @@
+.vysta-card {
+  padding: 16px;
+  border: 1px solid var(--vysta-border-color);
+  border-radius: 8px;
+  background: var(--vysta-bg-primary);
+}
+
+.vysta-error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--vysta-color-error);
+  font-size: 14px;
+}
+
+.vysta-bql-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vysta-bql-label {
+  font-size: 14px;
+  color: var(--vysta-text-primary);
+}
+
+.vysta-bql-editor {
+  border: 1px solid var(--vysta-border-color);
+  border-radius: 4px;
+  background: var(--vysta-bg-primary);
+  transition: all 0.2s ease;
+  min-height: 200px;
+}
+
+.vysta-bql-editor:hover:not(.vysta-bql-editor--disabled) {
+  border-color: var(--vysta-border-hover);
+}
+
+.vysta-bql-editor:focus-within {
+  outline: none;
+  border-color: var(--vysta-color-primary);
+  box-shadow: 0 0 0 2px var(--vysta-color-primary-light);
+}
+
+.vysta-bql-editor--disabled {
+  background: var(--vysta-bg-disabled);
+  cursor: not-allowed;
+}
+
+.vysta-bql-editor--error {
+  border-color: var(--vysta-color-error);
+}
+
+.vysta-bql-editor--error:hover,
+.vysta-bql-editor--error:focus-within {
+  border-color: var(--vysta-color-error);
+  box-shadow: 0 0 0 2px var(--vysta-color-error-light);
+}
+
+.vysta-bql-error {
+  font-size: 12px;
+  color: var(--vysta-color-error);
+  margin-top: 4px;
+}
+
+/* Ace Editor Overrides */
+.ace_editor {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ace_gutter {
+  background: var(--vysta-bg-secondary);
+  color: var(--vysta-text-secondary);
+}
+
+.ace_print-margin {
+  display: none;
+}
+
+.ace_scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ace_scrollbar::-webkit-scrollbar-track {
+  background: var(--vysta-bg-secondary);
+  border-radius: 4px;
+}
+
+.ace_scrollbar::-webkit-scrollbar-thumb {
+  background: var(--vysta-border-color);
+  border-radius: 4px;
+}
+
+.ace_scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--vysta-border-hover);
+}
+
+/* BQL Syntax Highlighting */
+.ace_keyword {
+  color: var(--vysta-syntax-keyword);
+}
+
+.ace_string {
+  color: var(--vysta-syntax-string);
+}
+
+.ace_numeric {
+  color: var(--vysta-syntax-number);
+}
+
+.ace_function {
+  color: var(--vysta-syntax-function);
+}
+
+.ace_comment {
+  color: var(--vysta-syntax-comment);
+  font-style: italic;
+} 

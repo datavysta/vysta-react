@@ -1,0 +1,65 @@
+.vysta-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vysta-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.vysta-toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.vysta-toggle-slider {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  background-color: var(--vysta-bg-disabled);
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.vysta-toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.vysta-toggle-input:checked + .vysta-toggle-slider {
+  background-color: var(--vysta-color-primary);
+}
+
+.vysta-toggle-input:checked + .vysta-toggle-slider::before {
+  transform: translateX(16px);
+}
+
+.vysta-toggle-input:disabled + .vysta-toggle-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vysta-toggle-label {
+  font-size: 14px;
+  color: var(--vysta-text-primary);
+}
+
+.vysta-toggle-input:disabled ~ .vysta-toggle-label {
+  color: var(--vysta-text-disabled);
+  cursor: not-allowed;
+} 

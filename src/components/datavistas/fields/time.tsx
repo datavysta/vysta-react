@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { TimeInput } from '@mantine/dates';
 import { formatTime, parseTimeWithBaseDate, toUTC } from '../../../utils/dateTime';
 import IFieldProperty from '../../Models/public/fieldproperty';
 
@@ -12,11 +11,9 @@ const TimeComponent: FC<IFieldProperty> = ({
 	onChange,
 	utc
 }) => {
-	const handleChange = (date: Date | null) => {
-		if (!date || !onChange) return;
-		const hours = padZero(date.getHours());
-		const minutes = padZero(date.getMinutes());
-		onChange(`${hours}:${minutes}`);
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (!event.target.value || !onChange) return;
+		onChange(event.target.value);
 	};
 
 	if (readOnly && value) {
@@ -25,13 +22,23 @@ const TimeComponent: FC<IFieldProperty> = ({
 	}
 
 	return (
-		<TimeInput
-			disabled={disabled}
-			error={error}
-			value={value ? parseTimeWithBaseDate(value) : null}
-			label={label}
-			onChange={handleChange}
-		/>
+		<div className="vysta-field-wrapper">
+			{label && (
+				<label className="vysta-field-label" htmlFor="time-input">
+					{label}
+				</label>
+			)}
+			<input
+				id="time-input"
+				type="time"
+				className={`vysta-field-input ${error ? 'vysta-field-error' : ''}`}
+				disabled={disabled}
+				value={value || ''}
+				onChange={handleChange}
+				aria-invalid={error ? 'true' : 'false'}
+			/>
+			{error && <span className="vysta-field-error-text">{error}</span>}
+		</div>
 	);
 };
 

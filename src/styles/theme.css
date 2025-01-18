@@ -1,0 +1,44 @@
+:root {
+  /* Grayscale */
+  --vysta-color-gray-0: #f8f9fa;
+  --vysta-color-gray-1: #f1f3f5;
+  --vysta-color-gray-2: #e9ecef;
+  --vysta-color-gray-3: #dee2e6;
+  --vysta-color-gray-4: #ced4da;
+  --vysta-color-gray-5: #adb5bd;
+  --vysta-color-gray-6: #868e96;
+  --vysta-color-gray-7: #495057;
+  --vysta-color-gray-8: #343a40;
+  --vysta-color-gray-9: #212529;
+
+  /* Brand Colors */
+  --vysta-color-primary: #228be6;
+  --vysta-color-primary-hover: #1c7ed6;
+  --vysta-color-accent: #37B24D;
+  --vysta-color-accent-hover: #2f9e44;
+  --vysta-color-accent2: #4263EB;
+  --vysta-color-accent2-hover: #364fc7;
+
+  /* Text Colors */
+  --vysta-text-primary: var(--vysta-color-gray-9);
+  --vysta-text-secondary: var(--vysta-color-gray-7);
+  --vysta-text-disabled: var(--vysta-color-gray-5);
+
+  /* Border Colors */
+  --vysta-border-color: var(--vysta-color-gray-3);
+  --vysta-border-color-hover: var(--vysta-color-gray-4);
+  --vysta-border-color-focus: var(--vysta-color-primary);
+
+  /* Background Colors */
+  --vysta-bg-primary: white;
+  --vysta-bg-secondary: var(--vysta-color-gray-0);
+  --vysta-bg-disabled: var(--vysta-color-gray-1);
+
+  /* Status Colors */
+  --vysta-color-error: #fa5252;
+  --vysta-color-error-hover: #e03131;
+  --vysta-color-success: #40c057;
+  --vysta-color-success-hover: #37b24d;
+  --vysta-color-warning: #fab005;
+  --vysta-color-warning-hover: #f59f00;
+} 

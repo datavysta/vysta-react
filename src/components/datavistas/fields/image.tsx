@@ -1,7 +1,7 @@
 import { FC } from 'react';
-import { Image } from '@mantine/core';
 import IFieldProperty from '../../Models/public/fieldproperty';
 import DataType from '../../Models/DataType';
+import './image.css';
 
 const getContentType = (fileName?: string): string => {
 	if (!fileName) {
@@ -31,7 +31,15 @@ const ImageComponent: FC<IFieldProperty> = ({
 			src = `data:${contentType};base64,${value}`;
 		}
 
-		return <Image src={src} />;
+		return (
+			<div className="vysta-image-wrapper">
+				<img 
+					src={src} 
+					alt={fileName || 'Image'} 
+					className="vysta-image"
+				/>
+			</div>
+		);
 	}
 
 	return <>{value}</>;
