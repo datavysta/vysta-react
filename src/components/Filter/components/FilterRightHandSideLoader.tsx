@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useRef } from 'react';
+import { FC, useEffect, useState } from 'react';
 import ExpressionCondition from '../../Models/ExpressionCondition';
 import { useTranslationContext } from '../TranslationContext';
 import { FilterDefinitionWrapper } from '../FilterDefinitionsByField';
@@ -216,7 +216,7 @@ const FilterRightHandSideLoader: FC<IFilterProps> = ({
 			select: apiSelectColumns,
 			limit,
 			offset: keyword ? 0 : useOffset,
-			orderBy,
+			order: orderBy,
 			q: keyword || ''
 		});
 
@@ -245,7 +245,6 @@ const FilterRightHandSideLoader: FC<IFilterProps> = ({
 				className="vysta-select"
 				value={expressionCondition.values[0] || ''}
 				onChange={(e) => handleOnChange(e.target.value)}
-				onScroll={handleScroll}
 			>
 				<option value="">{loading ? t('Loading...') : t('Select an option')}</option>
 				{options.map((option) => (

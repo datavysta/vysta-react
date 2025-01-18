@@ -1,8 +1,6 @@
 import {FC, ReactNode, useState, useRef, useEffect} from 'react';
 import {useTranslationContext} from '../TranslationContext';
 import DataType from '../../Models/DataType';
-import angleDown from "../../../assets/svg/angle-down.svg?react";
-import {SvgIcon} from "../../SvgIcon.tsx";
 import './FilterAutocomplete.css';
 
 interface IFilterProps {
@@ -113,15 +111,7 @@ const FilterAutocomplete: FC<IFilterProps> = ({
 						}
 					}}
 				>
-					<SvgIcon
-						Icon={angleDown}
-						size={18}
-						style={{
-							color: 'var(--mantine-color-Gray-25)',
-							transform: isOpen ? 'rotate(180deg)' : 'none',
-							transition: 'transform 0.2s ease'
-						}}
-					/>
+					⏷
 				</button>
 			</div>
 			{isOpen && (

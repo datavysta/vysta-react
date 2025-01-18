@@ -9,7 +9,7 @@ const TimeComponent: FC<IFieldProperty> = ({
 	value,
 	label,
 	onChange,
-	utc
+	dataType
 }) => {
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (!event.target.value || !onChange) return;
@@ -18,7 +18,8 @@ const TimeComponent: FC<IFieldProperty> = ({
 
 	if (readOnly && value) {
 		const date = parseTimeWithBaseDate(value);
-		return <>{utc ? formatTime(toUTC(date)) : formatTime(date)}</>;
+		const isUtc = dataType === 'TimeUtc';
+		return <>{isUtc ? formatTime(toUTC(date)) : formatTime(date)}</>;
 	}
 
 	return (
@@ -41,7 +42,5 @@ const TimeComponent: FC<IFieldProperty> = ({
 		</div>
 	);
 };
-
-const padZero = (num: number): string => num.toString().padStart(2, '0');
 
 export default TimeComponent;

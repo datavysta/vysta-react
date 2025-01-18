@@ -1,6 +1,5 @@
 import {useTranslationContext} from '../TranslationContext';
 import {useState, useRef, useEffect} from 'react';
-import {IoCheckmarkCircleOutline, IoClose} from 'react-icons/io5';
 import './SaveFilterButton.css';
 
 function SaveFilterButton() {
@@ -48,7 +47,7 @@ function SaveFilterButton() {
 							onClick={() => setFilterName('')}
 							onMouseDown={(e) => e.preventDefault()}
 						>
-							<IoClose size={14} color="#000"/>
+							⊗
 						</button>
 						<button
 							className="save-filter-action-button save-filter-confirm"
@@ -65,7 +64,7 @@ function SaveFilterButton() {
 				<div className="save-filter-button-wrapper">
 					{filterSaved && (
 						<div className="save-filter-success">
-							<IoCheckmarkCircleOutline className="save-filter-success-icon" />
+							✓
 							<span className="save-filter-success-text">
 								Filter Saved
 							</span>

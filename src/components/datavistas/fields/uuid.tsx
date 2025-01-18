@@ -1,5 +1,4 @@
 import { FC, ChangeEvent } from 'react';
-import { FaPlus } from 'react-icons/fa';
 import IFieldProperty from '../../Models/public/fieldproperty';
 
 const UuidComponent: FC<IFieldProperty> = ({
@@ -45,7 +44,7 @@ const UuidComponent: FC<IFieldProperty> = ({
 					onClick={handleGenerateUuid}
 					aria-label="Generate UUID"
 				>
-					<FaPlus />
+					⊕
 				</button>
 			</div>
 			{error && <span className="vysta-field-error">{error}</span>}

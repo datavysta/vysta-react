@@ -4,8 +4,6 @@ import Condition from '../Models/Condition';
 import ExpressionCondition from '../Models/ExpressionCondition';
 import GroupCondition from '../Models/GroupCondition';
 import Filter from './Filter';
-import { AiOutlinePlus } from 'react-icons/ai';
-import { BsChevronDown } from 'react-icons/bs';
 import filterNestedConditions from '../../utils/filterNestedConditions';
 import filterEmptyGroups from '../../utils/filterEmptyGroups';
 import updateNestedCondition from '../../utils/updateNestedCondition';
@@ -194,7 +192,7 @@ const FilterPanel: FC<IFilterProps> = ({
 						className="filter-button"
 						onClick={() => handleAddCondition(getPreparedGroup())}
 					>
-						<AiOutlinePlus />
+						+
 						{t('Add Filter Group')}
 					</button>
 				</div>
@@ -212,7 +210,6 @@ const FilterPanel: FC<IFilterProps> = ({
 							<select className="filter-select">
 								<option value="">{t('Saved Filters')}</option>
 							</select>
-							<BsChevronDown className="select-icon" />
 						</div>
 						{onClose && <CloseButton onClickAction={onClose} />}
 					</div>
@@ -247,7 +244,7 @@ const FilterPanel: FC<IFilterProps> = ({
 						className="filter-button"
 						onClick={() => handleAddCondition(getPreparedGroup())}
 					>
-						<AiOutlinePlus />
+						+
 						{t('Add Filter Group')}
 					</button>
 				)}

@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import FilterConditionRow from './components/FilterConditionRow';
-import { FaPlus } from 'react-icons/fa';
 import { useTranslationContext } from './TranslationContext';
 import FilterGroup from './components/FilterGroup';
 import Condition from '../Models/Condition';
@@ -101,7 +100,7 @@ const Filter: FC<IFilterProps> = ({
 						className="filter-button"
 						onClick={() => createNewCondition()}
 					>
-						<FaPlus />
+						⊕
 						{t('Add Condition')}
 					</button>
 				</div>

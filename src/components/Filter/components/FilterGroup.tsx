@@ -1,7 +1,6 @@
 import {FC, ReactNode} from 'react';
 import {useTranslationContext} from '../TranslationContext';
 import FilterOperator from './FilterOperator';
-import {AiOutlinePlus} from 'react-icons/ai';
 import Condition from '../../Models/Condition';
 import './FilterGroup.css';
 
@@ -48,7 +47,7 @@ const FilterGroup: FC<IFilterProps> = ({
 							className="add-filter-button"
 							onClick={onAddCondition}
 						>
-							<AiOutlinePlus />
+							+
 							{t('Add Filter')}
 						</button>
 					</div>

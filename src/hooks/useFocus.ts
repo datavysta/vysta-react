@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-function useFocus<T extends HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement>(focus: number | undefined) {
+function useFocus<T extends HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | HTMLSelectElement>(focus: number | undefined) {
 	const inputRef = useRef<T>(null);
 
 	useEffect(() => {

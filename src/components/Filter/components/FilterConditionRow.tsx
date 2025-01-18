@@ -4,8 +4,7 @@ import FilterAutocomplete, {
 } from './FilterAutocomplete';
 import FilterComparisonOperator from './FilterComparisonOperator';
 import FilterRightHandSide from './FilterRightHandSide';
-import FilterOperator from './FilterOperator';
-import { FiMinusCircle } from 'react-icons/fi';
+import FilterOperator from './FilterOperator';;
 import Condition from '../../Models/Condition';
 import ComparisonOperator from '../../Models/ComparisonOperator';
 import DataType from '../../Models/DataType';
@@ -283,7 +282,7 @@ const FilterConditionRow: FC<IFilterProps> = ({
 				{isDeleteRowVisible() && (
 					<div className="filter-delete-col">
 						<button className="filter-delete-button" onClick={onDelete}>
-							<FiMinusCircle className="filter-delete-icon" />
+							⊖
 						</button>
 					</div>
 				)}
