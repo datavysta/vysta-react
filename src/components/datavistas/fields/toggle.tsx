@@ -12,19 +12,40 @@ const ToggleComponent: FC<IFieldProperty> = ({
 	const { t } = useTranslationContext();
 
 	const handleChange = (checked: boolean) => {
-		onChange && onChange(checked);
+		onChange && onChange(checked.toString());
 	};
 
-	return readOnly ? (
-		<>{value ? t('Yes') : t('No')}</>
-	) : (
+	if (readOnly) {
+		if (value === undefined || value === null) {
+			return null;
+		}
+
+		let converted = `${value}`.toLowerCase();
+		if (converted === 'true') {
+			converted = 'Yes';
+		} else if (converted === 'false') {
+			converted = 'No';
+		}
+
+		return <span>{t(converted)}</span>;
+	}
+
+	let checked: boolean | undefined = undefined;
+	const strValue = value ? `${value}`.toLowerCase() : 'false';
+	if (strValue === 'true') {
+		checked = true;
+	} else if (strValue === 'false') {
+		checked = false;
+	}
+
+	return (
 		<div className="vysta-toggle-wrapper">
 			<label className="vysta-toggle">
 				<input
 					type="checkbox"
 					className="vysta-toggle-input"
 					disabled={disabled}
-					checked={value}
+					checked={checked}
 					onChange={(event) => handleChange(event.target.checked)}
 					aria-label={label}
 				/>
