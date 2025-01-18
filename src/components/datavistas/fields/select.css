@@ -2,51 +2,64 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 100%;
 }
 
 .vysta-field-label {
   font-size: 14px;
-  color: var(--vysta-text-secondary);
+  color: var(--text-color, #212529);
+}
+
+.vysta-field-required {
+  color: var(--error-color, #fa5252);
+  margin-left: 4px;
 }
 
 .vysta-select {
   height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--vysta-border-color);
-  border-radius: 4px;
-  background: var(--vysta-bg-primary);
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 6px;
+  background: white;
+  color: var(--text-color, #212529);
   font-size: 14px;
-  color: var(--vysta-text-primary);
-  transition: border-color 0.2s ease;
   cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
 }
 
-.vysta-select:hover {
-  border-color: var(--vysta-border-color-hover);
+.vysta-select:hover:not(:disabled) {
+  border-color: var(--border-hover-color, #ced4da);
 }
 
 .vysta-select:focus {
   outline: none;
-  border-color: var(--vysta-border-color-focus);
+  border-color: var(--border-focus-color, #228be6);
+  box-shadow: 0 0 0 1px var(--border-focus-color, #228be6);
 }
 
 .vysta-select:disabled {
-  background-color: var(--vysta-bg-disabled);
-  color: var(--vysta-text-disabled);
+  background-color: var(--disabled-bg-color, #f8f9fa);
+  color: var(--disabled-text-color, #adb5bd);
   cursor: not-allowed;
 }
 
-.vysta-select--error {
-  border-color: var(--vysta-color-error);
+.vysta-select-error {
+  border-color: var(--error-color, #fa5252);
 }
 
-.vysta-select--error:hover,
-.vysta-select--error:focus {
-  border-color: var(--vysta-color-error-hover);
+.vysta-select-error:focus {
+  border-color: var(--error-color, #fa5252);
+  box-shadow: 0 0 0 1px var(--error-color, #fa5252);
+}
+
+.vysta-field-description {
+  font-size: 12px;
+  color: var(--description-color, #868e96);
 }
 
 .vysta-field-error {
   font-size: 12px;
-  color: var(--vysta-color-error);
+  color: var(--error-color, #fa5252);
 } 
