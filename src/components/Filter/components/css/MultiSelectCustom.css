@@ -1,59 +1,73 @@
 .mantine-Combobox-dropdown {
-	padding: 0;
+	padding: 4px;
+	background: var(--vysta-bg-white);
+	border: 1px solid var(--vysta-border-color);
+	border-radius: 6px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .mantine-Combobox-option {
-	border-bottom: 1px solid #232b38;
-	border-radius: 0;
-	font-size: 12px;
+	border: 1px solid var(--vysta-border-color);
+	border-radius: 4px;
+	font-size: 14px;
 	font-weight: 400;
+	padding: 8px 12px;
+	margin: 2px 0;
+	color: var(--vysta-text-primary);
+	background: var(--vysta-bg-white);
+}
+
+.mantine-Combobox-option[data-combobox-active='true'] {
+	background: var(--vysta-bg-hover);
 }
 
 .mantine-Combobox-option[data-combobox-active='true'] > div {
-	color: white;
-	flex-direction: row-reverse;
-	justify-content: space-between;
+	color: var(--vysta-text-primary);
 }
 
 .mantine-Combobox-option > div > span {
-	max-width: 180px;
+	max-width: none;
 }
 
 .mantine-Pill-root {
-	border-radius: 4px !important ;
-	background-color: #222934;
-	color: white !important;
+	border-radius: 4px;
+	background-color: var(--vysta-bg-hover);
+	color: var(--vysta-text-primary);
+	padding: 2px 8px;
 }
 
 .mantine-Combobox-search {
-	margin: 0px;
-	background-color: transparent;
-	width: 100%;
-	padding: 0;
-	padding-left: 10px;
-	border: none !important;
-	border-bottom: 1px solid #232b38 !important;
+	margin: 4px;
+	background-color: var(--vysta-bg-white);
+	width: calc(100% - 8px);
+	padding: 8px 12px;
+	border: 1px solid var(--vysta-border-color) !important;
+	border-radius: 4px;
+	font-size: 14px;
 }
 
 .mantine-Combobox-wrapper {
-	background-color: #151b25;
+	background-color: var(--vysta-bg-white);
 }
 
 .multiselect-custom {
 	.mantine-PillsInput-input {
-		padding: 5px;
+		padding: 4px;
 	}
 	
 	.mantine-PillsInput-wrapper {
-		background-color: var(--mantine-color-dark-11);
+		background-color: var(--vysta-bg-white);
+		border: 1px solid var(--vysta-border-color);
 		border-radius: 6px;
 	}
 	
 	.mantine-Combobox-groupLabel {
-		color: white;
+		color: var(--vysta-text-secondary);
+		padding: 4px 8px;
+		font-size: 12px;
 	
 		&::after {
-			background-color: white;
+			background-color: var(--vysta-border-color);
 		}
 	}
 	

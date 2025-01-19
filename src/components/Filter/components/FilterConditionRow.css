@@ -1,6 +1,9 @@
 .filter-condition-row {
   width: 100%;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .filter-condition-content {
@@ -46,4 +49,12 @@
 .filter-delete-icon {
   width: 20px;
   height: 20px;
+}
+
+.filter-condition-row .label {
+  color: var(--vysta-text-secondary);
+}
+
+.filter-condition-row .value {
+  color: var(--vysta-text-primary);
 } 
