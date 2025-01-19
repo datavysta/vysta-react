@@ -4,6 +4,8 @@ import { ExampleToolbar } from './ExampleToolbar';
 import './FilterExample.css';
 import Condition from "../../../src/components/Models/Condition";
 import FilterPanel from "../../../src/components/Filter/FilterPanel";
+import DataType from "../../../src/components/Models/DataType";
+import { FilterDefinitionsByField } from "../../../src/components/Filter/FilterDefinitionsByField";
 
 interface FilterExampleProps {
     client: VystaClient;
@@ -12,6 +14,29 @@ interface FilterExampleProps {
     onShowOrders: () => void;
     tick: number;
 }
+
+const filterDefinitions: FilterDefinitionsByField = [
+    {
+        targetFieldName: "productName",
+        label: "Product Name",
+        dataType: DataType.String
+    },
+    {
+        targetFieldName: "unitPrice",
+        label: "Unit Price",
+        dataType: DataType.Numeric
+    },
+    {
+        targetFieldName: "unitsInStock",
+        label: "Units In Stock",
+        dataType: DataType.Numeric
+    },
+    {
+        targetFieldName: "discontinued",
+        label: "Discontinued",
+        dataType: DataType.Boolean
+    }
+];
 
 export function FilterExample({ 
     client, 
@@ -37,6 +62,7 @@ export function FilterExample({
                     <FilterPanel 
                         conditions={conditions}
                         onChange={setConditions}
+                        filterDefinitions={filterDefinitions}
                     />
                 </div>
                 <div className="json-output">

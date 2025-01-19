@@ -180,8 +180,8 @@ const FilterPanel: FC<IFilterProps> = ({
 	}, [currentConditions, validateConditions, onApply]);
 
 	const handleClear = useCallback(() => {
-		onApply?.([]);
-	}, [getPreparedGroup, handleOnChange]);
+		setCurrentConditions([getPreparedGroup()]);
+	}, []);
 
 	return (
 		<div className="filter-panel">
@@ -231,31 +231,32 @@ const FilterPanel: FC<IFilterProps> = ({
 			</div>
 
 			<div className="filter-footer">
-				{!hideClear && (
+				<div className="filter-actions">
 					<button
-						className="clear-button"
-						onClick={handleClear}
-					>
-						{t('Clear')}
-					</button>
-				)}
-				{!asideTitle && (
-					<button
-						className="filter-button"
+						className="add-group"
 						onClick={() => handleAddCondition(getPreparedGroup())}
 					>
-						+
-						{t('Add Filter Group')}
+						+ {t('Add Filter Group')}
 					</button>
-				)}
-				<button
-					className="apply-button"
-					onClick={handleApply}
-					disabled={getIsApplyDisabled}
-				>
-					{t('Apply')}
-				</button>
-				{!asideTitle && <SaveFilterButton />}
+					<div className="filter-actions-right">
+						{!hideClear && (
+							<button
+								className="clear"
+								onClick={handleClear}
+							>
+								{t('Clear')}
+							</button>
+						)}
+						{!asideTitle && <SaveFilterButton />}
+						<button
+							className="apply"
+							onClick={handleApply}
+							disabled={getIsApplyDisabled}
+						>
+							{t('Apply')}
+						</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

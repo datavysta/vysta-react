@@ -1,122 +1,163 @@
 .filter-panel {
-    padding: 12px 16px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--vysta-bg-primary);
+    border: 1px solid var(--vysta-border-color);
+    border-radius: 8px;
+    padding: 24px;
 }
 
 .filter-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.filter-header.with-border {
-    padding-bottom: 12px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--border-color, #e9ecef);
+    margin-bottom: 24px;
 }
 
 .filter-title {
-    color: var(--text-color, #000);
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 500;
+    color: var(--vysta-text-primary);
 }
 
-.filter-actions {
+.filter-header-actions {
     display: flex;
-    flex-direction: row;
     gap: 12px;
     align-items: center;
 }
 
-.filter-button {
-    border: 1px solid var(--border-color, #e9ecef);
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--text-color, #000);
+/* Filter row */
+.filter-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+    background: var(--vysta-bg-secondary);
+    padding: 16px;
+    border-radius: 8px;
+}
+
+/* Form controls */
+.filter-panel select,
+.filter-panel input {
     padding: 8px 12px;
-    background: transparent;
+    border-radius: 6px;
+    border: 1px solid var(--vysta-border-color);
+    background: var(--vysta-bg-primary);
+    font-size: 14px;
+    color: var(--vysta-text-primary);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.filter-panel select {
+    appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+}
+
+/* Field widths */
+.filter-row .field-select {
+    width: 200px;
+    flex: 0 0 200px;
+}
+
+.filter-row .operator-select {
+    width: 125px;
+    flex: 0 0 125px;
+}
+
+.filter-row .value-input {
+    width: 200px;
+    flex: 0 0 200px;
+}
+
+/* Remove button */
+.filter-row .remove-button {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--vysta-text-secondary);
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 24px;
+}
+
+/* Footer actions */
+.filter-header .filter-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.filter-footer .filter-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--vysta-border-color);
+    flex: 1;
+    width: 100%;
+}
+
+.filter-actions button,
+.filter-actions-right :global(.save-filter-button) {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+.filter-actions .add-group {
+    border: 1px solid var(--vysta-border-color);
+    background: var(--vysta-bg-primary);
+    color: var(--vysta-text-secondary);
     display: flex;
     align-items: center;
     gap: 8px;
-    border-radius: 4px;
 }
 
-.filter-button:hover {
-    background: var(--hover-color, #f8f9fa);
-}
-
-.clear-button {
-    color: var(--gray-color, #868e96);
-    font-size: 12px;
-    font-weight: 500;
-    background: none;
+.filter-actions .clear {
     border: none;
-    cursor: pointer;
-    padding: 4px 8px;
+    background: none;
+    color: var(--vysta-color-gray-6);
 }
 
-.clear-button:hover {
-    color: var(--gray-dark-color, #495057);
+.filter-actions .save,
+.filter-actions-right :global(.save-filter-button) {
+    border: 1px solid var(--vysta-border-color);
+    background: var(--vysta-bg-primary);
+    color: var(--vysta-text-primary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.select-wrapper {
-    position: relative;
-    width: 125px;
+.filter-actions .apply {
+    border: none;
+    background: var(--vysta-color-primary);
+    color: var(--vysta-bg-primary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.filter-select {
-    width: 100%;
-    padding: 4px 24px 4px 8px;
-    font-size: 12px;
-    border: 1px solid var(--border-color, #e9ecef);
-    border-radius: 4px;
-    background: transparent;
-    appearance: none;
-    cursor: pointer;
+.filter-actions .save:hover,
+.filter-actions-right :global(.save-filter-button):hover {
+    background: var(--vysta-bg-secondary);
 }
 
-.select-icon {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: var(--text-color, #000);
-    font-size: 12px;
+.filter-actions .apply:hover {
+    background: var(--vysta-color-primary-hover);
 }
 
-.filter-content {
-    margin: 16px 0;
-}
-
-.filter-footer {
+.filter-actions-right {
     display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
-    padding-top: 20px;
-}
-
-.apply-button {
-    border: 1px solid var(--accent-color, #228be6);
-    color: var(--accent-color, #228be6);
-    background: transparent;
-    padding: 8px 16px;
-    font-size: 12px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.apply-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    border-color: var(--border-color, #e9ecef);
-    color: var(--gray-color, #868e96);
-}
-
-.apply-button:not(:disabled):hover {
-    background: var(--accent-hover-color, #e7f5ff);
 } 
