@@ -15,10 +15,12 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
-      name: 'VystaReact',
+      entry: {
+        'index': path.resolve(__dirname, 'src/index.ts'),
+        'mantine/index': path.resolve(__dirname, 'src/components/datavistas/mantine/index.tsx')
+      },
       formats: ['es'],
-      fileName: () => 'index.js',
+      fileName: (format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
       external: [
@@ -27,7 +29,9 @@ export default defineConfig({
         'react-dom',
         '@datavysta/vysta-client',
         'ag-grid-react',
-        'ag-grid-community'
+        'ag-grid-community',
+        '@mantine/core',
+        '@mantine/hooks'
       ],
       output: {
         preserveModules: true,

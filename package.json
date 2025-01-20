@@ -12,7 +12,17 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./style.css": "./dist/style.css"
+    "./style.css": "./dist/style.css",
+    "./mantine": {
+      "types": "./dist/mantine/index.d.ts",
+      "import": "./dist/mantine/index.js",
+      "default": "./dist/mantine/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "mantine": ["./dist/mantine/index.d.ts"]
+    }
   },
   "sideEffects": [
     "**/*.css"
@@ -25,7 +35,8 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    "dist/mantine"
   ],
   "scripts": {
     "dev": "vite",
@@ -36,8 +47,18 @@
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "@mantine/core": "^7.0.0",
+    "@mantine/hooks": "^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@mantine/core": {
+      "optional": true
+    },
+    "@mantine/hooks": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@datavysta/vysta-client": "^1.0.10",
@@ -51,6 +72,10 @@
     "@vitejs/plugin-react": "^4.0.0",
     "ag-grid-community": "^33.0.3",
     "ag-grid-react": "^33.0.3",
+    "@mantine/core": "^7.16.1",
+    "@mantine/hooks": "^7.16.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "eslint": "^8.0.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.0",
