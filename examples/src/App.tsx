@@ -36,6 +36,7 @@ function App() {
             setIsAuthenticated(true);
             return true;
         } catch (err) {
+            console.error('Login error:', err);
             setError('Failed to login. Please check your credentials and server status.');
             setIsAuthenticated(false);
             return false;
@@ -58,60 +59,66 @@ function App() {
                 } else {
                     await login();
                 }
-            } catch {
+            } catch (err) {
+                console.error('Init auth error:', err);
                 await login();
             }
         }
         initAuth();
     }, [login]);
 
-    if (error) {
-        return <div style={{ padding: '20px', color: 'red' }}>{error}</div>;
-    }
-
     const showProducts = useCallback(() => setView('products'), []);
     const showCustomers = useCallback(() => setView('customers'), []);
     const showOrders = useCallback(() => setView('orders'), []);
     const showFilter = useCallback(() => setView('filter'), []);
 
+    if (isAuthenticated) {
+        return (
+            <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+                {view === 'products' && (
+                    <ProductGrid 
+                        client={clientRef.current} 
+                        onShowCustomers={showCustomers}
+                        onShowOrders={showOrders}
+                        onShowFilter={showFilter}
+                        tick={tick}
+                    />
+                )}
+                {view === 'customers' && (
+                    <CustomerGrid 
+                        client={clientRef.current} 
+                        onShowProducts={showProducts}
+                        onShowOrders={showOrders}
+                        onShowFilter={showFilter}
+                        tick={tick}
+                    />
+                )}
+                {view === 'orders' && (
+                    <OrderGrid 
+                        client={clientRef.current}
+                        onShowProducts={showProducts}
+                        onShowCustomers={showCustomers}
+                        onShowFilter={showFilter}
+                        tick={tick}
+                    />
+                )}
+                {view === 'filter' && (
+                    <FilterExample 
+                        client={clientRef.current}
+                        onShowProducts={showProducts}
+                        onShowCustomers={showCustomers}
+                        onShowOrders={showOrders}
+                        tick={tick}
+                    />
+                )}
+            </div>
+        );
+    }
+
     return (
-        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            {view === 'products' && (
-                <ProductGrid 
-                    client={clientRef.current} 
-                    onShowCustomers={showCustomers}
-                    onShowOrders={showOrders}
-                    onShowFilter={showFilter}
-                    tick={tick}
-                />
-            )}
-            {view === 'customers' && (
-                <CustomerGrid 
-                    client={clientRef.current} 
-                    onShowProducts={showProducts}
-                    onShowOrders={showOrders}
-                    onShowFilter={showFilter}
-                    tick={tick}
-                />
-            )}
-            {view === 'orders' && (
-                <OrderGrid 
-                    client={clientRef.current}
-                    onShowProducts={showProducts}
-                    onShowCustomers={showCustomers}
-                    onShowFilter={showFilter}
-                    tick={tick}
-                />
-            )}
-            {view === 'filter' && (
-                <FilterExample 
-                    client={clientRef.current}
-                    onShowProducts={showProducts}
-                    onShowCustomers={showCustomers}
-                    onShowOrders={showOrders}
-                    tick={tick}
-                />
-            )}
+        <div style={{ padding: '20px' }}>
+            <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
+            <button onClick={login}>Retry Login</button>
         </div>
     );
 }

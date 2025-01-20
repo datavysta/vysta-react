@@ -12,11 +12,20 @@ import ToggleComponent from './fields/toggle';
 import SelectComponent from './fields/select';
 import Fields from './fields';
 import UUIDComponent from './fields/uuid';
-import IComponentFactory from "../Models/public/componentfactory";
 import IFieldProperty from "../Models/public/fieldproperty";
+import { useFieldComponentContext } from './FieldComponentContext';
 
-class ComponentFactory implements IComponentFactory {
-	createField(typeName: string, properties: IFieldProperty): ReactElement {
+export const useComponentFactory = () => {
+	const overrides = useFieldComponentContext();
+
+	const createField = (typeName: string, properties: IFieldProperty): ReactElement => {
+		// Get any overridden components from context
+		const OverriddenComponent = overrides[typeName];
+		
+		if (OverriddenComponent) {
+			return <OverriddenComponent {...properties} />;
+		}
+
 		switch (typeName) {
 			case Fields.Time:
 			case Fields.TimeUtc:
@@ -40,14 +49,16 @@ class ComponentFactory implements IComponentFactory {
 				return <SelectComponent {...properties} />;
 			case Fields.Image:
 				return <ImageComponent {...properties} />;
-			case Fields.UUID:
-				return <UUIDComponent {...properties} />;
 			case Fields.Bql:
 				return <BQLComponent {...properties} />;
+			case Fields.UUID:
+				return <UUIDComponent {...properties} />;
+			default:
+				return <TextComponent {...properties} />;
 		}
+	};
 
-		throw new Error('type not found');
-	}
-}
+	return { createField };
+};
 
-export default ComponentFactory;
+export default useComponentFactory;

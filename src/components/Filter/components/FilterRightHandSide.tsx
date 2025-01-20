@@ -1,8 +1,7 @@
 import {FC, useEffect, useState} from 'react';
 import DataType from '../../Models/DataType';
 import ExpressionCondition from '../../Models/ExpressionCondition';
-import ComponentFactory from '../../datavistas/componentfactory';
-import {DataTypeComponentFactory} from '../../datavistas/datatypecomponentfactory';
+import {useDataTypeComponentFactory} from '../../datavistas/datatypecomponentfactory';
 import ComparisonOperator from '../../Models/ComparisonOperator';
 import {ConditionMode} from '../ConditionMode';
 import IFieldProperty from "../../Models/public/fieldproperty";
@@ -23,18 +22,14 @@ interface IBaseFieldProperty {
 	dataType?: DataType;
 }
 
-const componentFactory = new ComponentFactory();
-const dataTypeComponentFactory = new DataTypeComponentFactory(
-	componentFactory
-);
-
 const FilterRightHandSide: FC<IFilterProps> = ({
-	                                               dataType,
-	                                               label,
-	                                               onChange,
-	                                               expressionCondition,
-                                               }: IFilterProps) => {
+	dataType,
+	label,
+	onChange,
+	expressionCondition,
+}: IFilterProps) => {
 	const [focusTick, setFocusTick] = useState(-1);
+	const dataTypeComponentFactory = useDataTypeComponentFactory();
 
 	useUpdateEffect(() => {
 		// Only run after the first load
@@ -176,7 +171,9 @@ const FilterRightHandSide: FC<IFilterProps> = ({
 		}
 	}, [isComparisonOperatorBetweenOrNotBetween]);
 
-	const renderComponent = (dataType: DataType) => {
+	const renderComponent = (dataType: DataType | undefined) => {
+		if (!dataType) return null;
+		
 		return !isComparisonOperatorBetweenOrNotBetween ? (
 			<>
 				{dataTypeComponentFactory.getByDataType(
@@ -198,7 +195,7 @@ const FilterRightHandSide: FC<IFilterProps> = ({
 		);
 	};
 
-	return dataType ? renderComponent(dataType) : null;
+	return renderComponent(dataType);
 };
 
 export default FilterRightHandSide;

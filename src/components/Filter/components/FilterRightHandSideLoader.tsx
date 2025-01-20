@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import ExpressionCondition from "../../Models/ExpressionCondition";
 import {FilterDefinitionWrapper} from "../FilterDefinitionsByField";
+import { useTranslationContext } from '../TranslationContext';
 
 interface Props {
 	filterDefinition: FilterDefinitionWrapper;
@@ -9,7 +10,8 @@ interface Props {
 }
 
 const FilterRightHandSideLoader: FC<Props> = () => {
-	throw new Error('FilterRightHandSideLoader is temporarily disabled. Please use a different component for now.');
+	const { t } = useTranslationContext();
+	throw new Error(t('FilterRightHandSideLoader is temporarily disabled. Please use a different component for now.'));
 };
 
 export default FilterRightHandSideLoader;

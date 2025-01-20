@@ -1,14 +1,14 @@
 import { ReactElement } from 'react';
 import IFieldProperty from './fieldproperty';
 
-export interface IComponentFactory {
+interface IComponentFactory {
 	/*
     createValidation(properties: ValidationProperties): ReactElement;
 
     createLayout(properties: ILayoutProperties): ReactElement;
      */
 
-	createField(typeName: string, properties: IFieldProperty): ReactElement;
+	createField: (typeName: string, properties: IFieldProperty) => ReactElement;
 
 	/*
     createPanel(properties: IPanelProperties): ReactElement;
