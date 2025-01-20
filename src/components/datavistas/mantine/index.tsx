@@ -11,7 +11,7 @@ interface MantineProviderProps {
     children: ReactNode;
 }
 
-export const MantineComponentProvider: FC<MantineProviderProps> = ({ children }) => {
+export const VystaMantineComponentProvider: FC<MantineProviderProps> = ({ children }) => {
     return (
         <FieldComponentProvider components={mantineComponents}>
             {children}

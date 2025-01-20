@@ -62,7 +62,108 @@ function ProductList() {
     />
   );
 }
+
+## FilterPanel Component
+
+The FilterPanel component provides a powerful and flexible filtering interface for your data.
+
+### Basic Usage
+
+```tsx
+import { FilterPanel } from '@datavysta/vysta-react';
+import DataType from '@datavysta/vysta-react/components/Models/DataType';
+import { FilterDefinitionsByField } from '@datavysta/vysta-react/components/Filter/FilterDefinitionsByField';
+
+const filterDefinitions: FilterDefinitionsByField = [
+    {
+        targetFieldName: "productName",
+        label: "Product Name",
+        dataType: DataType.String
+    },
+    {
+        targetFieldName: "unitPrice",
+        label: "Unit Price",
+        dataType: DataType.Numeric
+    },
+    {
+        targetFieldName: "unitsInStock",
+        label: "Units In Stock",
+        dataType: DataType.Numeric
+    },
+    {
+        targetFieldName: "discontinued",
+        label: "Discontinued",
+        dataType: DataType.Boolean
+    }
+];
+
+function App() {
+    const [conditions, setConditions] = useState<Condition[]>([]);
+
+    return (
+        <FilterPanel 
+            conditions={conditions}
+            onChange={setConditions}
+            filterDefinitions={filterDefinitions}
+        />
+    );
+}
 ```
+
+### FilterPanel Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `filterDefinitions` | `FilterDefinitionsByField` | Array of field definitions with types and labels |
+| `conditions` | `Condition[]` | Current filter conditions |
+| `onChange` | `(conditions: Condition[]) => void` | Callback when conditions change |
+
+### Filter Types
+
+The FilterPanel supports these data types from `DataType`:
+- `String`: Text fields with operations like contains, equals, starts with
+- `Numeric`: Numeric fields with operations like equals, greater than, less than
+- `Boolean`: True/false fields
+- `Date`: Date fields with operations like equals, before, after
+
+### Filter Definition Format
+
+Each filter definition should include:
+- `targetFieldName`: The field name to filter on
+- `label`: Display label for the field
+- `dataType`: One of the DataType enum values
+
+## Vysta Mantine Integration
+
+Vysta components can optionally use Mantine UI for enhanced styling and interactions. To use Vysta's Mantine integration:
+
+1. Install Mantine dependencies:
+```bash
+npm install @mantine/core @mantine/hooks
+```
+
+2. Import Mantine styles:
+```tsx
+import '@mantine/core/styles.css';
+```
+
+3. Wrap your Vysta components with both providers:
+```tsx
+import { MantineProvider } from '@mantine/core';
+import { VystaMantineComponentProvider } from '@datavysta/vysta-react/mantine';
+
+function App() {
+  return (
+    <MantineProvider>
+      <VystaMantineComponentProvider>
+        {/* Your Vysta components here */}
+      </VystaMantineComponentProvider>
+    </MantineProvider>
+  );
+}
+```
+
+This will enable Mantine-styled versions of Vysta components while maintaining all their core functionality.
 
 ## Props Documentation
 
