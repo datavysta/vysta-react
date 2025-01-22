@@ -24,6 +24,7 @@ export enum Fields {
 	Password = 'password',
 	UUID = 'uuid',
 	Bql = 'bql',
+	Autocomplete = 'Autocomplete',
 }
 
 export default Fields;
