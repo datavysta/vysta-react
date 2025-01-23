@@ -93,7 +93,7 @@ export function LazyLoadList<T extends object>({
                         ...effectiveFilters,
                         [effectivePrimaryKey]: { eq: value } 
                     },
-                    select: [effectivePrimaryKey, displayColumn] as (keyof T)[],
+                    select: Array.from(new Set([effectivePrimaryKey, displayColumn])) as (keyof T)[],
                     limit: 2
                 });
                 
@@ -132,7 +132,7 @@ export function LazyLoadList<T extends object>({
 
         try {
             const result = await repository.getAll({
-                select: [effectivePrimaryKey, displayColumn, ...(groupBy ? [groupBy] : [])] as (keyof T)[],
+                select: Array.from(new Set([effectivePrimaryKey, displayColumn, ...(groupBy ? [groupBy] : [])])) as (keyof T)[],
                 limit: pageSize,
                 offset: useOffset,
                 order: effectiveOrderBy as OrderBy<T>,

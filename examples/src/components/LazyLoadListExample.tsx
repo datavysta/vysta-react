@@ -30,6 +30,7 @@ export function LazyLoadListExample({
     const [selectedProductId, setSelectedProductId] = useState<string | null>("28");
     const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+    const [selectedProductId2, setSelectedProductId2] = useState<string | null>(null);
     
     const productService = useMemo(() => new ProductService(client), [client]);
     const customerService = useMemo(() => new CustomerService(client), [client]);
@@ -92,6 +93,21 @@ export function LazyLoadListExample({
                         />
                         {selectedOrderId && (
                             <p style={{ marginTop: '10px' }}>Selected Order ID: {selectedOrderId}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <p>Select a product by ID:</p>
+                        <LazyLoadList<Product>
+                            repository={productService}
+                            value={selectedProductId2}
+                            onChange={setSelectedProductId2}
+                            label="Select Product ID"
+                            displayColumn="productId"
+                            primaryKey="productId"
+                        />
+                        {selectedProductId2 && (
+                            <p style={{ marginTop: '10px' }}>Selected Product ID: {selectedProductId2}</p>
                         )}
                     </div>
                 </Stack>
