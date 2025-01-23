@@ -43,25 +43,16 @@ export default defineConfig({
           const name = assetInfo.name || '';
           const extname = name.split('.').pop();
           
-          // If it's a CSS file
+          // Put all CSS files into style.css
           if (extname === 'css') {
-            // If it's the theme CSS
-            if (name.includes('theme.css')) {
-              return 'style.css';
-            }
-            
-            // For component CSS files, preserve their path relative to src
-            const srcIndex = name.indexOf('/src/');
-            if (srcIndex >= 0) {
-              return name.slice(srcIndex + 5); // +5 to skip '/src/'
-            }
+            return 'style.css';
           }
           
           return '[name][extname]';
         },
       },
     },
-    cssCodeSplit: true,
+    cssCodeSplit: false,
     target: 'esnext',
     outDir: 'dist',
   },

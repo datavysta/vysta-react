@@ -1,5 +1,5 @@
 export { DataGrid } from './components/DataGrid/DataGrid';
-export type { DataGridProps } from './components/DataGrid/DataGrid';
+export type { DataGridProps, DataGridStyles } from './components/DataGrid/DataGrid';
 export { default as FilterPanel } from './components/Filter/FilterPanel';
 export type { FilterDefinitionsByField } from './components/Filter/FilterDefinitionsByField';
 export { default as DataType } from './components/Models/DataType';

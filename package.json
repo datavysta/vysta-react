@@ -39,8 +39,7 @@
   "files": [
     "dist",
     "dist/mantine",
-    "dist/style.css",
-    "dist/components/**/*.css"
+    "dist/style.css"
   ],
   "scripts": {
     "dev": "vite",
