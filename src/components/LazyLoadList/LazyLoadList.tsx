@@ -290,8 +290,9 @@ export function LazyLoadList<T extends object>({
                         value={itemId}
                         active={isActive}
                         styles={styles?.option}
+                        className={moduleStyles.option}
                     >
-                        <Group gap="sm">
+                        <Group gap="sm" wrap="nowrap">
                             <Highlight highlight={search} size="sm">
                                 {displayText}
                             </Highlight>

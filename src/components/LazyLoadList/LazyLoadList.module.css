@@ -9,6 +9,18 @@
     animation-delay: 0.5s;
 }
 
+.input {
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+}
+
+.option {
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+}
+
 .errorInput {
     border-color: #862e2c;
 }
