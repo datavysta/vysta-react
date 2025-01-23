@@ -14,6 +14,7 @@ export interface LazyLoadListStyles {
     option?: Partial<Record<'option', CSSProperties>>;
     loader?: CSSProperties;
     errorDot?: CSSProperties;
+    clearButton?: CSSProperties;
 }
 
 export interface LazyLoadListProps<T extends object> {
@@ -89,6 +90,12 @@ export interface LazyLoadListProps<T extends object> {
      * @default true
      */
     searchable?: boolean;
+
+    /**
+     * Whether to show a clear button when a value is selected
+     * @default false
+     */
+    clearable?: boolean;
 
     styles?: LazyLoadListStyles;
 }

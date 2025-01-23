@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { LazyLoadListProps } from './types';
-import { Combobox, ScrollArea, Text, InputBase, Input, useCombobox, Tooltip, Loader, Group, Highlight } from '@mantine/core';
+import { Combobox, ScrollArea, Text, InputBase, Input, useCombobox, Tooltip, Loader, Group, Highlight, CloseButton } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { OrderBy } from '@datavysta/vysta-client';
 import moduleStyles from './LazyLoadList.module.css';
@@ -20,6 +20,7 @@ export function LazyLoadList<T extends object>({
     orderBy,
     searchable = true,
     styles = {},
+    clearable = true,
 }: LazyLoadListProps<T>) {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -253,6 +254,22 @@ export function LazyLoadList<T extends object>({
             );
         }
 
+        if (clearable && value) {
+            return (
+                <CloseButton 
+                    variant="transparent"
+                    size="sm"
+                    style={styles?.clearButton}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onChange(null);
+                    }}
+                    aria-label="Clear value"
+                />
+            );
+        }
+
         return <Combobox.Chevron />;
     };
 
@@ -306,7 +323,7 @@ export function LazyLoadList<T extends object>({
                     pointer
                     rightSection={getRightSection()}
                     onClick={() => combobox.toggleDropdown()}
-                    rightSectionPointerEvents="none"
+                    rightSectionPointerEvents={loading || (clearable && value) ? 'auto' : 'none'}
                     styles={styles?.input}
                     classNames={{ input: moduleStyles.input }}
                 >

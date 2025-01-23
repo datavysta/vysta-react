@@ -59,6 +59,7 @@ export function LazyLoadListExample({
                             label="Select Product"
                             displayColumn="productName"
                             primaryKey="productId"
+                            clearable
                         />
                         {selectedProductId && (
                             <p style={{ marginTop: '10px' }}>Selected Product ID: {selectedProductId}</p>
