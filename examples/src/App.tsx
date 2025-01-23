@@ -4,8 +4,10 @@ import { ProductGrid } from './components/ProductGrid';
 import { CustomerGrid } from './components/CustomerGrid';
 import { OrderGrid } from './components/OrderGrid';
 import { FilterExample } from './components/FilterExample';
+import { LazyLoadListExample } from './components/LazyLoadListExample';
+import { MantineProvider } from '@mantine/core';
 
-type View = 'products' | 'customers' | 'orders' | 'filter';
+type View = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist';
 
 function App() {
     const [error, setError] = useState<string | null>(null);
@@ -71,55 +73,72 @@ function App() {
     const showCustomers = useCallback(() => setView('customers'), []);
     const showOrders = useCallback(() => setView('orders'), []);
     const showFilter = useCallback(() => setView('filter'), []);
+    const showLazyLoadList = useCallback(() => setView('lazyloadlist'), []);
 
-    if (isAuthenticated) {
-        return (
-            <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-                {view === 'products' && (
-                    <ProductGrid 
-                        client={clientRef.current} 
-                        onShowCustomers={showCustomers}
-                        onShowOrders={showOrders}
-                        onShowFilter={showFilter}
-                        tick={tick}
-                    />
-                )}
-                {view === 'customers' && (
-                    <CustomerGrid 
-                        client={clientRef.current} 
-                        onShowProducts={showProducts}
-                        onShowOrders={showOrders}
-                        onShowFilter={showFilter}
-                        tick={tick}
-                    />
-                )}
-                {view === 'orders' && (
-                    <OrderGrid 
-                        client={clientRef.current}
-                        onShowProducts={showProducts}
-                        onShowCustomers={showCustomers}
-                        onShowFilter={showFilter}
-                        tick={tick}
-                    />
-                )}
-                {view === 'filter' && (
-                    <FilterExample 
-                        client={clientRef.current}
-                        onShowProducts={showProducts}
-                        onShowCustomers={showCustomers}
-                        onShowOrders={showOrders}
-                        tick={tick}
-                    />
-                )}
-            </div>
-        );
-    }
-
-    return (
+    const content = isAuthenticated ? (
+        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+            {view === 'products' && (
+                <ProductGrid 
+                    client={clientRef.current} 
+                    onShowCustomers={showCustomers}
+                    onShowOrders={showOrders}
+                    onShowFilter={showFilter}
+                    onShowLazyLoadList={showLazyLoadList}
+                    tick={tick}
+                />
+            )}
+            {view === 'customers' && (
+                <CustomerGrid 
+                    client={clientRef.current} 
+                    onShowProducts={showProducts}
+                    onShowOrders={showOrders}
+                    onShowFilter={showFilter}
+                    onShowLazyLoadList={showLazyLoadList}
+                    tick={tick}
+                />
+            )}
+            {view === 'orders' && (
+                <OrderGrid 
+                    client={clientRef.current}
+                    onShowProducts={showProducts}
+                    onShowCustomers={showCustomers}
+                    onShowFilter={showFilter}
+                    onShowLazyLoadList={showLazyLoadList}
+                    tick={tick}
+                />
+            )}
+            {view === 'filter' && (
+                <FilterExample 
+                    client={clientRef.current}
+                    onShowProducts={showProducts}
+                    onShowCustomers={showCustomers}
+                    onShowOrders={showOrders}
+                    onShowLazyLoadList={showLazyLoadList}
+                    tick={tick}
+                />
+            )}
+            {view === 'lazyloadlist' && (
+                <LazyLoadListExample 
+                    client={clientRef.current}
+                    onShowProducts={showProducts}
+                    onShowCustomers={showCustomers}
+                    onShowOrders={showOrders}
+                    onShowFilter={showFilter}
+                    tick={tick}
+                />
+            )}
+        </div>
+    ) : (
         <div style={{ padding: '20px' }}>
             <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
             <button onClick={login}>Retry Login</button>
         </div>
+    );
+
+    return (
+        <MantineProvider>
+            {content}
+        </MantineProvider>
     );
 }
 

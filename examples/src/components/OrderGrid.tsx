@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { DataGrid } from '@datavysta/vysta-react';
 import { VystaClient } from '@datavysta/vysta-client';
 import { OrderService } from '../services/OrderService';
-import { OrderWithTotal } from '../types/Order';
+import { Order } from '../types/Order';
 import { ColDef } from 'ag-grid-community';
 import { ExampleToolbar } from './ExampleToolbar';
 import './OrderGrid.css';
@@ -12,13 +12,21 @@ interface OrderGridProps {
     onShowProducts: () => void;
     onShowCustomers: () => void;
     onShowFilter: () => void;
+    onShowLazyLoadList: () => void;
     tick: number;
 }
 
-export function OrderGrid({ client, onShowProducts, onShowCustomers, onShowFilter, tick }: OrderGridProps) {
+export function OrderGrid({ 
+    client, 
+    onShowProducts, 
+    onShowCustomers, 
+    onShowFilter,
+    onShowLazyLoadList,
+    tick 
+}: OrderGridProps) {
     const orders = useMemo(() => new OrderService(client), [client]);
 
-    const columnDefs: ColDef<OrderWithTotal>[] = [
+    const columnDefs: ColDef<Order>[] = [
         { 
             field: 'orderId',
             headerName: 'ID',
@@ -26,32 +34,29 @@ export function OrderGrid({ client, onShowProducts, onShowCustomers, onShowFilte
             initialSort: 'asc'
         },
         { 
+            field: 'customerId',
+            headerName: 'Customer',
+            flex: 1
+        },
+        { 
+            field: 'employeeId',
+            headerName: 'Employee',
+            flex: 1
+        },
+        { 
             field: 'orderDate',
-            headerName: 'Date',
-            flex: 1,
-            valueFormatter: (params) => new Date(params.value).toLocaleDateString()
+            headerName: 'Order Date',
+            flex: 1
         },
         { 
-            field: 'shipName',
-            headerName: 'Ship To',
-            flex: 2
+            field: 'requiredDate',
+            headerName: 'Required Date',
+            flex: 1
         },
         { 
-            field: 'shipCountry',
-            headerName: 'Country',
-            width: 120
-        },
-        { 
-            field: 'freight',
-            headerName: 'Freight',
-            flex: 1,
-            valueFormatter: (params) => params.value && `$${params.value.toFixed(2)}`
-        },
-        { 
-            field: '_total',
-            headerName: 'Total',
-            flex: 1,
-            valueFormatter: (params) => params.value && `$${params.value.toFixed(2)}`
+            field: 'shippedDate',
+            headerName: 'Shipped Date',
+            flex: 1
         }
     ];
 
@@ -62,10 +67,11 @@ export function OrderGrid({ client, onShowProducts, onShowCustomers, onShowFilte
                 onShowCustomers={onShowCustomers}
                 onShowOrders={() => {}}
                 onShowFilter={onShowFilter}
+                onShowLazyLoadList={onShowLazyLoadList}
                 currentView="orders"
             />
             <div className="grid-container">
-                <DataGrid<OrderWithTotal>
+                <DataGrid<Order>
                     title="Orders"
                     noun="Order"
                     repository={orders}

@@ -15,6 +15,7 @@ interface FilterExampleProps {
     onShowProducts: () => void;
     onShowCustomers: () => void;
     onShowOrders: () => void;
+    onShowLazyLoadList: () => void;
     tick: number;
 }
 
@@ -46,6 +47,7 @@ export function FilterExample({
     onShowProducts, 
     onShowCustomers, 
     onShowOrders,
+    onShowLazyLoadList,
     tick 
 }: FilterExampleProps) {
     const [conditions, setConditions] = useState<Condition[]>([]);
@@ -61,6 +63,7 @@ export function FilterExample({
                 onShowCustomers={onShowCustomers}
                 onShowOrders={onShowOrders}
                 onShowFilter={() => {}}
+                onShowLazyLoadList={onShowLazyLoadList}
                 currentView="filter"
             />
             <div className="filter-content">

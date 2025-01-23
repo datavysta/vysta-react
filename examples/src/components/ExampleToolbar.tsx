@@ -5,7 +5,8 @@ interface ExampleToolbarProps {
     onShowCustomers: () => void;
     onShowOrders: () => void;
     onShowFilter: () => void;
-    currentView: 'products' | 'customers' | 'orders' | 'filter';
+    onShowLazyLoadList: () => void;
+    currentView: 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist';
 }
 
 export function ExampleToolbar({ 
@@ -13,6 +14,7 @@ export function ExampleToolbar({
     onShowCustomers, 
     onShowOrders, 
     onShowFilter,
+    onShowLazyLoadList,
     currentView 
 }: ExampleToolbarProps) {
     return (
@@ -40,6 +42,12 @@ export function ExampleToolbar({
                 disabled={currentView === 'filter'}
             >
                 Filter Example
+            </button>
+            <button 
+                onClick={onShowLazyLoadList}
+                disabled={currentView === 'lazyloadlist'}
+            >
+                Lazy Load List
             </button>
         </div>
     );

@@ -5,11 +5,20 @@ interface OrderDetail {
 }
 
 export interface Order {
-    orderId: number; // [ Currency ], default: 0
+    orderId: string;
+    customerId: string;
+    employeeId: string;
     orderDate: string;
-    shipName: string;
-    shipCountry: string;
+    requiredDate: string;
+    shippedDate: string;
+    shipVia: string;
     freight: number;
+    shipName: string;
+    shipAddress: string;
+    shipCity: string;
+    shipRegion: string;
+    shipPostalCode: string;
+    shipCountry: string;
     details?: OrderDetail[];
 }
 

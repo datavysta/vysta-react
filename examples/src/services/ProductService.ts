@@ -1,8 +1,10 @@
-import { VystaClient, VystaReadonlyService } from '@datavysta/vysta-client';
+import { VystaClient, VystaService } from '@datavysta/vysta-client';
 import { Product } from '../types/Product';
 
-export class ProductService extends VystaReadonlyService<Product> {
+export class ProductService extends VystaService<Product> {
     constructor(client: VystaClient) {
-        super(client, 'Northwinds', 'Products');
+        super(client, 'Northwinds', 'Products', {
+            primaryKey: 'productId'
+        });
     }
 } 

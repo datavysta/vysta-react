@@ -6,5 +6,13 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true
+  },
+  build: {
+    rollupOptions: {
+      external: [
+        '@datavysta/vysta-react/style.css',
+        '@mantine/core/styles.css'
+      ]
+    }
   }
 }); 

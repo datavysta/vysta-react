@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
-import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
   plugins: [
@@ -16,8 +17,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        'index': path.resolve(__dirname, 'src/index.ts'),
-        'mantine/index': path.resolve(__dirname, 'src/components/datavistas/mantine/index.tsx')
+        'index': fileURLToPath(new URL('./src/index.ts', import.meta.url)),
+        'styles': fileURLToPath(new URL('./src/styles/index.ts', import.meta.url)),
+        'mantine/index': fileURLToPath(new URL('./src/components/datavistas/mantine/index.tsx', import.meta.url))
       },
       formats: ['es'],
       fileName: (format, entryName) => `${entryName}.js`,
@@ -38,13 +40,30 @@ export default defineConfig({
         preserveModulesRoot: 'src',
         entryFileNames: '[name].js',
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'style.css') return 'style.css';
-          return assetInfo.name || assetInfo.fileName || '';
+          const name = assetInfo.name || '';
+          const extname = name.split('.').pop();
+          
+          // If it's a CSS file
+          if (extname === 'css') {
+            // If it's the theme CSS
+            if (name.includes('theme.css')) {
+              return 'style.css';
+            }
+            
+            // For component CSS files, preserve their path relative to src
+            const srcIndex = name.indexOf('/src/');
+            if (srcIndex >= 0) {
+              return name.slice(srcIndex + 5); // +5 to skip '/src/'
+            }
+          }
+          
+          return '[name][extname]';
         },
       },
     },
-    cssCodeSplit: false,
+    cssCodeSplit: true,
     target: 'esnext',
+    outDir: 'dist',
   },
   css: {
     modules: {

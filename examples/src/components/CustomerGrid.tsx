@@ -12,10 +12,18 @@ interface CustomerGridProps {
     onShowProducts: () => void;
     onShowOrders: () => void;
     onShowFilter: () => void;
+    onShowLazyLoadList: () => void;
     tick: number;
 }
 
-export function CustomerGrid({ client, onShowProducts, onShowOrders, onShowFilter, tick }: CustomerGridProps) {
+export function CustomerGrid({ 
+    client, 
+    onShowProducts, 
+    onShowOrders, 
+    onShowFilter,
+    onShowLazyLoadList,
+    tick 
+}: CustomerGridProps) {
     const customers = useMemo(() => new CustomerService(client), [client]);
 
     const columnDefs: ColDef<Customer>[] = [
@@ -54,6 +62,7 @@ export function CustomerGrid({ client, onShowProducts, onShowOrders, onShowFilte
                 onShowCustomers={() => {}}
                 onShowOrders={onShowOrders}
                 onShowFilter={onShowFilter}
+                onShowLazyLoadList={onShowLazyLoadList}
                 currentView="customers"
             />
             <div className="grid-container">
