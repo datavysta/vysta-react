@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { generateUUID } from '../../utils/uuid';
 import QueryStatement from './QueryStatement';
 import TableSource from './TableSource';
 import SelectStatementItem from './SelectStatementItem';
@@ -6,7 +6,7 @@ import OrderBy from './OrderBy';
 import Condition from './Condition';
 
 export class SelectStatement extends QueryStatement {
-	id: string = uuidv4();
+	id: string = generateUUID();
 	distinct = false;
 	items: SelectStatementItem[] = [];
 	sources: TableSource[] = [];

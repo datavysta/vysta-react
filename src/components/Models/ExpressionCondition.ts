@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { generateUUID } from '../../utils/uuid';
 import Condition from './Condition';
 import ConditionType from './ConditionType';
 import ComparisonOperator from './ComparisonOperator';
@@ -6,7 +6,7 @@ import { ConditionMode } from '../Filter/ConditionMode';
 import isNil from '../../utils/isNil';
 
 export default class ExpressionCondition implements Condition {
-	id: string = uuidv4().toLowerCase();
+	id: string = generateUUID();
 	type: ConditionType = ConditionType.Expression;
 	comparisonOperator?: ComparisonOperator = undefined;
 	children = [];

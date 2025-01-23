@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { generateUUID } from '../../utils/uuid';
 import { LogicalOperator } from './LogicalOperator';
 import ConditionType from './ConditionType';
 import ComparisonOperator from './ComparisonOperator';
@@ -24,7 +24,7 @@ export const newCondition = (
 	value: string | string[] | null,
 	comparisonOperator: ComparisonOperator = ComparisonOperator.In
 ): Condition => ({
-	id: uuidv4(),
+	id: generateUUID(),
 	type: ConditionType.Expression,
 	operator: LogicalOperator.AND,
 	active: true,
@@ -62,7 +62,7 @@ export const deleteConditionProperties = (arr: any[]) => {
 
 export const regenerateConditionIds = (condition: Condition | Condition[]): void => {
 	const updateIds = (item: Condition) => {
-		item.id = uuidv4();
+		item.id = generateUUID();
 		if (item.children && item.children.length > 0) {
 			item.children.forEach(updateIds);
 		}

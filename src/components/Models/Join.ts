@@ -1,10 +1,10 @@
-import { v4 as uuidv4 } from 'uuid';
-import TableSource from './TableSource';
+import { generateUUID } from '../../utils/uuid';
 import JoinType from './JoinType';
+import TableSource from './TableSource';
 import Condition from './Condition';
 
 export default class Join {
-	id: string = uuidv4().toLowerCase();
+	id: string = generateUUID();
 	edit = false;
 	tableSource: TableSource | null = null;
 	searchConditions: Condition[] = [];
