@@ -50,6 +50,11 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	};
 	toolbarItems?: React.ReactNode;
 	onDataFirstLoaded?: (gridApi: GridApi<U>) => void;
+	/**
+	 * Called every time data is loaded, including filter changes and initial load
+	 * Not called for infinite scroll loads
+	 */
+	onDataLoaded?: (gridApi: GridApi<U>, data: U[]) => void;
 	getRowClass?: ((params: RowClassParams<U>) => string | string[] | undefined);
 	onRowClicked?: (event: RowClickedEvent<U>) => void;
 	getRowId: (data: T) => string;
@@ -67,20 +72,21 @@ export function DataGrid<T extends object, U extends T = T>({
 	                                           supportRegularDownload = false,
 	                                           supportInsert = false,
 	                                           supportDelete = false,
-	                                           filters = {},
-	                                           inputProperties = {},
+	                                           filters,
+	                                           inputProperties,
 	                                           toolbarItems,
 	                                           onDataFirstLoaded,
+	                                           onDataLoaded,
 	                                           getRowClass,
 	                                           onRowClicked,
 	                                           getRowId,
-												theme,
+	                                           theme,
 	                                           tick = 0,
 	                                           styles = {},
                                            }: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
-	const [dataFirstLoaded, setDataFirstLoaded] = useState(false);
+	const dataFirstLoadedRef = useRef(false);
 
 	const defaultColDef = useMemo<ColDef>(() => ({
 		sortable: true,
@@ -184,9 +190,13 @@ export function DataGrid<T extends object, U extends T = T>({
 				const lastRow = result.data.length < limit ? startRow + result.data.length : undefined;
 				params.successCallback(result.data, lastRow);
 
-				if (!dataFirstLoaded && gridApiRef.current) {
+				if (!dataFirstLoadedRef.current && gridApiRef.current) {
 					onDataFirstLoaded?.(gridApiRef.current);
-					setDataFirstLoaded(true);
+					dataFirstLoadedRef.current = true;
+				}
+
+				if (gridApiRef.current && onDataLoaded) {
+					onDataLoaded(gridApiRef.current, result.data);
 				}
 			} catch (error) {
 				console.error('Error fetching rows:', error);
@@ -215,8 +225,9 @@ export function DataGrid<T extends object, U extends T = T>({
 	}), [modifiedColDefs, defaultColDef, gridOptions, getRowClass, onRowClicked, getRowIdHandler]);
 
 	useEffect(() => {
+		dataFirstLoadedRef.current = false;
 		gridApiRef.current?.updateGridOptions({datasource: dataSource});
-	}, [tick, filters]);
+	}, [tick, filters, inputProperties]);
 
 	const onGridReady = (params: any) => {
 		gridApiRef.current = params.api;

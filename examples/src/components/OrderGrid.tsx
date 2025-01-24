@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DataGrid } from '@datavysta/vysta-react';
 import { VystaClient } from '@datavysta/vysta-client';
 import { OrderService } from '../services/OrderService';
 import { Order } from '../types/Order';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, GridApi } from 'ag-grid-community';
 import { ExampleToolbar } from './ExampleToolbar';
 import './OrderGrid.css';
 
@@ -25,6 +25,17 @@ export function OrderGrid({
     tick 
 }: OrderGridProps) {
     const orders = useMemo(() => new OrderService(client), [client]);
+    const [logs, setLogs] = useState<string[]>([]);
+    const [useFilter, setUseFilter] = useState(false);
+    const [useInputProps, setUseInputProps] = useState(false);
+    const [localTick, setLocalTick] = useState(0);
+
+    const filters = useMemo(() => useFilter ? { employeeId: 1 } : undefined, [useFilter]);
+    const inputProperties = useMemo(() => useInputProps ? { test: 'value' } : undefined, [useInputProps]);
+
+    const addLog = (message: string) => {
+        setLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+    };
 
     const columnDefs: ColDef<Order>[] = [
         { 
@@ -70,6 +81,34 @@ export function OrderGrid({
                 onShowLazyLoadList={onShowLazyLoadList}
                 currentView="orders"
             />
+            <div style={{ margin: '10px' }}>
+                <button onClick={() => setUseFilter(prev => !prev)} style={{ marginRight: '10px' }}>
+                    Toggle Filter: {useFilter ? 'ON' : 'OFF'}
+                </button>
+                <button onClick={() => setUseInputProps(prev => !prev)} style={{ marginRight: '10px' }}>
+                    Toggle Input Props: {useInputProps ? 'ON' : 'OFF'}
+                </button>
+                <button onClick={() => setLocalTick(t => t + 1)} style={{ marginRight: '10px' }}>
+                    Increment Tick: {localTick}
+                </button>
+                <button onClick={() => setLogs([])} style={{ marginLeft: '10px' }}>
+                    Clear Logs
+                </button>
+            </div>
+            <div style={{ 
+                margin: '10px',
+                padding: '10px', 
+                border: '1px solid #ccc', 
+                borderRadius: '4px',
+                maxHeight: '100px',
+                overflowY: 'auto',
+                backgroundColor: '#f5f5f5',
+                fontFamily: 'monospace'
+            }}>
+                {logs.map((log, i) => (
+                    <div key={i}>{log}</div>
+                ))}
+            </div>
             <div className="grid-container">
                 <DataGrid<Order>
                     title="Orders"
@@ -88,7 +127,15 @@ export function OrderGrid({
                             padding: '4px 12px'
                         }
                     }}
-                    tick={tick}
+                    filters={filters}
+                    inputProperties={inputProperties}
+                    tick={localTick}
+                    onDataFirstLoaded={(api: GridApi<Order>) => {
+                        addLog('onDataFirstLoaded called');
+                    }}
+                    onDataLoaded={(api: GridApi<Order>, data: Order[]) => {
+                        addLog(`onDataLoaded called with ${data.length} rows`);
+                    }}
                 />
             </div>
         </div>
