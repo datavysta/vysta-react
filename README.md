@@ -185,9 +185,11 @@ This will enable Mantine-styled versions of Vysta components while maintaining a
 | `supportRegularDownload` | `boolean` | `false` | Show download button |
 | `supportInsert` | `boolean` | `false` | Show "New" button |
 | `supportDelete` | `boolean` | `false` | Show delete button in each row |
-| `filters` | `{ [K in keyof T]?: any }` | `{}` | Vysta filters to apply |
+| `filters` | `{ [K in keyof T]?: any }` | `undefined` | Vysta filters to apply. Should be memoized to prevent unnecessary reloads |
+| `inputProperties` | `{ [key: string]: any }` | `undefined` | Additional properties to pass to data source. Should be memoized to prevent unnecessary reloads |
 | `toolbarItems` | `React.ReactNode` | `undefined` | Custom toolbar items |
-| `onDataFirstLoaded` | `(gridApi: GridApi<T>) => void` | `undefined` | Callback when data first loads |
+| `onDataFirstLoaded` | `(gridApi: GridApi<T>) => void` | `undefined` | Callback when data first loads or when filters/inputProperties change |
+| `onDataLoaded` | `(gridApi: GridApi<T>, data: T[]) => void` | `undefined` | Callback when any data loads, including incremental loads |
 | `getRowClass` | `(params: RowClassParams<T>) => string \| string[] \| undefined` | `undefined` | Custom row CSS classes |
 | `onRowClicked` | `(event: RowClickedEvent<T>) => void` | `undefined` | Row click handler |
 | `tick` | `number` | `0` | Trigger grid refresh when incremented |
@@ -250,13 +252,43 @@ The grid uses AG Grid Community Edition under the hood. You can customize the gr
 ### Filtering Example
 
 ```tsx
-<DataGrid<Product>
-  // ... other props ...
-  filters={{
-    unitPrice: { gt: 20 },
-    discontinued: { eq: 0 }
-  }}
-/>
+// Example with memoized filters to prevent unnecessary reloads
+function ProductList() {
+  const [useFilter, setUseFilter] = useState(false);
+  
+  const filters = useMemo(
+    () => useFilter ? { unitPrice: { gt: 20 } } : undefined,
+    [useFilter]
+  );
+
+  return (
+    <DataGrid<Product>
+      // ... other props ...
+      filters={filters}
+    />
+  );
+}
+```
+
+### Input Properties Example
+
+```tsx
+// Example with memoized input properties
+function ProductList() {
+  const [useInputProps, setUseInputProps] = useState(false);
+  
+  const inputProperties = useMemo(
+    () => useInputProps ? { customParam: 'value' } : undefined,
+    [useInputProps]
+  );
+
+  return (
+    <DataGrid<Product>
+      // ... other props ...
+      inputProperties={inputProperties}
+    />
+  );
+}
 ```
 
 ## License
