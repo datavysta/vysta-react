@@ -52,7 +52,7 @@ const FilterPanel: FC<IFilterProps> = ({
 				return groupCondition;
 			}
 
-			const definition = filterDefinitions.find(def => def.targetFieldName === condition.propertyName);
+			const definition = filterDefinitions.find(def => def.targetFieldName === condition.columnName);
 			if (definition?.loader) {
 				const selectColumns = definition.loaderColumns || ["id", "name"];
 				try {
@@ -113,7 +113,7 @@ const FilterPanel: FC<IFilterProps> = ({
 	}, [handleOnChange]);
 
 	const [currentConditions, setCurrentConditions] = useState<Condition[]>(() => {
-		if (conditions.length > 0 && conditions[0].children[0]?.propertyName) {
+		if (conditions.length > 0 && conditions[0].children[0]?.columnName) {
 			return conditions;
 		}
 		return [getPreparedGroup()];
@@ -162,7 +162,7 @@ const FilterPanel: FC<IFilterProps> = ({
 		const firstCondition = currentConditions[0]
 			?.children[0] as ExpressionCondition;
 		return (
-			firstCondition.propertyName &&
+			firstCondition.columnName &&
 			firstCondition.comparisonOperator &&
 			firstCondition.values !== null
 		);
@@ -181,7 +181,7 @@ const FilterPanel: FC<IFilterProps> = ({
 
 	const handleClear = useCallback(() => {
 		setCurrentConditions([getPreparedGroup()]);
-	}, []);
+	}, [getPreparedGroup]);
 
 	return (
 		<div className="filter-panel">

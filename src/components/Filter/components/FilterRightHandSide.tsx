@@ -33,10 +33,10 @@ const FilterRightHandSide: FC<IFilterProps> = ({
 
 	useUpdateEffect(() => {
 		// Only run after the first load
-		if (expressionCondition.propertyName) {
+		if (expressionCondition.columnName) {
 			setFocusTick(tick => ++tick);
 		}
-	}, [expressionCondition.propertyName]);
+	}, [expressionCondition.columnName]);
 
 	const {comparisonOperator} = expressionCondition;
 

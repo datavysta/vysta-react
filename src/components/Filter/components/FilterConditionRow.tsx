@@ -81,18 +81,18 @@ const FilterConditionRow: FC<IFilterProps> = ({
 		return filterDefinition?.dataType || DataType.String;
 	};
 
-	const { comparisonOperator, propertyName, values } = expressionCondition;
+	const { comparisonOperator, columnName, values } = expressionCondition;
 	const defaultDataType =
 		conditionMode === ConditionMode.ExpressionBased
 			? DataType.String
-			: getDataTypeForColumnName(filterDefinitions, propertyName);
+			: getDataTypeForColumnName(filterDefinitions, columnName);
 	const [dataType, setDataType] = useState<DataType | undefined>(
 		defaultDataType
 	);
 
 	const filterDefinition = useMemo(
-		() => findFilterDefinitionByColumnName(filterDefinitions, propertyName),
-		[propertyName]
+		() => findFilterDefinitionByColumnName(filterDefinitions, columnName),
+		[columnName]
 	);
 
 	const isComparisonOperatorNullOrNotNull =
@@ -133,7 +133,7 @@ const FilterConditionRow: FC<IFilterProps> = ({
 		// Clear
 		setExpressionCondition({
 			...expressionCondition,
-			propertyName: value,
+			columnName: value,
 			values: [],
 		});
 
@@ -150,7 +150,7 @@ const FilterConditionRow: FC<IFilterProps> = ({
 		}
 
 		if (index === 0 && values.length === 0) {
-			return !propertyName ? true : checkRightExpression();
+			return !columnName ? true : checkRightExpression();
 		} else {
 			return checkRightExpression();
 		}
@@ -261,7 +261,7 @@ const FilterConditionRow: FC<IFilterProps> = ({
 				<div className="filter-left-side-col">
 					<FilterAutocomplete
 						data={leftSideListOptions}
-						initialValue={conditionMode === ConditionMode.ExpressionBased ? expressionCondition.leftExpression : expressionCondition.propertyName}
+						initialValue={conditionMode === ConditionMode.ExpressionBased ? expressionCondition.leftExpression : expressionCondition.columnName}
 						onChange={handleLeftSideChange}
 						dataType={dataType}
 					/>

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DataGrid } from '@datavysta/vysta-react';
 import { VystaClient } from '@datavysta/vysta-client';
 import { CustomerService } from '../services/CustomerService';
@@ -6,6 +6,12 @@ import { Customer } from '../types/Customer';
 import { ColDef } from 'ag-grid-community';
 import { ExampleToolbar } from './ExampleToolbar';
 import './CustomerGrid.css';
+import { Modal, Button } from '@mantine/core';
+import Condition from '../../../src/components/Models/Condition';
+import FilterPanel from '../../../src/components/Filter/FilterPanel';
+import DataType from '../../../src/components/Models/DataType';
+import { FilterDefinitionsByField } from '../../../src/components/Filter/FilterDefinitionsByField';
+import { FieldComponentProvider } from '../../../src/components/datavistas/FieldComponentContext';
 
 interface CustomerGridProps {
     client: VystaClient;
@@ -25,6 +31,36 @@ export function CustomerGrid({
     tick 
 }: CustomerGridProps) {
     const customers = useMemo(() => new CustomerService(client), [client]);
+    const [conditions, setConditions] = useState<Condition[]>([]);
+    const [showFilterModal, setShowFilterModal] = useState(false);
+
+    const filterDefinitions: FilterDefinitionsByField = [
+        {
+            targetFieldName: "customerId",
+            label: "Customer ID",
+            dataType: DataType.String
+        },
+        {
+            targetFieldName: "companyName",
+            label: "Company Name",
+            dataType: DataType.String
+        },
+        {
+            targetFieldName: "contactName",
+            label: "Contact Name",
+            dataType: DataType.String
+        },
+        {
+            targetFieldName: "country",
+            label: "Country",
+            dataType: DataType.String
+        },
+        {
+            targetFieldName: "phone",
+            label: "Phone",
+            dataType: DataType.String
+        }
+    ];
 
     const columnDefs: ColDef<Customer>[] = [
         { 
@@ -55,6 +91,21 @@ export function CustomerGrid({
         }
     ];
 
+    const toolbarItems = (
+        <Button 
+            variant="light" 
+            onClick={() => setShowFilterModal(true)}
+            size="sm"
+        >
+            Filter
+        </Button>
+    );
+
+    const handleApplyFilter = (newConditions: Condition[]) => {
+        setConditions(newConditions);
+        setShowFilterModal(false);
+    };
+
     return (
         <div className="example-container">
             <ExampleToolbar 
@@ -84,8 +135,24 @@ export function CustomerGrid({
                         }
                     }}
                     tick={tick}
+                    conditions={conditions}
+                    toolbarItems={toolbarItems}
                 />
             </div>
+            <Modal 
+                opened={showFilterModal} 
+                onClose={() => setShowFilterModal(false)}
+                title="Filter Customers"
+                size="90dvw"
+            >
+                <FieldComponentProvider>
+                    <FilterPanel
+                        conditions={conditions}
+                        onApply={handleApplyFilter}
+                        filterDefinitions={filterDefinitions}
+                    />
+                </FieldComponentProvider>
+            </Modal>
         </div>
     );
 } 

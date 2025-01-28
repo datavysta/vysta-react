@@ -11,7 +11,7 @@ export default interface Condition {
 	active: boolean;
 	valid: boolean;
 	children: Condition[];
-	propertyName?: string;
+	columnName?: string;
 	leftExpression?: string;
 	rightExpression?: string;
 	startExpression?: string;
@@ -30,7 +30,7 @@ export const newCondition = (
 	active: true,
 	valid: true,
 	children: [],
-	propertyName,
+	columnName: propertyName,
 	comparisonOperator: comparisonOperator,
 	values: !value || !value.length ? [] : Array.isArray(value) ?  value : [value],
 });

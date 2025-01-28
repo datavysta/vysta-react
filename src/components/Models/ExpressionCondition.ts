@@ -12,7 +12,7 @@ export default class ExpressionCondition implements Condition {
 	children = [];
 	valid = false;
 	active = true;
-	propertyName?: string = undefined;
+	columnName?: string = undefined;
 	values: string[] = [];
 	leftExpression?: string;
 	rightExpression?: string;

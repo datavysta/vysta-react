@@ -103,7 +103,7 @@ function App() {
     return (
         <FilterPanel 
             conditions={conditions}
-            onChange={setConditions}
+            onApply={setConditions}
             filterDefinitions={filterDefinitions}
         />
     );
@@ -116,6 +116,7 @@ function App() {
 |------|------|-------------|
 | `filterDefinitions` | `FilterDefinitionsByField` | Array of field definitions with types and labels |
 | `conditions` | `Condition[]` | Current filter conditions |
+| `onApply` | `(conditions: Condition[]) => void` | Callback when filters are applied |
 | `onChange` | `(conditions: Condition[]) => void` | Callback when conditions change |
 
 ### Filter Types

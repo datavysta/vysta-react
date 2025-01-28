@@ -15,6 +15,7 @@ import {
 import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
 import {OrderBy, SortDirection, IReadonlyDataService, IDataService} from '@datavysta/vysta-client';
 import moduleStyles from './DataGrid.module.css';
+import type Condition from '../Models/Condition';
 
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
@@ -45,6 +46,7 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	supportInsert?: boolean;
 	supportDelete?: boolean;
 	filters?: { [K in keyof T]?: any };
+	conditions?: Condition[];
 	inputProperties?: {
 		[key: string]: string;
 	};
@@ -73,6 +75,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	                                           supportInsert = false,
 	                                           supportDelete = false,
 	                                           filters,
+	                                           conditions,
 	                                           inputProperties,
 	                                           toolbarItems,
 	                                           onDataFirstLoaded,
@@ -173,12 +176,13 @@ export function DataGrid<T extends object, U extends T = T>({
 					select.push(primaryKey);
 				}
 
-				const result = await repository.getAll({
+				const result = await repository.query({
 					select,
 					limit,
 					offset: startRow,
 					order,
 					filters,
+					conditions,
 					inputProperties,
 					recordCount: startRow === 0
 				});
@@ -227,7 +231,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	useEffect(() => {
 		dataFirstLoadedRef.current = false;
 		gridApiRef.current?.updateGridOptions({datasource: dataSource});
-	}, [tick, filters, inputProperties]);
+	}, [tick, filters, conditions, inputProperties]);
 
 	const onGridReady = (params: any) => {
 		gridApiRef.current = params.api;
