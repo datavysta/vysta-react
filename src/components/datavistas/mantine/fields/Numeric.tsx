@@ -23,6 +23,14 @@ export const NumericField: FC<IFieldProperty> = ({
         return <>{value}</>;
     }
 
+    const handleChange = (val: number | string | '') => {
+        if (val === '' || val === null || val === undefined) {
+            onChange?.('');
+            return;
+        }
+        onChange?.(val.toString());
+    };
+
     return (
         <NumberInput
             id={id}
@@ -33,12 +41,14 @@ export const NumericField: FC<IFieldProperty> = ({
             error={error}
             placeholder={placeholder}
             description={description}
-            value={value ? parseFloat(value) : undefined}
-            onChange={(val: number | string | undefined) => onChange?.(val?.toString() || '')}
+            value={value === '' ? '' : parseFloat(value)}
+            onChange={handleChange}
             onBlur={onBlur}
             onFocus={onFocus}
             min={minValue ? parseFloat(minValue) : undefined}
             max={maxValue ? parseFloat(maxValue) : undefined}
+            allowNegative
+            allowDecimal
             hideControls
         />
     );
