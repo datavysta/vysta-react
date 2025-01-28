@@ -129,13 +129,15 @@ const FilterPanel: FC<IFilterProps> = ({
 	) => {
 		setCurrentConditions((prevConditions) => {
 			if (parent) {
-				const updatedParent = prevConditions.map((cond) => {
+				return prevConditions.map((cond) => {
 					if (cond.id === parent.id) {
-						cond.children?.push(condition);
+						return {
+							...cond,
+							children: [...(cond.children || []), condition]
+						};
 					}
 					return cond;
 				});
-				return updatedParent;
 			}
 			return [...prevConditions, condition];
 		});
@@ -190,7 +192,7 @@ const FilterPanel: FC<IFilterProps> = ({
 					<span className="filter-title">{asideTitle}</span>
 					<button
 						className="filter-button"
-						onClick={() => handleAddCondition(getPreparedGroup())}
+						onClick={() => handleAddCondition(new ExpressionCondition(), currentConditions[0] as GroupCondition)}
 					>
 						+
 						{t('Add Filter Group')}

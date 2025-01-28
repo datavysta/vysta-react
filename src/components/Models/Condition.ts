@@ -22,7 +22,7 @@ export default interface Condition {
 export const newCondition = (
 	propertyName: string,
 	value: string | string[] | null,
-	comparisonOperator: ComparisonOperator = ComparisonOperator.In
+	comparisonOperator: ComparisonOperator = ComparisonOperator.Equal
 ): Condition => ({
 	id: generateUUID(),
 	type: ConditionType.Expression,

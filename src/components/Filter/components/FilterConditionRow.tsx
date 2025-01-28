@@ -46,7 +46,7 @@ const FilterConditionRow: FC<IFilterProps> = ({
 	const [expressionCondition, setExpressionCondition] = useState<Condition>({
 		...condition,
 		comparisonOperator:
-			condition.comparisonOperator || ComparisonOperator.In,
+			condition.comparisonOperator || ComparisonOperator.Equal,
 	});
 
 	const findFilterDefinitionByColumnName = (

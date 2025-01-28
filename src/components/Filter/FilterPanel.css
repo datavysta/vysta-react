@@ -24,17 +24,6 @@
     align-items: center;
 }
 
-/* Filter row */
-.filter-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 16px;
-    background: var(--vysta-bg-secondary);
-    padding: 16px;
-    border-radius: 8px;
-}
-
 /* Form controls */
 .filter-panel select,
 .filter-panel input {

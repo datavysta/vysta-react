@@ -36,7 +36,7 @@ const FilterComparisonOperator: FC<IFilterComparisonOperatorProps> = ({
 
 	const getAllOperators = () =>
 		Object.values(ComparisonOperator)
-			.filter(_ => _ != ComparisonOperator.Equal && _ != ComparisonOperator.NotEqual)
+			//.filter(_ => _ != ComparisonOperator.Equal && _ != ComparisonOperator.NotEqual)
 			.map((key: string) => ({
 				value: key as ComparisonOperator,
 				label: t(key),

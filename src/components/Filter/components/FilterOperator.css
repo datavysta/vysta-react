@@ -6,6 +6,7 @@
 }
 
 .filter-operator.small {
+    width: 80px;
     font-size: 12px;
     padding: 4px 8px;
 }
