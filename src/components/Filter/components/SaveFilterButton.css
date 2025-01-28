@@ -96,6 +96,12 @@
   align-items: center;
 }
 
-.save-filter-button:hover {
+.save-filter-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--vysta-bg-secondary);
+}
+
+.save-filter-button:hover:not(:disabled) {
   background-color: var(--vysta-bg-secondary);
 } 

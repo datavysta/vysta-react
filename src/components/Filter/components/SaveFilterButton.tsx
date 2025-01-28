@@ -1,17 +1,28 @@
 import {useTranslationContext} from '../TranslationContext';
 import {useState, useRef, useEffect} from 'react';
+import Condition from '../../Models/Condition';
 import './SaveFilterButton.css';
 
 interface SaveFilterButtonProps {
 	disabled?: boolean;
+	conditions: Condition[];
 }
 
-function SaveFilterButton({ disabled }: SaveFilterButtonProps) {
+interface SavedFilter {
+	name: string;
+	conditions: Condition[];
+}
+
+function SaveFilterButton({ disabled, conditions }: SaveFilterButtonProps) {
 	const {t} = useTranslationContext();
 	const [isClicked, setIsClicked] = useState(false);
 	const [filterName, setFilterName] = useState('');
 	const [filterSaved, setFilterSaved] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
+
+	const hasValidConditions = conditions.some(group => 
+		group.children?.some(expr => expr.columnName && expr.comparisonOperator && expr.values !== null)
+	);
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
 		if (!event.currentTarget.contains(event.relatedTarget as Node)) {
@@ -20,6 +31,22 @@ function SaveFilterButton({ disabled }: SaveFilterButtonProps) {
 	};
 
 	const handleSave = () => {
+		const savedFilters = JSON.parse(localStorage.getItem('savedFilters') || '[]') as SavedFilter[];
+		const newFilter: SavedFilter = {
+			name: filterName.trim(),
+			conditions
+		};
+
+		// If filter with same name exists, replace it
+		const existingIndex = savedFilters.findIndex(f => f.name === newFilter.name);
+		if (existingIndex >= 0) {
+			savedFilters[existingIndex] = newFilter;
+		} else {
+			savedFilters.push(newFilter);
+		}
+
+		localStorage.setItem('savedFilters', JSON.stringify(savedFilters));
+		
 		setIsClicked(false);
 		setFilterSaved(true);
 		setFilterName('');
@@ -80,7 +107,7 @@ function SaveFilterButton({ disabled }: SaveFilterButtonProps) {
 					<button
 						className="save-filter-button"
 						onClick={() => setIsClicked(true)}
-						disabled={disabled}
+						disabled={disabled || !hasValidConditions}
 					>
 						{t('Save')}
 					</button>

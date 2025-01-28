@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState, useEffect } from 'react';
 import { useTranslationContext } from './TranslationContext';
 import Condition from '../Models/Condition';
 import ExpressionCondition from '../Models/ExpressionCondition';
@@ -15,6 +15,11 @@ import { ColDef } from "ag-grid-community";
 import ConditionType from '../Models/ConditionType';
 import CloseButton from '../CloseButton';
 import './FilterPanel.css';
+
+interface SavedFilter {
+	name: string;
+	conditions: Condition[];
+}
 
 interface IFilterProps {
 	conditions: Condition[];
@@ -184,6 +189,21 @@ const FilterPanel: FC<IFilterProps> = ({
 		onApply?.([]);
 	}, [getPreparedGroup, onApply]);
 
+	const [savedFilters, setSavedFilters] = useState<SavedFilter[]>([]);
+
+	useEffect(() => {
+		const filters = JSON.parse(localStorage.getItem('savedFilters') || '[]');
+		setSavedFilters(filters);
+	}, []);
+
+	const handleFilterSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		const selectedFilter = savedFilters.find(f => f.name === event.target.value);
+		if (selectedFilter) {
+			setCurrentConditions(selectedFilter.conditions);
+			onApply?.(selectedFilter.conditions);
+		}
+	};
+
 	return (
 		<div className="filter-panel">
 			{asideTitle ? (
@@ -201,10 +221,19 @@ const FilterPanel: FC<IFilterProps> = ({
 				<div className="filter-header">
 					<span className="filter-title">Filters</span>
 					<div className="filter-actions">
-						{!asideTitle && <SaveFilterButton />}
+						{!asideTitle && <SaveFilterButton conditions={currentConditions} />}
 						<div className="select-wrapper">
-							<select className="filter-select">
+							<select 
+								className="filter-select"
+								onChange={handleFilterSelect}
+								value=""
+							>
 								<option value="">{t('Saved Filters')}</option>
+								{savedFilters.map(filter => (
+									<option key={filter.name} value={filter.name}>
+										{filter.name}
+									</option>
+								))}
 							</select>
 						</div>
 						{onClose && <CloseButton onClickAction={onClose} />}
