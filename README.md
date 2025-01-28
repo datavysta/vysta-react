@@ -292,6 +292,77 @@ function ProductList() {
 }
 ```
 
+## LazyLoadList Component
+
+The LazyLoadList component provides a searchable, lazy-loading dropdown list that efficiently loads data from a Vysta service.
+
+### Basic Usage
+
+```tsx
+import { LazyLoadList } from '@datavysta/vysta-react';
+
+function ProductSelector() {
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const productService = useMemo(() => new ProductService(client), [client]);
+
+    return (
+        <LazyLoadList<Product>
+            repository={productService}
+            value={selectedId}
+            onChange={setSelectedId}
+            label="Select Product"
+            displayColumn="productName"
+            clearable
+        />
+    );
+}
+```
+
+### LazyLoadList Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `repository` | `IReadonlyDataService<T>` | The Vysta service to fetch data from |
+| `value` | `string \| null` | The currently selected value |
+| `onChange` | `(value: string \| null) => void` | Callback when selection changes |
+| `displayColumn` | `keyof T` | The field to display in the list |
+| `label` | `string` | Optional label for the list |
+| `filters` | `{ [K in keyof T]?: any }` | Optional filters to apply |
+| `groupBy` | `keyof T` | Optional field to group items by |
+| `pageSize` | `number` | Number of items to load per page (default: 20) |
+| `searchable` | `boolean` | Whether to show search input (default: true) |
+| `clearable` | `boolean` | Whether to show clear button (default: false) |
+| `disableInitialValueLoad` | `boolean` | Disable initial value query when display matches key (default: false) |
+
+### Features
+
+- 🔄 Lazy loading with infinite scroll
+- 🔍 Built-in search functionality
+- 📑 Optional grouping of items
+- 🎯 Efficient loading of selected values
+- 🎨 Customizable styles
+- 💪 Full TypeScript support
+
+### Example with Filtering
+
+```tsx
+function OrderSelector() {
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+    const [customerId, setCustomerId] = useState<string | null>(null);
+    
+    return (
+        <LazyLoadList<Order>
+            repository={orderService}
+            value={selectedOrderId}
+            onChange={setSelectedOrderId}
+            label="Select Order"
+            displayColumn="orderId"
+            filters={customerId ? { customerId: { eq: customerId } } : undefined}
+        />
+    );
+}
+```
+
 ## License
 
 MIT 
