@@ -24,7 +24,6 @@ interface IFilterProps {
 	asideTitle?: string;
 	onApply?(conditions: Condition[]): void;
 	onChange?(conditions: Condition[]): void;
-	hideClear?: boolean;
 	onClose?: () => void;
 }
 
@@ -35,7 +34,6 @@ const FilterPanel: FC<IFilterProps> = ({
 	onApply,
 	onChange,
 	filterDefinitions,
-	hideClear = true,
 	onClose,
 }: IFilterProps) => {
 	const { t } = useTranslationContext();
@@ -183,7 +181,8 @@ const FilterPanel: FC<IFilterProps> = ({
 
 	const handleClear = useCallback(() => {
 		setCurrentConditions([getPreparedGroup()]);
-	}, [getPreparedGroup]);
+		onApply?.([]);
+	}, [getPreparedGroup, onApply]);
 
 	return (
 		<div className="filter-panel">
@@ -202,12 +201,7 @@ const FilterPanel: FC<IFilterProps> = ({
 				<div className="filter-header">
 					<span className="filter-title">Filters</span>
 					<div className="filter-actions">
-						<button
-							className="clear-button"
-							onClick={() => setCurrentConditions([getPreparedGroup()])}
-						>
-							{t('Clear All Filters')}
-						</button>
+						{!asideTitle && <SaveFilterButton />}
 						<div className="select-wrapper">
 							<select className="filter-select">
 								<option value="">{t('Saved Filters')}</option>
@@ -241,15 +235,12 @@ const FilterPanel: FC<IFilterProps> = ({
 						+ {t('Add Filter Group')}
 					</button>
 					<div className="filter-actions-right">
-						{!hideClear && (
-							<button
-								className="clear"
-								onClick={handleClear}
-							>
-								{t('Clear')}
-							</button>
-						)}
-						{!asideTitle && <SaveFilterButton />}
+						<button
+							className="clear-button"
+							onClick={handleClear}
+						>
+							{t('Clear All Filters')}
+						</button>
 						<button
 							className="apply"
 							onClick={handleApply}

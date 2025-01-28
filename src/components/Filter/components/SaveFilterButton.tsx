@@ -2,7 +2,11 @@ import {useTranslationContext} from '../TranslationContext';
 import {useState, useRef, useEffect} from 'react';
 import './SaveFilterButton.css';
 
-function SaveFilterButton() {
+interface SaveFilterButtonProps {
+	disabled?: boolean;
+}
+
+function SaveFilterButton({ disabled }: SaveFilterButtonProps) {
 	const {t} = useTranslationContext();
 	const [isClicked, setIsClicked] = useState(false);
 	const [filterName, setFilterName] = useState('');
@@ -40,12 +44,14 @@ function SaveFilterButton() {
 						value={filterName}
 						onChange={(event) => setFilterName(event.currentTarget.value)}
 						onBlur={handleBlur}
+						disabled={disabled}
 					/>
 					<div className="save-filter-actions">
 						<button
 							className="save-filter-action-button"
 							onClick={() => setFilterName('')}
 							onMouseDown={(e) => e.preventDefault()}
+							disabled={disabled}
 						>
 							⊗
 						</button>
@@ -53,6 +59,7 @@ function SaveFilterButton() {
 							className="save-filter-action-button save-filter-confirm"
 							onClick={() => handleSave()}
 							onMouseDown={(e) => e.preventDefault()}
+							disabled={!filterName.trim()}
 						>
 							<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M8.5 2.5L3.5 7.5L1 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -73,6 +80,7 @@ function SaveFilterButton() {
 					<button
 						className="save-filter-button"
 						onClick={() => setIsClicked(true)}
+						disabled={disabled}
 					>
 						{t('Save')}
 					</button>

@@ -18,7 +18,7 @@
     color: var(--vysta-text-primary);
 }
 
-.filter-header-actions {
+.filter-header .filter-actions {
     display: flex;
     gap: 12px;
     align-items: center;
@@ -76,13 +76,7 @@
     flex: 0 0 24px;
 }
 
-/* Footer actions */
-.filter-header .filter-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
+/* Footer */
 .filter-footer .filter-actions {
     display: flex;
     justify-content: space-between;
@@ -90,65 +84,90 @@
     margin-top: 24px;
     padding-top: 24px;
     border-top: 1px solid var(--vysta-border-color);
-    flex: 1;
     width: 100%;
 }
 
-.filter-actions button,
-.filter-actions-right :global(.save-filter-button) {
+.filter-footer .filter-actions-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Buttons */
+.filter-footer .filter-actions button,
+.filter-header .filter-actions > button {
+    height: 36px;
     padding: 8px 16px;
     border-radius: 6px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    height: 36px;
     display: flex;
     align-items: center;
 }
 
+/* Add Group button */
 .filter-actions .add-group {
-    border: 1px solid var(--vysta-border-color);
-    background: var(--vysta-bg-primary);
-    color: var(--vysta-text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.filter-actions .clear {
-    border: none;
-    background: none;
-    color: var(--vysta-color-gray-6);
-}
-
-.filter-actions .save,
-.filter-actions-right :global(.save-filter-button) {
-    border: 1px solid var(--vysta-border-color);
-    background: var(--vysta-bg-primary);
+    border: 1px solid var(--vysta-color-gray-6);
+    background: white;
     color: var(--vysta-text-primary);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.filter-actions .apply {
-    border: none;
-    background: var(--vysta-color-primary);
-    color: var(--vysta-bg-primary);
+    gap: 8px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    padding: 5px;
-    border-radius: 4px;
 }
 
-.filter-actions .save:hover,
-.filter-actions-right :global(.save-filter-button):hover {
+.filter-actions .add-group:hover {
     background: var(--vysta-bg-secondary);
 }
 
-.filter-actions .apply:hover {
-    background: var(--vysta-color-primary-hover);
+/* Save button */
+.filter-header .filter-actions :global(.save-filter-button) {
+    height: 38px;
+    padding: 8px 12px;
+    border: 1px solid var(--vysta-border-color);
+    background: var(--vysta-bg-primary);
+    color: var(--vysta-text-primary);
 }
 
-.filter-actions-right {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+.filter-header .filter-actions :global(.save-filter-button:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--vysta-bg-secondary);
+}
+
+.filter-header .filter-actions :global(.save-filter-button:hover:not(:disabled)) {
+    background: var(--vysta-bg-secondary);
+}
+
+/* Clear and Apply buttons */
+.filter-footer .clear-button,
+.filter-footer .apply {
+    border: 1px solid var(--vysta-border-color);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.filter-footer .clear-button {
+    background: white;
+    color: var(--vysta-text-primary);
+    border-color: var(--vysta-color-gray-6);
+}
+
+.filter-footer .apply {
+    background: var(--vysta-color-primary);
+    border-color: var(--vysta-color-primary);
+    color: var(--vysta-bg-primary);
+}
+
+.filter-footer .apply:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--vysta-color-primary);
+}
+
+.filter-footer .apply:hover:not(:disabled) {
+    background: var(--vysta-color-primary-hover);
+    border-color: var(--vysta-color-primary-hover);
+}
+
+.filter-footer .clear-button:hover {
+    background: var(--vysta-bg-secondary);
 } 

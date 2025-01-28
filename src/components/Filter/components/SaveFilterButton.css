@@ -10,7 +10,7 @@
 }
 
 .save-filter-input {
-  height: 28px;
+  height: 38px;
   padding: 0 64px 0 12px;
   border: 1px solid var(--vysta-border-color);
   border-radius: 4px;
@@ -26,7 +26,7 @@
 
 .save-filter-actions {
   position: absolute;
-  right: 0;
+  right: 4px;
   top: 0;
   bottom: 0;
   display: flex;
@@ -55,6 +55,11 @@
   border-radius: 0 2.75px 2.75px 0;
 }
 
+.save-filter-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .save-filter-button-wrapper {
   display: flex;
   align-items: center;
@@ -77,15 +82,18 @@
 }
 
 .save-filter-button {
-  height: 28px;
-  padding: 0 12px;
+  height: 36px;
+  padding: 8px 16px;
   border: 1px solid var(--vysta-border-color);
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--vysta-bg-primary);
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--vysta-text-primary);
   cursor: pointer;
   transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
 }
 
 .save-filter-button:hover {
