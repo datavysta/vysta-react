@@ -74,12 +74,6 @@ export interface LazyLoadListProps<T extends object> {
     tick?: number;
 
     /**
-     * The primary key field to use for identifying items
-     * If not provided, will try to use repository.primaryKey or fall back to 'id'
-     */
-    primaryKey?: keyof T;
-
-    /**
      * Optional order by configuration
      * If not provided, will sort by displayColumn ascending
      */
@@ -96,6 +90,9 @@ export interface LazyLoadListProps<T extends object> {
      * @default false
      */
     clearable?: boolean;
+
+    /** Disable the initial value load query. Useful when the display value matches the key or when you don't need to load additional data. */
+    disableInitialValueLoad?: boolean;
 
     styles?: LazyLoadListStyles;
 }

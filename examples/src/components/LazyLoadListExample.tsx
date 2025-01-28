@@ -58,7 +58,6 @@ export function LazyLoadListExample({
                             onChange={setSelectedProductId}
                             label="Select Product"
                             displayColumn="productName"
-                            primaryKey="productId"
                             clearable
                         />
                         {selectedProductId && (
@@ -74,7 +73,6 @@ export function LazyLoadListExample({
                             onChange={setSelectedCustomerId}
                             label="Select Customer"
                             displayColumn="companyName"
-                            primaryKey="customerId"
                         />
                         {selectedCustomerId && (
                             <p style={{ marginTop: '10px' }}>Selected Customer ID: {selectedCustomerId}</p>
@@ -89,7 +87,6 @@ export function LazyLoadListExample({
                             onChange={setSelectedOrderId}
                             label="Select Order"
                             displayColumn="orderId"
-                            primaryKey="orderId"
                             filters={selectedCustomerId ? { customerId: { eq: selectedCustomerId } } : undefined}
                         />
                         {selectedOrderId && (
@@ -105,7 +102,6 @@ export function LazyLoadListExample({
                             onChange={setSelectedProductId2}
                             label="Select Product ID"
                             displayColumn="productId"
-                            primaryKey="productId"
                         />
                         {selectedProductId2 && (
                             <p style={{ marginTop: '10px' }}>Selected Product ID: {selectedProductId2}</p>

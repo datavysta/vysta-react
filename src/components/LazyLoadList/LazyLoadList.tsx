@@ -16,11 +16,11 @@ export function LazyLoadList<T extends object>({
     groupBy,
     pageSize = 20,
     tick,
-    primaryKey,
     orderBy,
     searchable = true,
     styles = {},
     clearable = true,
+    disableInitialValueLoad = false,
 }: LazyLoadListProps<T>) {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -37,7 +37,7 @@ export function LazyLoadList<T extends object>({
     const [totalCount, setTotalCount] = useState<number | undefined>(undefined);
     const [totalLoaded, setTotalLoaded] = useState(0);
 
-    const effectivePrimaryKey = (primaryKey || (repository as any).primaryKey || 'id') as keyof T;
+    const effectivePrimaryKey = ((repository as any).primaryKey || 'id') as keyof T;
     const effectiveFilters = useMemo(() => filters || {}, [filters]);
     const effectiveOrderBy = useMemo(() => orderBy || { [displayColumn]: 'asc' }, [orderBy, displayColumn]);
     const selectedOption = options.find(opt => String(opt[effectivePrimaryKey]) === value);
@@ -59,10 +59,19 @@ export function LazyLoadList<T extends object>({
 
     // Load value details if provided
     useEffect(() => {
-        if (value && !valueResolved) {
-            loadValueData();
+        if (!value || valueResolved) return;
+        
+        // Skip loading if disabled or if display matches key
+        if (disableInitialValueLoad || 
+            !displayColumn || 
+            displayColumn === effectivePrimaryKey || 
+            value === displayValue) {
+            setValueResolved(true);
+            return;
         }
-    }, [value]);
+
+        loadValueData();
+    }, [value, displayColumn, effectivePrimaryKey, disableInitialValueLoad]);
 
     // Load options when search changes or tick changes
     useEffect(() => {
