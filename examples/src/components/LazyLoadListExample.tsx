@@ -27,10 +27,10 @@ export function LazyLoadListExample({
     onShowFilter,
     tick
 }: LazyLoadListExampleProps) {
-    const [selectedProductId, setSelectedProductId] = useState<string | null>("28");
+    const [selectedProductId, setSelectedProductId] = useState<string | null>("1");
     const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-    const [selectedProductId2, setSelectedProductId2] = useState<string | null>(null);
+    const [selectedProductId2, setSelectedProductId2] = useState<string | null>("1");
     
     const productService = useMemo(() => new ProductService(client), [client]);
     const customerService = useMemo(() => new CustomerService(client), [client]);
@@ -106,6 +106,12 @@ export function LazyLoadListExample({
                         {selectedProductId2 && (
                             <p style={{ marginTop: '10px' }}>Selected Product ID: {selectedProductId2}</p>
                         )}
+                        <button 
+                            onClick={() => setSelectedProductId2("2")}
+                            style={{ marginTop: '10px' }}
+                        >
+                            Set to ID 2
+                        </button>
                     </div>
                 </Stack>
             </div>

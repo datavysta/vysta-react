@@ -57,6 +57,29 @@ export function LazyLoadList<T extends object>({
         },
     });
 
+    // Handle value changes and add temporary option if needed
+    useEffect(() => {
+        if (!value) return;
+
+        const hasValue = options.some(opt => String(opt[effectivePrimaryKey]) === value);
+        const hasTempValue = options.some(opt => (opt as any).__isTemp && String(opt[effectivePrimaryKey]) === value);
+        
+        // Only throw if we've loaded all data and value isn't found
+        if (!moreDataExists && options.some(opt => !(opt as any).__isTemp) && !hasValue) {
+            throw new Error(`Value ${value} not found in loaded options`);
+        }
+
+        // Add temporary option if value not found and we're not querying for details
+        if (!hasValue && !hasTempValue && (disableInitialValueLoad || displayColumn === effectivePrimaryKey)) {
+            const tempItem = {
+                [effectivePrimaryKey]: value,
+                [displayColumn]: value,
+                __isTemp: true
+            } as unknown as T;
+            setOptions(prev => [tempItem, ...prev.filter(opt => !(opt as any).__isTemp)]);
+        }
+    }, [value, options, effectivePrimaryKey, displayColumn, disableInitialValueLoad, moreDataExists]);
+
     // Load value details if provided
     useEffect(() => {
         if (!value || valueResolved) return;
