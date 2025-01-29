@@ -332,7 +332,7 @@ function ProductSelector() {
 | `groupBy` | `keyof T` | Optional field to group items by |
 | `pageSize` | `number` | Number of items to load per page (default: 20) |
 | `searchable` | `boolean` | Whether to show search input (default: true) |
-| `clearable` | `boolean` | Whether to show clear button (default: false) |
+| `clearable` | `boolean` | Whether to show clear button (default: true) |
 | `disableInitialValueLoad` | `boolean` | Disable initial value query when display matches key (default: false) |
 
 ### Features
@@ -358,6 +358,7 @@ function OrderSelector() {
             onChange={setSelectedOrderId}
             label="Select Order"
             displayColumn="orderId"
+            clearable={true}
             filters={customerId ? { customerId: { eq: customerId } } : undefined}
         />
     );
