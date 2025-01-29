@@ -45,6 +45,7 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	supportRegularDownload?: boolean;
 	supportInsert?: boolean;
 	supportDelete?: boolean;
+	deleteButton?: (onDelete: () => void) => React.ReactNode;
 	filters?: { [K in keyof T]?: any };
 	conditions?: Condition[];
 	inputProperties?: {
@@ -74,6 +75,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	                                           supportRegularDownload = false,
 	                                           supportInsert = false,
 	                                           supportDelete = false,
+	                                           deleteButton,
 	                                           filters,
 	                                           conditions,
 	                                           inputProperties,
@@ -101,16 +103,18 @@ export function DataGrid<T extends object, U extends T = T>({
 		if (!supportDelete || !params.data) return null;
 
 		const rowId = getRowId(params.data);
-		return (
-			<button
-				onClick={() => handleDelete(rowId)}
-				className={moduleStyles.deleteButton}
-				style={styles.deleteButton}
-			>
-				Delete
-			</button>
-		);
-	}, [supportDelete, getRowId]);
+		return deleteButton ? 
+			deleteButton(() => handleDelete(rowId)) :
+			(
+				<button
+					onClick={() => handleDelete(rowId)}
+					className={moduleStyles.deleteButton}
+					style={styles.deleteButton}
+				>
+					Delete
+				</button>
+			);
+	}, [supportDelete, getRowId, deleteButton]);
 
 	const handleDelete = async (id: string) => {
 		if (!id) return;

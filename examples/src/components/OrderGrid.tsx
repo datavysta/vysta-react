@@ -130,6 +130,22 @@ export function OrderGrid({
                     filters={filters}
                     inputProperties={inputProperties}
                     tick={localTick}
+                    supportDelete
+                    deleteButton={(onDelete) => (
+                        <button 
+                            onClick={onDelete}
+                            style={{
+                                padding: '2px 8px',
+                                background: 'none',
+                                border: '1px solid #ff4d4f',
+                                borderRadius: '4px',
+                                color: '#ff4d4f',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            ×
+                        </button>
+                    )}
                     onDataFirstLoaded={(api: GridApi<Order>) => {
                         addLog('onDataFirstLoaded called');
                     }}

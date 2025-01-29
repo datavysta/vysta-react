@@ -186,6 +186,7 @@ This will enable Mantine-styled versions of Vysta components while maintaining a
 | `supportRegularDownload` | `boolean` | `false` | Show download button |
 | `supportInsert` | `boolean` | `false` | Show "New" button |
 | `supportDelete` | `boolean` | `false` | Show delete button in each row |
+| `deleteButton` | `(onDelete: () => void) => React.ReactNode` | `undefined` | Custom delete button renderer |
 | `filters` | `{ [K in keyof T]?: any }` | `undefined` | Vysta filters to apply. Should be memoized to prevent unnecessary reloads |
 | `inputProperties` | `{ [key: string]: any }` | `undefined` | Additional properties to pass to data source. Should be memoized to prevent unnecessary reloads |
 | `toolbarItems` | `React.ReactNode` | `undefined` | Custom toolbar items |
