@@ -57,6 +57,19 @@ export function LazyLoadList<T extends object>({
         },
     });
 
+    // Show loading when we have a value but no option for it yet
+    useEffect(() => {
+        if (!value) {
+            setLoading(false);
+            return;
+        }
+        
+        const hasValue = options.some(opt => String(opt[effectivePrimaryKey]) === value);
+        const hasTempValue = options.some(opt => (opt as any).__isTemp && String(opt[effectivePrimaryKey]) === value);
+        
+        setLoading(!hasValue && !hasTempValue);
+    }, [value, options, effectivePrimaryKey]);
+
     // Handle value changes and add temporary option if needed
     useEffect(() => {
         if (!value) return;
@@ -64,11 +77,6 @@ export function LazyLoadList<T extends object>({
         const hasValue = options.some(opt => String(opt[effectivePrimaryKey]) === value);
         const hasTempValue = options.some(opt => (opt as any).__isTemp && String(opt[effectivePrimaryKey]) === value);
         
-        // Only throw if we've loaded all data and value isn't found
-        if (!moreDataExists && options.some(opt => !(opt as any).__isTemp) && !hasValue) {
-            throw new Error(`Value ${value} not found in loaded options`);
-        }
-
         // Add temporary option if value not found and we're not querying for details
         if (!hasValue && !hasTempValue && (disableInitialValueLoad || displayColumn === effectivePrimaryKey)) {
             const tempItem = {
@@ -78,7 +86,7 @@ export function LazyLoadList<T extends object>({
             } as unknown as T;
             setOptions(prev => [tempItem, ...prev.filter(opt => !(opt as any).__isTemp)]);
         }
-    }, [value, options, effectivePrimaryKey, displayColumn, disableInitialValueLoad, moreDataExists]);
+    }, [value, options, effectivePrimaryKey, displayColumn, disableInitialValueLoad]);
 
     // Load value details if provided
     useEffect(() => {
@@ -93,8 +101,18 @@ export function LazyLoadList<T extends object>({
             return;
         }
 
+        // Skip if value exists in loaded results (non-temp)
+        const valueInResults = options.some(opt => 
+            !(opt as any).__isTemp && 
+            String(opt[effectivePrimaryKey]) === value
+        );
+        if (valueInResults) {
+            setValueResolved(true);
+            return;
+        }
+
         loadValueData();
-    }, [value, displayColumn, effectivePrimaryKey, disableInitialValueLoad]);
+    }, [value, displayColumn, effectivePrimaryKey, disableInitialValueLoad, options]);
 
     // Load options when search changes or tick changes
     useEffect(() => {
@@ -375,32 +393,34 @@ export function LazyLoadList<T extends object>({
                         classNames={{ input: moduleStyles.searchInput }}
                     />
                 )}
-                <ScrollArea.Autosize
-                    mah="30vh"
-                    type="scroll"
-                    scrollbarSize={6}
-                    onScrollCapture={handleScroll}
-                    viewportRef={scrollAreaRef}
-                    styles={styles?.scrollArea}
-                >
-                    <Combobox.Options>
-                        {Object.entries(groupedOptions).map(([group, items]) => (
-                            groupBy ? (
-                                <Combobox.Group 
-                                    label={group} 
-                                    key={group}
-                                >
-                                    {renderOptions(items)}
-                                </Combobox.Group>
-                            ) : (
-                                renderOptions(items)
-                            )
-                        ))}
-                        {!loading && (!options.length || options.every(item => (item as any).__isTemp)) && (
-                            <Combobox.Empty>No options found</Combobox.Empty>
-                        )}
-                    </Combobox.Options>
-                </ScrollArea.Autosize>
+                {(loading || options.some(opt => !(opt as any).__isTemp)) && (
+                    <ScrollArea.Autosize
+                        mah="30vh"
+                        type="scroll"
+                        scrollbarSize={6}
+                        onScrollCapture={handleScroll}
+                        viewportRef={scrollAreaRef}
+                        styles={styles?.scrollArea}
+                    >
+                        <Combobox.Options>
+                            {Object.entries(groupedOptions).map(([group, items]) => (
+                                groupBy ? (
+                                    <Combobox.Group 
+                                        label={group} 
+                                        key={group}
+                                    >
+                                        {renderOptions(items)}
+                                    </Combobox.Group>
+                                ) : (
+                                    renderOptions(items)
+                                )
+                            ))}
+                            {!loading && (!options.length || options.every(item => (item as any).__isTemp)) && (
+                                <Combobox.Empty>No options found</Combobox.Empty>
+                            )}
+                        </Combobox.Options>
+                    </ScrollArea.Autosize>
+                )}
             </Combobox.Dropdown>
         </Combobox>
     );
