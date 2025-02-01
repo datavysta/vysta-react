@@ -30,7 +30,7 @@ export function OrderGrid({
     const [useInputProps, setUseInputProps] = useState(false);
     const [localTick, setLocalTick] = useState(0);
 
-    const filters = useMemo(() => useFilter ? { employeeId: 1 } : undefined, [useFilter]);
+    const filters = useMemo(() => useFilter ? { employeeId: { eq: 1 } } : undefined, [useFilter]);
     const inputProperties = useMemo(() => useInputProps ? { test: 'value' } : undefined, [useInputProps]);
 
     const addLog = (message: string) => {
