@@ -68,7 +68,7 @@
     }
   },
   "dependencies": {
-    "@datavysta/vysta-client": "^1.0.14"
+    "@datavysta/vysta-client": "^1.0.15"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
