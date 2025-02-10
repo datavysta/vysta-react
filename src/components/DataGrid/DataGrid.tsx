@@ -175,9 +175,14 @@ export function DataGrid<T extends object, U extends T = T>({
 						.map(col => String(col.field) as keyof T)
 				)];
 
-				const primaryKey = (repository as any).primaryKey as keyof T;
-				if (primaryKey && !select.includes(primaryKey)) {
-					select.push(primaryKey);
+				const primaryKey = (repository as any).primaryKey as keyof T | Array<keyof T>;
+				if (primaryKey) {
+					const keysToAdd = Array.isArray(primaryKey) ? primaryKey : [primaryKey];
+					for (const key of keysToAdd) {
+						if (!select.includes(key)) {
+							select.push(key);
+						}
+					}
 				}
 
 				const result = await repository.query({
