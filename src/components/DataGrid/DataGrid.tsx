@@ -11,9 +11,11 @@ import {
 	GetRowIdParams,
 	ModuleRegistry,
 	InfiniteRowModelModule,
+	SortModelItem,
 } from 'ag-grid-community';
 import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
-import {OrderBy, SortDirection, IReadonlyDataService, IDataService} from '@datavysta/vysta-client';
+import type {OrderBy, SortDirection, IReadonlyDataService, IDataService} from '@datavysta/vysta-client';
+import {FileType} from '@datavysta/vysta-client';
 import moduleStyles from './DataGrid.module.css';
 import type Condition from '../Models/Condition';
 
@@ -135,6 +137,49 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 	};
 
+	const handleDownload = useCallback(async () => {
+		try {
+			const order: OrderBy<T> = {};
+			const gridApi = gridApiRef.current;
+			if (gridApi) {
+				const sortModel = (gridApi as any).getColumnState() as SortModelItem[];
+				if (sortModel?.length > 0) {
+					for (const sort of sortModel) {
+						const key = sort.colId;
+						order[key as keyof T] = sort.sort?.toLowerCase() as SortDirection;
+					}
+				}
+			}
+
+			const select = [...new Set(
+				columnDefs
+					.filter(col => col.field && !col.field.startsWith('_'))
+					.map(col => String(col.field) as keyof T)
+			)];
+
+			const blob = await repository.download({
+				select,
+				order,
+				filters,
+				conditions,
+				inputProperties,
+				recordCount: false
+			}, FileType.CSV);
+
+			// Create download link
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `${title.toLowerCase().replace(/\s+/g, '-')}.csv`;
+			document.body.appendChild(a);
+			a.click();
+			window.URL.revokeObjectURL(url);
+			document.body.removeChild(a);
+		} catch (error) {
+			console.error('Download failed:', error);
+		}
+	}, [repository, columnDefs, filters, conditions, inputProperties, title]);
+
 	const modifiedColDefs = useMemo(() => {
 		const cols = columnDefs.map(col => ({
 			...col,
@@ -175,9 +220,14 @@ export function DataGrid<T extends object, U extends T = T>({
 						.map(col => String(col.field) as keyof T)
 				)];
 
-				const primaryKey = (repository as any).primaryKey as keyof T;
-				if (primaryKey && !select.includes(primaryKey)) {
-					select.push(primaryKey);
+				const primaryKey = (repository as any).primaryKey as keyof T | Array<keyof T>;
+				if (primaryKey) {
+					const keysToAdd = Array.isArray(primaryKey) ? primaryKey : [primaryKey];
+					for (const key of keysToAdd) {
+						if (!select.includes(key)) {
+							select.push(key);
+						}
+					}
 				}
 
 				const result = await repository.query({
@@ -263,7 +313,11 @@ export function DataGrid<T extends object, U extends T = T>({
 						</button>
 					)}
 					{supportRegularDownload && (
-						<button className={moduleStyles.downloadButton} style={styles.downloadButton} disabled>
+						<button 
+							className={moduleStyles.downloadButton} 
+							style={styles.downloadButton}
+							onClick={handleDownload}
+						>
 							Download
 						</button>
 					)}

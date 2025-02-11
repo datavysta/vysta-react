@@ -131,6 +131,7 @@ export function OrderGrid({
                     inputProperties={inputProperties}
                     tick={localTick}
                     supportDelete
+                    supportRegularDownload
                     deleteButton={(onDelete) => (
                         <button 
                             onClick={onDelete}

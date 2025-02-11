@@ -183,7 +183,7 @@ This will enable Mantine-styled versions of Vysta components while maintaining a
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `gridOptions` | `GridOptions<T>` | `undefined` | Additional AG Grid options |
-| `supportRegularDownload` | `boolean` | `false` | Show download button |
+| `supportRegularDownload` | `boolean` | `false` | Enable CSV download of grid data with current sorting and filtering |
 | `supportInsert` | `boolean` | `false` | Show "New" button |
 | `supportDelete` | `boolean` | `false` | Show delete button in each row |
 | `deleteButton` | `(onDelete: () => void) => React.ReactNode` | `undefined` | Custom delete button renderer |
