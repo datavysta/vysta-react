@@ -1,0 +1,1 @@
+export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid'; 

@@ -1,19 +1,13 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { VystaClient } from '@datavysta/vysta-client';
-import { ProductGrid } from './components/ProductGrid';
-import { CustomerGrid } from './components/CustomerGrid';
-import { OrderGrid } from './components/OrderGrid';
-import { FilterExample } from './components/FilterExample';
-import { LazyLoadListExample } from './components/LazyLoadListExample';
 import { MantineProvider } from '@mantine/core';
-
-type View = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist';
+import { PageController, PageView } from './components/PageController';
 
 function App() {
     const [error, setError] = useState<string | null>(null);
     const [tick, setTick] = useState(0);
     const [isAuthenticated, setIsAuthenticated] = useState(true);
-    const [view, setView] = useState<View>('products');
+    const [currentView, setCurrentView] = useState<PageView>('products');
     const wasAuthenticated = useRef(true);
     
     const clientRef = useRef(new VystaClient({ 
@@ -69,64 +63,14 @@ function App() {
         initAuth();
     }, [login]);
 
-    const showProducts = useCallback(() => setView('products'), []);
-    const showCustomers = useCallback(() => setView('customers'), []);
-    const showOrders = useCallback(() => setView('orders'), []);
-    const showFilter = useCallback(() => setView('filter'), []);
-    const showLazyLoadList = useCallback(() => setView('lazyloadlist'), []);
-
     const content = isAuthenticated ? (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            {view === 'products' && (
-                <ProductGrid 
-                    client={clientRef.current} 
-                    onShowCustomers={showCustomers}
-                    onShowOrders={showOrders}
-                    onShowFilter={showFilter}
-                    onShowLazyLoadList={showLazyLoadList}
-                    tick={tick}
-                />
-            )}
-            {view === 'customers' && (
-                <CustomerGrid 
-                    client={clientRef.current} 
-                    onShowProducts={showProducts}
-                    onShowOrders={showOrders}
-                    onShowFilter={showFilter}
-                    onShowLazyLoadList={showLazyLoadList}
-                    tick={tick}
-                />
-            )}
-            {view === 'orders' && (
-                <OrderGrid 
-                    client={clientRef.current}
-                    onShowProducts={showProducts}
-                    onShowCustomers={showCustomers}
-                    onShowFilter={showFilter}
-                    onShowLazyLoadList={showLazyLoadList}
-                    tick={tick}
-                />
-            )}
-            {view === 'filter' && (
-                <FilterExample 
-                    client={clientRef.current}
-                    onShowProducts={showProducts}
-                    onShowCustomers={showCustomers}
-                    onShowOrders={showOrders}
-                    onShowLazyLoadList={showLazyLoadList}
-                    tick={tick}
-                />
-            )}
-            {view === 'lazyloadlist' && (
-                <LazyLoadListExample 
-                    client={clientRef.current}
-                    onShowProducts={showProducts}
-                    onShowCustomers={showCustomers}
-                    onShowOrders={showOrders}
-                    onShowFilter={showFilter}
-                    tick={tick}
-                />
-            )}
+            <PageController 
+                client={clientRef.current}
+                currentView={currentView}
+                onViewChange={setCurrentView}
+                tick={tick}
+            />
         </div>
     ) : (
         <div style={{ padding: '20px' }}>

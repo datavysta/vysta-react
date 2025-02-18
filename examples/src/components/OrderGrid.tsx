@@ -4,24 +4,15 @@ import { VystaClient } from '@datavysta/vysta-client';
 import { OrderService } from '../services/OrderService';
 import { Order } from '../types/Order';
 import { ColDef, GridApi } from 'ag-grid-community';
-import { ExampleToolbar } from './ExampleToolbar';
 import './OrderGrid.css';
 
 interface OrderGridProps {
     client: VystaClient;
-    onShowProducts: () => void;
-    onShowCustomers: () => void;
-    onShowFilter: () => void;
-    onShowLazyLoadList: () => void;
     tick: number;
 }
 
 export function OrderGrid({ 
     client, 
-    onShowProducts, 
-    onShowCustomers, 
-    onShowFilter,
-    onShowLazyLoadList,
     tick 
 }: OrderGridProps) {
     const orders = useMemo(() => new OrderService(client), [client]);
@@ -73,14 +64,6 @@ export function OrderGrid({
 
     return (
         <div className="example-container">
-            <ExampleToolbar 
-                onShowProducts={onShowProducts}
-                onShowCustomers={onShowCustomers}
-                onShowOrders={() => {}}
-                onShowFilter={onShowFilter}
-                onShowLazyLoadList={onShowLazyLoadList}
-                currentView="orders"
-            />
             <div style={{ margin: '10px' }}>
                 <button onClick={() => setUseFilter(prev => !prev)} style={{ marginRight: '10px' }}>
                     Toggle Filter: {useFilter ? 'ON' : 'OFF'}
