@@ -23,7 +23,6 @@ export const EditableTextCell = forwardRef((
         if (!isDirty) return;
         try {
             await props.onSave(value);
-            //props.stopEditing();
         } catch (error) {
             console.error('Failed to save:', error);
         }
@@ -33,6 +32,9 @@ export const EditableTextCell = forwardRef((
         <TextInput
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            autoFocus
+            data-autofocus
+            onFocus={(e) => e.target.select()}
             onKeyDownCapture={(e) => {
                 if (e.key === 'Enter' && isDirty) {
                     e.preventDefault();
@@ -71,7 +73,6 @@ export const EditableTextCell = forwardRef((
                     ✓
                 </ActionIcon>
             }
-            autoFocus
         />
     );
 }); 

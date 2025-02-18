@@ -1,0 +1,10 @@
+.example-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.grid-container {
+  flex: 1;
+  min-height: 0;
+} 

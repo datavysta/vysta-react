@@ -205,14 +205,12 @@ export function DataGrid<T extends object, U extends T = T>({
 							const service = editService || repository as IDataService<T, U>;
 							const id = getRowId(params.data);
 
-							console.log(col.field, "new value", newValue, "pk:", id)
 							await service.update(id, {
 								[col.field]: newValue
 							} as Partial<T>);
 
 							params.api.stopEditing();
-
-							params.api.refreshInfiniteCache();
+							params.node.setDataValue(col.field, newValue);
 						}
 					})
 				};
