@@ -11,16 +11,23 @@ import {
 	GetRowIdParams,
 	ModuleRegistry,
 	InfiniteRowModelModule,
-	SortModelItem,
+	SortModelItem, TextEditorModule,
 } from 'ag-grid-community';
 import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
 import type {OrderBy, SortDirection, IReadonlyDataService, IDataService} from '@datavysta/vysta-client';
 import {FileType} from '@datavysta/vysta-client';
 import moduleStyles from './DataGrid.module.css';
 import type Condition from '../Models/Condition';
+import { EditableTextCell } from './EditableTextCell';
+import { EditableFieldType } from './types';
+import type { EditableFieldConfig } from './types';
+import { EditableNumberCell } from './cells/EditableNumberCell';
+import { EditableDateCell } from './cells/EditableDateCell';
+import { EditableListCell } from './cells/EditableListCell';
 
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
+	TextEditorModule
 ]);
 
 export interface DataGridStyles {
@@ -66,6 +73,10 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	theme?: Theme | 'legacy';
 	tick?: number;
 	styles?: DataGridStyles;
+	editService?: IDataService<T, U>;
+	editableFields?: {
+		[K in keyof U]?: EditableFieldConfig;
+	};
 }
 
 export function DataGrid<T extends object, U extends T = T>({
@@ -84,12 +95,12 @@ export function DataGrid<T extends object, U extends T = T>({
 	                                           toolbarItems,
 	                                           onDataFirstLoaded,
 	                                           onDataLoaded,
-	                                           getRowClass,
-	                                           onRowClicked,
 	                                           getRowId,
 	                                           theme,
 	                                           tick = 0,
 	                                           styles = {},
+	                                           editService,
+	                                           editableFields,
                                            }: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
@@ -98,7 +109,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	const defaultColDef = useMemo<ColDef>(() => ({
 		sortable: true,
 		resizable: true,
-		flex: 1,
+		flex: 1
 	}), []);
 
 	const actionsCellRenderer = useCallback((params: ICellRendererParams<U>) => {
@@ -180,12 +191,57 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 	}, [repository, columnDefs, filters, conditions, inputProperties, title]);
 
+	const hasEditableColumns = useMemo(() => 
+		editableFields !== undefined && Object.keys(editableFields).length > 0,
+		[editableFields]
+	);
+
+	if (hasEditableColumns && !editService && !('update' in repository)) {
+		throw new Error('Grid has editable columns but no edit capability. Either provide an editService or use a repository that supports updates');
+	}
+
 	const modifiedColDefs = useMemo(() => {
-		const cols = columnDefs.map(col => ({
-			...col,
-			// Disable sorting for computed fields (starting with underscore)
-			sortable: col.field?.startsWith('_') ? false : col.sortable ?? true
-		}));
+		const cols = columnDefs.map(col => {
+			if (col.field && editableFields?.[(col.field as unknown) as keyof U]) {
+				const fieldConfig = editableFields[(col.field as unknown) as keyof U];
+				const cellEditor = (() => {
+					switch (fieldConfig?.dataType) {
+						case EditableFieldType.Number:
+							return EditableNumberCell;
+						case EditableFieldType.Date:
+							return EditableDateCell;
+						case EditableFieldType.List:
+							return EditableListCell;
+						case EditableFieldType.Text:
+						default:
+							return EditableTextCell;
+					}
+				})();
+
+				return {
+					...col,
+					editable: true,
+					cellEditor,
+					cellEditorParams: (params: ICellRendererParams<U>) => ({
+						onSave: async (newValue: string) => {
+							if (!col.field || !params.data) return;
+							
+							const service = editService || repository as IDataService<T, U>;
+							const id = getRowId(params.data);
+
+							await service.update(id, {
+								[col.field]: newValue
+							} as Partial<T>);
+
+							params.api.stopEditing();
+							params.node.setDataValue(col.field, newValue);
+						},
+						...fieldConfig
+					})
+				};
+			}
+			return col;  // Don't modify non-editable columns
+		});
 
 		if (supportDelete) {
 			cols.push({
@@ -198,7 +254,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 
 		return cols;
-	}, [columnDefs, supportDelete]);
+	}, [columnDefs, supportDelete, editService, repository, getRowId, editableFields]);
 
 	const dataSource = {
 		getRows: async (params: IGetRowsParams) => {
@@ -267,20 +323,23 @@ export function DataGrid<T extends object, U extends T = T>({
 		return params.data ? getRowId(params.data) : '';
 	}, [getRowId]);
 
-	const actualGridOptions = useMemo<GridOptions<U>>(() => ({
-		columnDefs: modifiedColDefs,
-		rowModelType: 'infinite',
-		cacheBlockSize: 50,
-		paginationPageSize: 50,
-		defaultColDef,
-		components: {
-			actionsCellRenderer
-		},
-		getRowClass,
-		onRowClicked,
-		getRowId: getRowIdHandler,
-		...gridOptions,
-	}), [modifiedColDefs, defaultColDef, gridOptions, getRowClass, onRowClicked, getRowIdHandler]);
+	const actualGridOptions = useMemo<GridOptions<U>>(() => {
+		return {
+			columnDefs: modifiedColDefs,
+			rowModelType: 'infinite',
+			cacheBlockSize: 50,
+			paginationPageSize: 50,
+			defaultColDef,
+			components: {
+				actionsCellRenderer,
+				EditableTextCell
+			},
+			singleClickEdit: hasEditableColumns,
+			stopEditingWhenCellsLoseFocus: hasEditableColumns,
+			getRowId: getRowIdHandler,
+			...gridOptions,
+		};
+	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns]);
 
 	useEffect(() => {
 		dataFirstLoadedRef.current = false;

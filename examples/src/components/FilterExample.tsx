@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { VystaClient } from '@datavysta/vysta-client';
-import { ExampleToolbar } from './ExampleToolbar';
 import './FilterExample.css';
 import Condition from "../../../src/components/Models/Condition";
 import FilterPanel from "../../../src/components/Filter/FilterPanel";
@@ -12,10 +11,6 @@ import { FieldComponentProvider } from '../../../src/components/datavistas/Field
 
 interface FilterExampleProps {
     client: VystaClient;
-    onShowProducts: () => void;
-    onShowCustomers: () => void;
-    onShowOrders: () => void;
-    onShowLazyLoadList: () => void;
     tick: number;
 }
 
@@ -44,10 +39,6 @@ const filterDefinitions: FilterDefinitionsByField = [
 
 export function FilterExample({ 
     client, 
-    onShowProducts, 
-    onShowCustomers, 
-    onShowOrders,
-    onShowLazyLoadList,
     tick 
 }: FilterExampleProps) {
     const [conditions, setConditions] = useState<Condition[]>([]);
@@ -58,14 +49,6 @@ export function FilterExample({
 
     return (
         <div className="example-container">
-            <ExampleToolbar 
-                onShowProducts={onShowProducts}
-                onShowCustomers={onShowCustomers}
-                onShowOrders={onShowOrders}
-                onShowFilter={() => {}}
-                onShowLazyLoadList={onShowLazyLoadList}
-                currentView="filter"
-            />
             <div className="filter-content">
                 <h1>Filter Example</h1>
                 <div className="filter-panel-container">

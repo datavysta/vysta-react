@@ -21,6 +21,8 @@ export function LazyLoadList<T extends object>({
     styles = {},
     clearable = true,
     disableInitialValueLoad = false,
+    defaultOpened = false,
+    autoSearchInputFocus = true
 }: LazyLoadListProps<T>) {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -53,8 +55,11 @@ export function LazyLoadList<T extends object>({
                 return;
             }
             combobox.updateSelectedOptionIndex('active');
-            setTimeout(() => searchInputRef.current?.focus(), 0);
-        },
+
+            if (autoSearchInputFocus) {
+                setTimeout(() => searchInputRef.current?.focus(), 0);
+            }
+        }
     });
 
     // Show loading when we have a value but no option for it yet
@@ -98,6 +103,14 @@ export function LazyLoadList<T extends object>({
             displayColumn === effectivePrimaryKey || 
             value === displayValue) {
             setValueResolved(true);
+            if (defaultOpened) {
+                // Trigger initial load since openDropdown doesn't trigger the callback
+                setOffset(0);
+                setMoreDataExists(true);
+                loadOptions(false).then(() => {
+                    combobox.openDropdown();
+                });
+            }
             return;
         }
 

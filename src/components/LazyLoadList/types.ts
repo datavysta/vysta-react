@@ -94,7 +94,14 @@ export interface LazyLoadListProps<T extends object> {
     /** Disable the initial value load query. Useful when the display value matches the key or when you don't need to load additional data. */
     disableInitialValueLoad?: boolean;
 
+    /** Whether the list should be opened by default */
+    defaultOpened?: boolean;
+
+    /** Styles for the list components in the format of Mantine's theme */
     styles?: LazyLoadListStyles;
+
+    /** Whether to automatically focus the search input when dropdown opens */
+    autoSearchInputFocus?: boolean;
 }
 
 export interface LoaderResult<T> {

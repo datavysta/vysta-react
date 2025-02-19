@@ -4,7 +4,6 @@ import { VystaClient } from '@datavysta/vysta-client';
 import { CustomerService } from '../services/CustomerService';
 import { Customer } from '../types/Customer';
 import { ColDef } from 'ag-grid-community';
-import { ExampleToolbar } from './ExampleToolbar';
 import './CustomerGrid.css';
 import { Modal, Button } from '@mantine/core';
 import Condition from '../../../src/components/Models/Condition';
@@ -15,19 +14,11 @@ import { FieldComponentProvider } from '../../../src/components/datavistas/Field
 
 interface CustomerGridProps {
     client: VystaClient;
-    onShowProducts: () => void;
-    onShowOrders: () => void;
-    onShowFilter: () => void;
-    onShowLazyLoadList: () => void;
     tick: number;
 }
 
 export function CustomerGrid({ 
-    client, 
-    onShowProducts, 
-    onShowOrders, 
-    onShowFilter,
-    onShowLazyLoadList,
+    client,
     tick 
 }: CustomerGridProps) {
     const customers = useMemo(() => new CustomerService(client), [client]);
@@ -108,14 +99,6 @@ export function CustomerGrid({
 
     return (
         <div className="example-container">
-            <ExampleToolbar 
-                onShowProducts={onShowProducts}
-                onShowCustomers={() => {}}
-                onShowOrders={onShowOrders}
-                onShowFilter={onShowFilter}
-                onShowLazyLoadList={onShowLazyLoadList}
-                currentView="customers"
-            />
             <div className="grid-container">
                 <DataGrid<Customer>
                     title="Customers"
@@ -138,21 +121,21 @@ export function CustomerGrid({
                     conditions={conditions}
                     toolbarItems={toolbarItems}
                 />
+                <Modal 
+                    opened={showFilterModal} 
+                    onClose={() => setShowFilterModal(false)}
+                    title="Filter Customers"
+                    size="90dvw"
+                >
+                    <FieldComponentProvider>
+                        <FilterPanel
+                            conditions={conditions}
+                            onApply={handleApplyFilter}
+                            filterDefinitions={filterDefinitions}
+                        />
+                    </FieldComponentProvider>
+                </Modal>
             </div>
-            <Modal 
-                opened={showFilterModal} 
-                onClose={() => setShowFilterModal(false)}
-                title="Filter Customers"
-                size="90dvw"
-            >
-                <FieldComponentProvider>
-                    <FilterPanel
-                        conditions={conditions}
-                        onApply={handleApplyFilter}
-                        filterDefinitions={filterDefinitions}
-                    />
-                </FieldComponentProvider>
-            </Modal>
         </div>
     );
 } 

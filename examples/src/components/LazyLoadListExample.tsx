@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { LazyLoadList } from '../../../src/components/LazyLoadList/LazyLoadList';
 import { VystaClient } from '@datavysta/vysta-client';
-import { ExampleToolbar } from './ExampleToolbar';
 import { ProductService } from '../services/ProductService';
 import { CustomerService } from '../services/CustomerService';
 import { OrderService } from '../services/OrderService';
@@ -12,19 +11,11 @@ import { Stack } from '@mantine/core';
 
 interface LazyLoadListExampleProps {
     client: VystaClient;
-    onShowProducts: () => void;
-    onShowCustomers: () => void;
-    onShowOrders: () => void;
-    onShowFilter: () => void;
     tick: number;
 }
 
 export function LazyLoadListExample({
     client,
-    onShowProducts,
-    onShowCustomers,
-    onShowOrders,
-    onShowFilter,
     tick
 }: LazyLoadListExampleProps) {
     const [selectedProductId, setSelectedProductId] = useState<string | null>("1");
@@ -38,15 +29,6 @@ export function LazyLoadListExample({
 
     return (
         <div>
-            <ExampleToolbar
-                currentView="lazyloadlist"
-                onShowProducts={onShowProducts}
-                onShowCustomers={onShowCustomers}
-                onShowOrders={onShowOrders}
-                onShowFilter={onShowFilter}
-                onShowLazyLoadList={() => {}}
-            />
-            
             <div style={{ maxWidth: '400px', padding: '20px' }}>
                 <h2>LazyLoadList Example</h2>
                 <Stack gap="md">

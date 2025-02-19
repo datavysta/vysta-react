@@ -2,29 +2,23 @@ import React, { useMemo, useState } from 'react';
 import { DataGrid } from '@datavysta/vysta-react';
 import { VystaClient } from '@datavysta/vysta-client';
 import { OrderService } from '../services/OrderService';
+import { CustomerService } from '../services/CustomerService';
 import { Order } from '../types/Order';
 import { ColDef, GridApi } from 'ag-grid-community';
-import { ExampleToolbar } from './ExampleToolbar';
+import { EditableFieldType } from '../../../src/components/DataGrid/types';
 import './OrderGrid.css';
 
 interface OrderGridProps {
     client: VystaClient;
-    onShowProducts: () => void;
-    onShowCustomers: () => void;
-    onShowFilter: () => void;
-    onShowLazyLoadList: () => void;
     tick: number;
 }
 
 export function OrderGrid({ 
     client, 
-    onShowProducts, 
-    onShowCustomers, 
-    onShowFilter,
-    onShowLazyLoadList,
     tick 
 }: OrderGridProps) {
     const orders = useMemo(() => new OrderService(client), [client]);
+    const customers = useMemo(() => new CustomerService(client), [client]);
     const [logs, setLogs] = useState<string[]>([]);
     const [useFilter, setUseFilter] = useState(false);
     const [useInputProps, setUseInputProps] = useState(false);
@@ -73,14 +67,6 @@ export function OrderGrid({
 
     return (
         <div className="example-container">
-            <ExampleToolbar 
-                onShowProducts={onShowProducts}
-                onShowCustomers={onShowCustomers}
-                onShowOrders={() => {}}
-                onShowFilter={onShowFilter}
-                onShowLazyLoadList={onShowLazyLoadList}
-                currentView="orders"
-            />
             <div style={{ margin: '10px' }}>
                 <button onClick={() => setUseFilter(prev => !prev)} style={{ marginRight: '10px' }}>
                     Toggle Filter: {useFilter ? 'ON' : 'OFF'}
@@ -116,6 +102,17 @@ export function OrderGrid({
                     repository={orders}
                     columnDefs={columnDefs}
                     getRowId={(order) => order.orderId.toString()}
+                    editableFields={{
+                        customerId: {
+                            dataType: EditableFieldType.List,
+                            listService: customers,
+                            displayColumn: 'customerId',
+                            clearable: false,
+                            listOptions: {
+                                defaultOpened: true
+                            }
+                        }
+                    }}
                     gridOptions={{
                         alwaysShowVerticalScroll: true,
                     }}
