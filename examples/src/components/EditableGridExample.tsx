@@ -4,6 +4,7 @@ import { VystaClient } from '@datavysta/vysta-client';
 import { ProductService } from '../services/ProductService';
 import { Product } from '../types/Product';
 import { ColDef } from 'ag-grid-community';
+import { EditableFieldType } from '../../../src/components/DataGrid/types';
 import './EditableGridExample.css';
 
 interface EditableGridExampleProps {
@@ -22,23 +23,19 @@ export function EditableGridExample({
             field: 'productId',
             headerName: 'ID',
             width: 100,
-            initialSort: 'asc',
-            editable: false
+            initialSort: 'asc'
         },
         { 
             field: 'productName',
-            headerName: 'Name',
-            editable: true
+            headerName: 'Name'
         },
         { 
             field: 'unitPrice',
-            headerName: 'Price',
-            editable: true
+            headerName: 'Price'
         },
         { 
             field: 'unitsInStock',
-            headerName: 'Stock',
-            editable: true
+            headerName: 'Stock'
         }
     ], []);
 
@@ -51,7 +48,28 @@ export function EditableGridExample({
                     repository={productService}
                     columnDefs={columnDefs}
                     getRowId={(data) => data.productId + ""}
-
+                    editableFields={{
+                        productName: {
+                            dataType: EditableFieldType.Text
+                        },
+                        unitPrice: {
+                            dataType: EditableFieldType.Number,
+                            numberOptions: {
+                                min: 0,
+                                decimalScale: 2,
+                                prefix: '$',
+                                hideControls: true
+                            }
+                        },
+                        unitsInStock: {
+                            dataType: EditableFieldType.Number,
+                            numberOptions: {
+                                min: 0,
+                                decimalScale: 0,
+                                hideControls: true
+                            }
+                        }
+                    }}
                     tick={tick}
                 />
             </div>

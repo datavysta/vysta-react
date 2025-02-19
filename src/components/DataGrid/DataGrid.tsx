@@ -19,6 +19,11 @@ import {FileType} from '@datavysta/vysta-client';
 import moduleStyles from './DataGrid.module.css';
 import type Condition from '../Models/Condition';
 import { EditableTextCell } from './EditableTextCell';
+import { EditableFieldType } from './types';
+import type { EditableFieldConfig } from './types';
+import { EditableNumberCell } from './cells/EditableNumberCell';
+import { EditableDateCell } from './cells/EditableDateCell';
+import { EditableListCell } from './cells/EditableListCell';
 
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
@@ -69,6 +74,9 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	tick?: number;
 	styles?: DataGridStyles;
 	editService?: IDataService<T, U>;
+	editableFields?: {
+		[K in keyof U]?: EditableFieldConfig;
+	};
 }
 
 export function DataGrid<T extends object, U extends T = T>({
@@ -92,6 +100,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	                                           tick = 0,
 	                                           styles = {},
 	                                           editService,
+	                                           editableFields,
                                            }: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
@@ -183,8 +192,8 @@ export function DataGrid<T extends object, U extends T = T>({
 	}, [repository, columnDefs, filters, conditions, inputProperties, title]);
 
 	const hasEditableColumns = useMemo(() => 
-		columnDefs.some(col => col.editable), 
-		[columnDefs]
+		editableFields !== undefined && Object.keys(editableFields).length > 0,
+		[editableFields]
 	);
 
 	if (hasEditableColumns && !editService && !('update' in repository)) {
@@ -193,11 +202,26 @@ export function DataGrid<T extends object, U extends T = T>({
 
 	const modifiedColDefs = useMemo(() => {
 		const cols = columnDefs.map(col => {
-			if (col.editable) {
+			if (col.field && editableFields?.[(col.field as unknown) as keyof U]) {
+				const fieldConfig = editableFields[(col.field as unknown) as keyof U];
+				const cellEditor = (() => {
+					switch (fieldConfig?.dataType) {
+						case EditableFieldType.Number:
+							return EditableNumberCell;
+						case EditableFieldType.Date:
+							return EditableDateCell;
+						case EditableFieldType.List:
+							return EditableListCell;
+						case EditableFieldType.Text:
+						default:
+							return EditableTextCell;
+					}
+				})();
+
 				return {
 					...col,
 					editable: true,
-					cellEditor: EditableTextCell,
+					cellEditor,
 					cellEditorParams: (params: ICellRendererParams<U>) => ({
 						onSave: async (newValue: string) => {
 							if (!col.field || !params.data) return;
@@ -211,7 +235,8 @@ export function DataGrid<T extends object, U extends T = T>({
 
 							params.api.stopEditing();
 							params.node.setDataValue(col.field, newValue);
-						}
+						},
+						...fieldConfig
 					})
 				};
 			}
@@ -229,7 +254,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 
 		return cols;
-	}, [columnDefs, supportDelete, editService, repository, getRowId]);
+	}, [columnDefs, supportDelete, editService, repository, getRowId, editableFields]);
 
 	const dataSource = {
 		getRows: async (params: IGetRowsParams) => {
