@@ -11,9 +11,11 @@ interface ListConfig {
 export class EditableListCell extends BaseEditableCell {
     render() {
         const { listService, displayColumn, clearable } = this.props as unknown as ListConfig;
-        
+        const options = (this.props as any).listOptions || {};
+
         return (
             <LazyLoadList
+                {...options}
                 repository={listService}
                 value={this.state.value}
                 onChange={(newValue) => {

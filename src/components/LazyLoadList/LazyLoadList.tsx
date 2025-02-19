@@ -21,6 +21,7 @@ export function LazyLoadList<T extends object>({
     styles = {},
     clearable = true,
     disableInitialValueLoad = false,
+    defaultOpened = false
 }: LazyLoadListProps<T>) {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -55,6 +56,7 @@ export function LazyLoadList<T extends object>({
             combobox.updateSelectedOptionIndex('active');
             setTimeout(() => searchInputRef.current?.focus(), 0);
         },
+        defaultOpened
     });
 
     // Show loading when we have a value but no option for it yet

@@ -2,8 +2,10 @@ import React, { useMemo, useState } from 'react';
 import { DataGrid } from '@datavysta/vysta-react';
 import { VystaClient } from '@datavysta/vysta-client';
 import { OrderService } from '../services/OrderService';
+import { CustomerService } from '../services/CustomerService';
 import { Order } from '../types/Order';
 import { ColDef, GridApi } from 'ag-grid-community';
+import { EditableFieldType } from '../../../src/components/DataGrid/types';
 import './OrderGrid.css';
 
 interface OrderGridProps {
@@ -16,6 +18,7 @@ export function OrderGrid({
     tick 
 }: OrderGridProps) {
     const orders = useMemo(() => new OrderService(client), [client]);
+    const customers = useMemo(() => new CustomerService(client), [client]);
     const [logs, setLogs] = useState<string[]>([]);
     const [useFilter, setUseFilter] = useState(false);
     const [useInputProps, setUseInputProps] = useState(false);
@@ -99,6 +102,17 @@ export function OrderGrid({
                     repository={orders}
                     columnDefs={columnDefs}
                     getRowId={(order) => order.orderId.toString()}
+                    editableFields={{
+                        customerId: {
+                            dataType: EditableFieldType.List,
+                            listService: customers,
+                            displayColumn: 'companyName',
+                            clearable: false,
+                            listOptions: {
+                                defaultOpened: true
+                            }
+                        }
+                    }}
                     gridOptions={{
                         alwaysShowVerticalScroll: true,
                     }}
