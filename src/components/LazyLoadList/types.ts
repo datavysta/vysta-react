@@ -99,6 +99,9 @@ export interface LazyLoadListProps<T extends object> {
 
     /** Styles for the list components in the format of Mantine's theme */
     styles?: LazyLoadListStyles;
+
+    /** Whether to automatically focus the search input when dropdown opens */
+    autoSearchInputFocus?: boolean;
 }
 
 export interface LoaderResult<T> {

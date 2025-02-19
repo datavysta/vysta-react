@@ -106,7 +106,7 @@ export function OrderGrid({
                         customerId: {
                             dataType: EditableFieldType.List,
                             listService: customers,
-                            displayColumn: 'companyName',
+                            displayColumn: 'customerId',
                             clearable: false,
                             listOptions: {
                                 defaultOpened: true

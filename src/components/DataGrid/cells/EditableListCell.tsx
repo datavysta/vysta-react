@@ -27,7 +27,7 @@ export class EditableListCell extends BaseEditableCell {
                 }}
                 displayColumn={displayColumn}
                 clearable={clearable}
-
+                autoSearchInputFocus={false}
             />
         );
     }
