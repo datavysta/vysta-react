@@ -235,6 +235,8 @@ export function DataGrid<T extends object, U extends T = T>({
 
 							params.api.stopEditing();
 							params.node.setDataValue(col.field, newValue);
+
+							params.api.refreshInfiniteCache();
 						},
 						...fieldConfig
 					})
