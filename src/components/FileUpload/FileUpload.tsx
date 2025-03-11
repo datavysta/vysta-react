@@ -19,15 +19,15 @@ type Meta = Record<string, never>;
 type Body = Record<string, never>;
 
 export function FileUpload({ client, fileService, onUploadSuccess }: FileUploadProps) {
-    const uppy = React.useMemo(() => {
-        return new Uppy<Meta, Body>()
-            .use(Tus, {});
-    }, []);
+    const [uppy, setUppy] = React.useState<Uppy<Meta, Body> | null>(null);
 
     useEffect(() => {
+        const uppyInstance = new Uppy<Meta, Body>().use(Tus, {});
+        setUppy(uppyInstance);
+
         const setupUppy = async () => {
             const tusOptions = await fileService.getTusXhrOptions();
-            const tusPlugin = uppy.getPlugin('Tus');
+            const tusPlugin = uppyInstance.getPlugin('Tus');
             if (tusPlugin) {
                 tusPlugin.setOptions(tusOptions);
             }
@@ -35,24 +35,29 @@ export function FileUpload({ client, fileService, onUploadSuccess }: FileUploadP
 
         setupUppy();
 
-        uppy.on('upload-success', (file, _) => {
-            if (!file?.name || !file?.id) return;
+        uppyInstance.on('upload-success', (file, response) => {
+            if (!file?.name || !response.uploadURL) return;
 
-            console.log("Uppy file response", file.id);
+            const fileId = response.uploadURL.split('/').pop();
+            if (!fileId) return;
+
+            console.log('Extracted file ID:', fileId);
             
             fileService.registerUploadedFile({
                 path: '/',
-                id: file.id,
+                id: fileId,
                 name: file.name
             }).catch(console.error);
             
-            onUploadSuccess?.(file.id, file.name);
+            onUploadSuccess?.(fileId, file.name);
         });
 
         return () => {
-            uppy.cancelAll();
+            uppyInstance.cancelAll();
         };
-    }, [client, fileService, onUploadSuccess, uppy]);
+    }, [client, fileService, onUploadSuccess]);
+
+    if (!uppy) return null;
 
     return (
         <div>
