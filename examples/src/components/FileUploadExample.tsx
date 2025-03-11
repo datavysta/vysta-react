@@ -21,7 +21,6 @@ export function FileUploadExample({
                 <h1>File Upload Example</h1>
                 <div className="upload-container">
                     <FileUpload
-                        client={client}
                         fileService={fileService}
                         onUploadSuccess={(fileId, fileName) => {
                             console.log(`File uploaded: ${fileName} with ID: ${fileId}`);

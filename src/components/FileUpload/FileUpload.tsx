@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { VystaClient, VystaFileService } from '@datavysta/vysta-client';
+import { VystaFileService } from '@datavysta/vysta-client';
 import { DragDrop, StatusBar } from '@uppy/react';
 import Uppy from '@uppy/core';
 import Tus from '@uppy/tus';
@@ -10,7 +10,6 @@ import '@uppy/progress-bar/dist/style.css';
 import '@uppy/file-input/dist/style.css';
 
 interface FileUploadProps {
-    client: VystaClient;
     fileService: VystaFileService;
     onUploadSuccess?: (fileId: string, fileName: string) => void;
     filename?: string;
@@ -19,7 +18,7 @@ interface FileUploadProps {
 type Meta = Record<string, never>;
 type Body = Record<string, never>;
 
-export function FileUpload({ client, fileService, onUploadSuccess, filename }: FileUploadProps) {
+export function FileUpload({ fileService, onUploadSuccess, filename }: FileUploadProps) {
     const [uppy, setUppy] = React.useState<Uppy<Meta, Body> | null>(null);
 
     useEffect(() => {
@@ -58,7 +57,7 @@ export function FileUpload({ client, fileService, onUploadSuccess, filename }: F
         return () => {
             uppyInstance.cancelAll();
         };
-    }, [client, fileService, onUploadSuccess, filename]);
+    }, [fileService, onUploadSuccess, filename]);
 
     if (!uppy) return null;
 
