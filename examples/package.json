@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@datavysta/vysta-client": "^1.0.19",
+    "@datavysta/vysta-client": "^1.0.21",
     "@datavysta/vysta-react": "file:..",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

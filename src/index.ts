@@ -1,4 +1,5 @@
 export { DataGrid } from './components/DataGrid/DataGrid';
+export { FileUpload } from './components/FileUpload/FileUpload';
 export type { DataGridProps, DataGridStyles } from './components/DataGrid/DataGrid';
 export { default as FilterPanel } from './components/Filter/FilterPanel';
 export type { FilterDefinitionsByField } from './components/Filter/FilterDefinitionsByField';
