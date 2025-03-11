@@ -13,12 +13,13 @@ interface FileUploadProps {
     client: VystaClient;
     fileService: VystaFileService;
     onUploadSuccess?: (fileId: string, fileName: string) => void;
+    filename?: string;
 }
 
 type Meta = Record<string, never>;
 type Body = Record<string, never>;
 
-export function FileUpload({ client, fileService, onUploadSuccess }: FileUploadProps) {
+export function FileUpload({ client, fileService, onUploadSuccess, filename }: FileUploadProps) {
     const [uppy, setUppy] = React.useState<Uppy<Meta, Body> | null>(null);
 
     useEffect(() => {
@@ -43,19 +44,21 @@ export function FileUpload({ client, fileService, onUploadSuccess }: FileUploadP
 
             console.log('Extracted file ID:', fileId);
             
+            const finalFileName = filename || file.name;
+            
             fileService.registerUploadedFile({
                 path: '/',
                 id: fileId,
-                name: file.name
+                name: finalFileName
             }).catch(console.error);
             
-            onUploadSuccess?.(fileId, file.name);
+            onUploadSuccess?.(fileId, finalFileName);
         });
 
         return () => {
             uppyInstance.cancelAll();
         };
-    }, [client, fileService, onUploadSuccess]);
+    }, [client, fileService, onUploadSuccess, filename]);
 
     if (!uppy) return null;
 
