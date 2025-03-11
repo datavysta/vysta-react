@@ -6,9 +6,10 @@ import { OrderGrid } from './OrderGrid';
 import { FilterExample } from './FilterExample';
 import { LazyLoadListExample } from './LazyLoadListExample';
 import { EditableGridExample } from './EditableGridExample';
+import { FileUploadExample } from './FileUploadExample';
 import './PageController.css';
 
-export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid';
+export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'fileupload';
 
 interface PageControllerProps {
     client: VystaClient;
@@ -56,6 +57,12 @@ function Navigation({ currentView, onViewChange }: { currentView: PageView; onVi
             >
                 Editable Grid
             </button>
+            <button 
+                onClick={() => onViewChange('fileupload')}
+                disabled={currentView === 'fileupload'}
+            >
+                File Upload
+            </button>
         </div>
     );
 }
@@ -63,7 +70,8 @@ function Navigation({ currentView, onViewChange }: { currentView: PageView; onVi
 export function PageController({ client, currentView, onViewChange, tick }: PageControllerProps) {
     const commonProps = {
         client,
-        tick
+        tick,
+        onViewChange
     };
 
     return (
@@ -84,6 +92,8 @@ export function PageController({ client, currentView, onViewChange, tick }: Page
                             return <LazyLoadListExample {...commonProps} />;
                         case 'editablegrid':
                             return <EditableGridExample {...commonProps} />;
+                        case 'fileupload':
+                            return <FileUploadExample {...commonProps} />;
                         default:
                             return null;
                     }
