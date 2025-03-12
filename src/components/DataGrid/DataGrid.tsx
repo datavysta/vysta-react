@@ -109,6 +109,15 @@ export function DataGrid<T extends object, U extends T = T>({
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
 	const dataFirstLoadedRef = useRef(false);
+	const isMountedRef = useRef(true);
+
+	// Track component mount status
+	useEffect(() => {
+		isMountedRef.current = true;
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
 
 	const defaultColDef = useMemo<ColDef>(() => ({
 		sortable: true,
@@ -303,6 +312,9 @@ export function DataGrid<T extends object, U extends T = T>({
 					recordCount: startRow === 0
 				});
 
+				// Guard against updates after unmounting
+				if (!isMountedRef.current) return;
+
 				if (startRow === 0 && result.count !== undefined) {
 					setLastKnownRowCount(result.count);
 				}
@@ -310,17 +322,19 @@ export function DataGrid<T extends object, U extends T = T>({
 				const lastRow = result.data.length < limit ? startRow + result.data.length : undefined;
 				params.successCallback(result.data, lastRow);
 
-				if (!dataFirstLoadedRef.current && gridApiRef.current) {
+				if (!dataFirstLoadedRef.current && gridApiRef.current && isMountedRef.current) {
 					onDataFirstLoaded?.(gridApiRef.current);
 					dataFirstLoadedRef.current = true;
 				}
 
-				if (gridApiRef.current && onDataLoaded) {
+				if (gridApiRef.current && onDataLoaded && isMountedRef.current) {
 					onDataLoaded(gridApiRef.current, result.data);
 				}
 			} catch (error) {
 				console.error('Error fetching rows:', error);
-				params.failCallback();
+				if (isMountedRef.current) {
+					params.failCallback();
+				}
 			}
 		}
 	};
@@ -355,16 +369,20 @@ export function DataGrid<T extends object, U extends T = T>({
 	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns, noRowsComponent, loadingComponent]);
 
 	useEffect(() => {
-		dataFirstLoadedRef.current = false;
-		gridApiRef.current?.updateGridOptions({datasource: dataSource});
+		if (isMountedRef.current) {
+			dataFirstLoadedRef.current = false;
+			gridApiRef.current?.updateGridOptions({datasource: dataSource});
+		}
 	}, [tick, filters, conditions, inputProperties]);
 
 	const onGridReady = (params: any) => {
-		gridApiRef.current = params.api;
-		params.api.updateGridOptions({datasource: dataSource});
+		if (isMountedRef.current) {
+			gridApiRef.current = params.api;
+			params.api.updateGridOptions({datasource: dataSource});
 
-		if (typeof gridOptions?.onGridReady === 'function') {
-			gridOptions.onGridReady(params);
+			if (typeof gridOptions?.onGridReady === 'function') {
+				gridOptions.onGridReady(params);
+			}
 		}
 	};
 
