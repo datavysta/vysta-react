@@ -326,20 +326,23 @@ export function DataGrid<T extends object, U extends T = T>({
 	}, [getRowId]);
 
 	const actualGridOptions = useMemo<GridOptions<U>>(() => {
+		const { components: gridOptionsComponents, ...restGridOptions } = gridOptions || {};
+		
 		return {
+			...restGridOptions,
 			columnDefs: modifiedColDefs,
 			rowModelType: 'infinite',
 			cacheBlockSize: 50,
 			paginationPageSize: 50,
 			defaultColDef,
 			components: {
+				...(gridOptionsComponents || {}),
 				actionsCellRenderer,
 				EditableTextCell
 			},
 			singleClickEdit: hasEditableColumns,
 			stopEditingWhenCellsLoseFocus: hasEditableColumns,
 			getRowId: getRowIdHandler,
-			...gridOptions,
 		};
 	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns]);
 
