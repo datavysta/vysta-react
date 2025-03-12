@@ -14,19 +14,27 @@ interface FileUploadProps {
     onUploadSuccess?: (fileId: string, fileName: string) => void;
     filename?: string;
     allowedFileTypes?: string[];
+    autoProceed?: boolean;
 }
 
 type Meta = Record<string, never>;
 type Body = Record<string, never>;
 
-export function FileUpload({ fileService, onUploadSuccess, filename, allowedFileTypes }: FileUploadProps) {
+export function FileUpload({ 
+    fileService, 
+    onUploadSuccess, 
+    filename, 
+    allowedFileTypes,
+    autoProceed = false 
+}: FileUploadProps) {
     const [uppy, setUppy] = React.useState<Uppy<Meta, Body> | null>(null);
 
     useEffect(() => {
         const uppyInstance = new Uppy<Meta, Body>({
             restrictions: allowedFileTypes ? {
                 allowedFileTypes
-            } : undefined
+            } : undefined,
+            autoProceed
         }).use(Tus, {});
         
         setUppy(uppyInstance);
@@ -63,14 +71,14 @@ export function FileUpload({ fileService, onUploadSuccess, filename, allowedFile
         return () => {
             uppyInstance.cancelAll();
         };
-    }, [fileService, onUploadSuccess, filename, allowedFileTypes]);
+    }, [fileService, onUploadSuccess, filename, allowedFileTypes, autoProceed]);
 
     if (!uppy) return null;
 
     return (
         <div>
             <DragDrop uppy={uppy} />
-            <StatusBar uppy={uppy} hideUploadButton={false} />
+            <StatusBar uppy={uppy} hideUploadButton={!autoProceed} showProgressDetails={true} />
         </div>
     );
 } 

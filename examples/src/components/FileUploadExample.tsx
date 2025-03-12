@@ -27,6 +27,7 @@ export function FileUploadExample({
                         }}
                         filename={"jp.xlsx"}
                         allowedFileTypes={["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel", "text/csv"]}
+                        autoProceed={true}
                     />
                 </div>
             </div>
