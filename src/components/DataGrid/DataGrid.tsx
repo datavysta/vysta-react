@@ -77,6 +77,8 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	editableFields?: {
 		[K in keyof U]?: EditableFieldConfig;
 	};
+	noRowsComponent?: React.ComponentType<any>;
+	loadingComponent?: React.ComponentType<any>;
 }
 
 export function DataGrid<T extends object, U extends T = T>({
@@ -101,6 +103,8 @@ export function DataGrid<T extends object, U extends T = T>({
 	                                           styles = {},
 	                                           editService,
 	                                           editableFields,
+	                                           noRowsComponent,
+	                                           loadingComponent,
                                            }: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
@@ -343,8 +347,12 @@ export function DataGrid<T extends object, U extends T = T>({
 			singleClickEdit: hasEditableColumns,
 			stopEditingWhenCellsLoseFocus: hasEditableColumns,
 			getRowId: getRowIdHandler,
+			noRowsOverlay: noRowsComponent,
+			suppressNoRowsOverlay: !noRowsComponent,
+			loadingOverlay: loadingComponent,
+			suppressLoadingOverlay: !loadingComponent,
 		};
-	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns]);
+	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns, noRowsComponent, loadingComponent]);
 
 	useEffect(() => {
 		dataFirstLoadedRef.current = false;

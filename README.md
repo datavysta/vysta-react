@@ -197,6 +197,8 @@ This will enable Mantine-styled versions of Vysta components while maintaining a
 | `tick` | `number` | `0` | Trigger grid refresh when incremented |
 | `theme` | `Theme \| 'legacy'` | `undefined` | AG Grid theme configuration |
 | `styles` | `DataGridStyles` | `{}` | Custom styles for grid elements |
+| `noRowsComponent` | `React.ComponentType<any>` | `undefined` | Custom component to display when no rows are found |
+| `loadingComponent` | `React.ComponentType<any>` | `undefined` | Custom component to display during loading |
 
 ### Styling
 
