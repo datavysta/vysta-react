@@ -26,6 +26,15 @@ export function LazyLoadList<T extends object>({
 }: LazyLoadListProps<T>) {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
+    const isMountedRef = useRef(true);
+    
+    // Track component mount status
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
     
     const [search, setSearch] = useState('');
     const [debouncedSearch] = useDebouncedValue(search, 300);
@@ -56,34 +65,42 @@ export function LazyLoadList<T extends object>({
             }
             combobox.updateSelectedOptionIndex('active');
 
-            if (autoSearchInputFocus) {
-                setTimeout(() => searchInputRef.current?.focus(), 0);
+            if (autoSearchInputFocus && isMountedRef.current) {
+                setTimeout(() => {
+                    if (isMountedRef.current && searchInputRef.current) {
+                        searchInputRef.current.focus();
+                    }
+                }, 0);
             }
         }
     });
 
     // Show loading when we have a value but no option for it yet
     useEffect(() => {
-        if (!value) {
-            setLoading(false);
+        if (!value || !isMountedRef.current) {
+            if (isMountedRef.current) {
+                setLoading(false);
+            }
             return;
         }
         
         const hasValue = options.some(opt => String(opt[effectivePrimaryKey]) === value);
         const hasTempValue = options.some(opt => (opt as any).__isTemp && String(opt[effectivePrimaryKey]) === value);
         
-        setLoading(!hasValue && !hasTempValue);
+        if (isMountedRef.current) {
+            setLoading(!hasValue && !hasTempValue);
+        }
     }, [value, options, effectivePrimaryKey]);
 
     // Handle value changes and add temporary option if needed
     useEffect(() => {
-        if (!value) return;
+        if (!value || !isMountedRef.current) return;
 
         const hasValue = options.some(opt => String(opt[effectivePrimaryKey]) === value);
         const hasTempValue = options.some(opt => (opt as any).__isTemp && String(opt[effectivePrimaryKey]) === value);
         
         // Add temporary option if value not found and we're not querying for details
-        if (!hasValue && !hasTempValue && (disableInitialValueLoad || displayColumn === effectivePrimaryKey)) {
+        if (!hasValue && !hasTempValue && (disableInitialValueLoad || displayColumn === effectivePrimaryKey) && isMountedRef.current) {
             const tempItem = {
                 [effectivePrimaryKey]: value,
                 [displayColumn]: value,
@@ -95,21 +112,25 @@ export function LazyLoadList<T extends object>({
 
     // Load value details if provided
     useEffect(() => {
-        if (!value || valueResolved) return;
+        if (!value || valueResolved || !isMountedRef.current) return;
         
         // Skip loading if disabled or if display matches key
         if (disableInitialValueLoad || 
             !displayColumn || 
             displayColumn === effectivePrimaryKey || 
             value === displayValue) {
-            setValueResolved(true);
-            if (defaultOpened) {
-                // Trigger initial load since openDropdown doesn't trigger the callback
-                setOffset(0);
-                setMoreDataExists(true);
-                loadOptions(false).then(() => {
-                    combobox.openDropdown();
-                });
+            if (isMountedRef.current) {
+                setValueResolved(true);
+                if (defaultOpened) {
+                    // Trigger initial load since openDropdown doesn't trigger the callback
+                    setOffset(0);
+                    setMoreDataExists(true);
+                    loadOptions(false).then(() => {
+                        if (isMountedRef.current) {
+                            combobox.openDropdown();
+                        }
+                    });
+                }
             }
             return;
         }
@@ -120,7 +141,9 @@ export function LazyLoadList<T extends object>({
             String(opt[effectivePrimaryKey]) === value
         );
         if (valueInResults) {
-            setValueResolved(true);
+            if (isMountedRef.current) {
+                setValueResolved(true);
+            }
             return;
         }
 
@@ -129,22 +152,24 @@ export function LazyLoadList<T extends object>({
 
     // Load options when search changes or tick changes
     useEffect(() => {
-        if (error || !combobox.dropdownOpened) return;
+        if (error || !combobox.dropdownOpened || !isMountedRef.current) return;
         
-        setOffset(0);
-        setMoreDataExists(true);
-        loadOptions(false);
+        if (isMountedRef.current) {
+            setOffset(0);
+            setMoreDataExists(true);
+            loadOptions(false);
+        }
     }, [debouncedSearch, effectiveFilters, tick]);
 
     // Separate effect for dropdown open state
     useEffect(() => {
-        if (error || !combobox.dropdownOpened) return;
+        if (error || !combobox.dropdownOpened || !isMountedRef.current) return;
         
         loadOptions(false);
     }, [combobox.dropdownOpened]);
 
     const loadValueData = async () => {
-        if (!value) return;
+        if (!value || !isMountedRef.current) return;
 
         try {
             let valueData: T;
@@ -167,6 +192,8 @@ export function LazyLoadList<T extends object>({
                 valueData = result.data[0];
             }
 
+            if (!isMountedRef.current) return;
+
             // Add a temporary flag to the resolved item
             const tempItem = {
                 ...valueData,
@@ -182,13 +209,15 @@ export function LazyLoadList<T extends object>({
             setResolvedItems(new Set([value]));
             setValueResolved(true);
         } catch (error) {
+            if (!isMountedRef.current) return;
+            
             console.error('Error loading value data:', error);
             setError(error instanceof Error ? error.message : 'Failed to load value data');
         }
     };
 
     const loadOptions = useCallback(async (incremental: boolean) => {
-        if (loading || (!incremental && !combobox.dropdownOpened)) return;
+        if (loading || (!incremental && !combobox.dropdownOpened) || !isMountedRef.current) return;
 
         setLoading(true);
         setError(null);
@@ -205,6 +234,8 @@ export function LazyLoadList<T extends object>({
                 inputProperties,
                 recordCount: true
             });
+
+            if (!isMountedRef.current) return;
 
             // If this is a fresh load and we have a selected value, ensure it stays in the options
             let newData = result.data;
@@ -245,12 +276,16 @@ export function LazyLoadList<T extends object>({
             setOffset(newOffset);
             setMoreDataExists(hasMoreData);
         } catch (error) {
+            if (!isMountedRef.current) return;
+
             console.error('Error loading options:', error);
             setError(error instanceof Error ? error.message : 'Failed to load options');
             setOptions(selectedOption ? [selectedOption] : []);
             setMoreDataExists(false);
         } finally {
-            setLoading(false);
+            if (isMountedRef.current) {
+                setLoading(false);
+            }
         }
     }, [
         loading,
@@ -271,7 +306,7 @@ export function LazyLoadList<T extends object>({
     ]);
 
     const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-        if (error || loading) return;
+        if (error || loading || !isMountedRef.current) return;
         
         const target = event.target as HTMLElement;
         const bottom = Math.abs(
