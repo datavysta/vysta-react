@@ -25,6 +25,8 @@ export function FileUploadExample({
                         onUploadSuccess={(fileId, fileName) => {
                             console.log(`File uploaded: ${fileName} with ID: ${fileId}`);
                         }}
+                        filename={"jp.xlsx"}
+                        allowedFileTypes={["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel", "text/csv"]}
                     />
                 </div>
             </div>

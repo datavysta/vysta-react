@@ -13,16 +13,22 @@ interface FileUploadProps {
     fileService: VystaFileService;
     onUploadSuccess?: (fileId: string, fileName: string) => void;
     filename?: string;
+    allowedFileTypes?: string[];
 }
 
 type Meta = Record<string, never>;
 type Body = Record<string, never>;
 
-export function FileUpload({ fileService, onUploadSuccess, filename }: FileUploadProps) {
+export function FileUpload({ fileService, onUploadSuccess, filename, allowedFileTypes }: FileUploadProps) {
     const [uppy, setUppy] = React.useState<Uppy<Meta, Body> | null>(null);
 
     useEffect(() => {
-        const uppyInstance = new Uppy<Meta, Body>().use(Tus, {});
+        const uppyInstance = new Uppy<Meta, Body>({
+            restrictions: allowedFileTypes ? {
+                allowedFileTypes
+            } : undefined
+        }).use(Tus, {});
+        
         setUppy(uppyInstance);
 
         const setupUppy = async () => {
@@ -57,7 +63,7 @@ export function FileUpload({ fileService, onUploadSuccess, filename }: FileUploa
         return () => {
             uppyInstance.cancelAll();
         };
-    }, [fileService, onUploadSuccess, filename]);
+    }, [fileService, onUploadSuccess, filename, allowedFileTypes]);
 
     if (!uppy) return null;
 
