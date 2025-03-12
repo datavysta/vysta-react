@@ -365,6 +365,45 @@ function OrderSelector() {
 }
 ```
 
+## FileUpload Component
+
+A file upload component that integrates with Vysta's file service and uses Uppy for the upload interface.
+
+```typescript
+import { FileUpload } from '@datavysta/vysta-react';
+
+function MyComponent() {
+    return (
+        <FileUpload
+            fileService={fileService}
+            allowedFileTypes={['.jpg', '.png', 'image/*']}
+            filename="custom-name.jpg"
+            autoProceed={true}
+            onUploadSuccess={(fileId, fileName) => {
+                console.log(`File uploaded: ${fileName} with ID: ${fileId}`);
+            }}
+        />
+    );
+}
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `fileService` | `VystaFileService` | Required | The Vysta file service instance to handle uploads |
+| `onUploadSuccess` | `(fileId: string, fileName: string) => void` | - | Callback when file upload completes successfully |
+| `filename` | `string` | - | Optional custom filename to use instead of the uploaded file's name |
+| `allowedFileTypes` | `string[]` | - | Optional array of allowed file types (e.g., ['.jpg', 'image/*']) |
+| `autoProceed` | `boolean` | `false` | Whether to start upload automatically when files are selected |
+
+The component provides:
+- Drag and drop interface
+- File type restrictions
+- Upload progress bar
+- Automatic or manual upload triggering
+- Integration with Vysta's file service
+
 ## License
 
 MIT 
