@@ -23,6 +23,7 @@ export function OrderGrid({
     const [useFilter, setUseFilter] = useState(false);
     const [useInputProps, setUseInputProps] = useState(false);
     const [localTick, setLocalTick] = useState(0);
+    const [searchText, setSearchText] = useState('');
 
     const filters = useMemo(() => useFilter ? { employeeId: { eq: 1 } } : undefined, [useFilter]);
     const inputProperties = useMemo(() => useInputProps ? { test: 'value' } : undefined, [useInputProps]);
@@ -81,6 +82,22 @@ export function OrderGrid({
                     Clear Logs
                 </button>
             </div>
+            <div style={{ margin: '10px' }}>
+                <label htmlFor="searchInput" style={{ marginRight: '10px' }}>Search: </label>
+                <input 
+                    id="searchInput"
+                    type="text" 
+                    value={searchText} 
+                    onChange={(e) => setSearchText(e.target.value)}
+                    placeholder="Search orders..."
+                    style={{ 
+                        padding: '6px 10px',
+                        border: '1px solid #ccc', 
+                        borderRadius: '4px',
+                        width: '250px'
+                    }}
+                />
+            </div>
             <div style={{ 
                 margin: '10px',
                 padding: '10px', 
@@ -102,6 +119,7 @@ export function OrderGrid({
                     repository={orders}
                     columnDefs={columnDefs}
                     getRowId={(order) => order.orderId.toString()}
+                    wildcardSearch={searchText}
                     editableFields={{
                         customerId: {
                             dataType: EditableFieldType.List,

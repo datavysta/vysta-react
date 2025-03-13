@@ -60,6 +60,7 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	inputProperties?: {
 		[key: string]: string;
 	};
+	wildcardSearch?: string;
 	toolbarItems?: React.ReactNode;
 	onDataFirstLoaded?: (gridApi: GridApi<U>) => void;
 	/**
@@ -94,6 +95,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	                                           filters,
 	                                           conditions,
 	                                           inputProperties,
+	                                           wildcardSearch,
 	                                           toolbarItems,
 	                                           onDataFirstLoaded,
 	                                           onDataLoaded,
@@ -309,7 +311,8 @@ export function DataGrid<T extends object, U extends T = T>({
 					filters,
 					conditions,
 					inputProperties,
-					recordCount: startRow === 0
+					recordCount: startRow === 0,
+					q: wildcardSearch
 				});
 
 				// Guard against updates after unmounting

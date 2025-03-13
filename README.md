@@ -188,6 +188,7 @@ This will enable Mantine-styled versions of Vysta components while maintaining a
 | `supportDelete` | `boolean` | `false` | Show delete button in each row |
 | `deleteButton` | `(onDelete: () => void) => React.ReactNode` | `undefined` | Custom delete button renderer |
 | `filters` | `{ [K in keyof T]?: any }` | `undefined` | Vysta filters to apply. Should be memoized to prevent unnecessary reloads |
+| `wildcardSearch` | `string` | `undefined` | Text to use for wildcard search across fields (passed as `q` parameter) |
 | `inputProperties` | `{ [key: string]: any }` | `undefined` | Additional properties to pass to data source. Should be memoized to prevent unnecessary reloads |
 | `toolbarItems` | `React.ReactNode` | `undefined` | Custom toolbar items |
 | `onDataFirstLoaded` | `(gridApi: GridApi<T>) => void` | `undefined` | Callback when data first loads or when filters/inputProperties change |
