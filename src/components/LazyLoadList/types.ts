@@ -102,6 +102,11 @@ export interface LazyLoadListProps<T extends object> {
 
     /** Whether to automatically focus the search input when dropdown opens */
     autoSearchInputFocus?: boolean;
+
+    /** Whether to render the dropdown in a portal
+     * @default true
+     */
+    withinPortal?: boolean;
 }
 
 export interface LoaderResult<T> {

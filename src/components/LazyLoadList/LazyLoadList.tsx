@@ -22,7 +22,8 @@ export function LazyLoadList<T extends object>({
     clearable = true,
     disableInitialValueLoad = false,
     defaultOpened = false,
-    autoSearchInputFocus = true
+    autoSearchInputFocus = true,
+    withinPortal = true
 }: LazyLoadListProps<T>) {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -408,7 +409,7 @@ export function LazyLoadList<T extends object>({
     return (
         <Combobox
             store={combobox}
-            withinPortal={true}
+            withinPortal={withinPortal}
             onOptionSubmit={(val) => {
                 onChange(val);
                 combobox.closeDropdown();
