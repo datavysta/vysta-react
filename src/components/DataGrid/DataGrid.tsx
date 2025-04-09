@@ -273,6 +273,19 @@ export function DataGrid<T extends object, U extends T = T>({
 		return cols;
 	}, [columnDefs, supportDelete, editService, repository, getRowId, editableFields]);
 
+	const getFieldsFromColDefs = (colDefs: ColDef[]): string[] => {
+		return colDefs.reduce<string[]>((acc, col) => {
+			if (col.field && !col.field.startsWith('_')) {
+				acc.push(String(col.field));
+			}
+			const children = (col as any).children as ColDef[] | undefined;
+			if (children) {
+				acc.push(...getFieldsFromColDefs(children));
+			}
+			return acc;
+		}, []);
+	};
+
 	const dataSource = {
 		getRows: async (params: IGetRowsParams) => {
 			const {startRow, endRow, sortModel} = params;
@@ -287,21 +300,11 @@ export function DataGrid<T extends object, U extends T = T>({
 					}
 				}
 
-				const select = [...new Set(
-					columnDefs
-						.filter(col => col.field && !col.field.startsWith('_'))
-						.map(col => String(col.field) as keyof T)
-				)];
-
 				const primaryKey = (repository as any).primaryKey as keyof T | Array<keyof T>;
-				if (primaryKey) {
-					const keysToAdd = Array.isArray(primaryKey) ? primaryKey : [primaryKey];
-					for (const key of keysToAdd) {
-						if (!select.includes(key)) {
-							select.push(key);
-						}
-					}
-				}
+				const select = [...new Set([
+					...getFieldsFromColDefs(columnDefs),
+					...(primaryKey ? (Array.isArray(primaryKey) ? primaryKey : [primaryKey]) : [])
+				])] as (keyof T)[];
 
 				const result = await repository.query({
 					select,
