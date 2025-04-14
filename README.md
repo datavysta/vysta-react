@@ -194,7 +194,6 @@ This will enable Mantine-styled versions of Vysta components while maintaining a
 | `onDataFirstLoaded` | `(gridApi: GridApi<T>) => void` | `undefined` | Callback when data first loads or when filters/inputProperties change |
 | `onDataLoaded` | `(gridApi: GridApi<T>, data: T[]) => void` | `undefined` | Callback when any data loads, including incremental loads |
 | `getRowClass` | `(params: RowClassParams<T>) => string \| string[] \| undefined` | `undefined` | Custom row CSS classes |
-| `onRowClicked` | `(event: RowClickedEvent<T>) => void` | `undefined` | Row click handler |
 | `tick` | `number` | `0` | Trigger grid refresh when incremented |
 | `theme` | `Theme \| 'legacy'` | `undefined` | AG Grid theme configuration |
 | `styles` | `DataGridStyles` | `{}` | Custom styles for grid elements |

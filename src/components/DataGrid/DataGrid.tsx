@@ -69,7 +69,6 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	 */
 	onDataLoaded?: (gridApi: GridApi<U>, data: U[]) => void;
 	getRowClass?: ((params: RowClassParams<U>) => string | string[] | undefined);
-	onRowClicked?: (event: RowClickedEvent<U>) => void;
 	getRowId: (data: T) => string;
 	theme?: Theme | 'legacy';
 	tick?: number;
