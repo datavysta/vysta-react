@@ -12,4 +12,60 @@
     font-family: monospace;
     font-size: 14px;
     color: var(--vysta-text-primary);
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.toggle-filter-button {
+    background: var(--vysta-bg-secondary);
+    border: 1px solid var(--vysta-border-color);
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.toggle-filter-button:hover {
+    background: var(--vysta-bg-hover);
+}
+
+.filter-controls {
+    margin-bottom: 20px;
+}
+
+.segment-control {
+    display: flex;
+    border: 1px solid var(--vysta-border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    width: fit-content;
+}
+
+.segment-button {
+    padding: 8px 16px;
+    border: none;
+    background: var(--vysta-bg-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.segment-button:not(:last-child) {
+    border-right: 1px solid var(--vysta-border-color);
+}
+
+.segment-button:hover {
+    background: var(--vysta-bg-hover);
+}
+
+.segment-button.active {
+    /* TODO: Replace with your design system's primary color variable if available */
+    background: #1976d2;
+    color: white;
 } 
