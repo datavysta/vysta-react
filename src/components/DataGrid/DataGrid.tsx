@@ -7,7 +7,6 @@ import {
 	ICellRendererParams,
 	IGetRowsParams,
 	RowClassParams,
-	RowClickedEvent,
 	GetRowIdParams,
 	ModuleRegistry,
 	InfiniteRowModelModule,
