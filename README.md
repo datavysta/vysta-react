@@ -63,6 +63,49 @@ function ProductList() {
   );
 }
 
+## VystaServiceProvider (Core Service Context)
+
+`VystaServiceProvider` is a core feature that provides the VystaClient instance and core Vysta services (roles, permissions, user profile, and authentication) to your app via React context.
+
+**Usage Example:**
+
+```tsx
+import { VystaServiceProvider, useVystaServices } from '@datavysta/vysta-react';
+import { VystaConfig } from '@datavysta/vysta-client';
+
+const config: VystaConfig = {
+  baseUrl: '/api',
+  debug: true,
+};
+
+function App() {
+  return (
+    <VystaServiceProvider config={config} apps={["Northwinds"]}>
+      <YourApp />
+    </VystaServiceProvider>
+  );
+}
+
+// In any child component:
+function MyComponent() {
+  const { auth, roleService, permissionService, userProfile } = useVystaServices();
+
+  // Example: login
+  const handleLogin = async () => {
+    await auth.login('user@example.com', 'password');
+  };
+
+  // Example: logout
+  const handleLogout = async () => {
+    await auth.logout();
+  };
+
+  // ...use roleService, permissionService, userProfile as needed
+}
+```
+
+> **Note:** `VystaServiceProvider` provides the VystaClient (internally), VystaRoleService, VystaPermissionService, user profile (via the `useUserProfile` hook), and an `auth` service for authentication. You can access them anywhere in your component tree using the `useVystaServices` hook.
+
 ## FilterPanel Component
 
 The FilterPanel component provides a powerful and flexible filtering interface for your data.
