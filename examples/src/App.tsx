@@ -1,33 +1,28 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { VystaClient } from '@datavysta/vysta-client';
+import React, { useEffect, useState, useCallback } from 'react';
 import { MantineProvider } from '@mantine/core';
 import { PageController, PageView } from './components/PageController';
+import { ServicesProvider } from './components/ServicesProvider';
+import { VystaConfig } from '@datavysta/vysta-client';
+import { VystaServiceProvider, useVystaServices } from '../../src';
 
-function App() {
+const config: VystaConfig = {
+  baseUrl: '/api',
+  debug: true,
+  // Add other config as needed
+};
+
+function AppContent() {
+    const { authService } = useVystaServices();
     const [error, setError] = useState<string | null>(null);
     const [tick, setTick] = useState(0);
     const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [currentView, setCurrentView] = useState<PageView>('products');
-    const wasAuthenticated = useRef(true);
-    
-    const clientRef = useRef(new VystaClient({ 
-        baseUrl: 'http://localhost:8080',
-        debug: false,
-        errorHandler: {
-            onError(error: Error) {
-                if (error.message === 'Authentication refresh failed') {
-                    setIsAuthenticated(false);
-                    login();
-                } else {
-                    console.error('Non-auth error:', error);
-                }
-            }
-        }
-    }));
 
+    // Authentication logic using auth service from context
     const login = useCallback(async () => {
         try {
-            await clientRef.current.login('test@datavysta.com', 'password');
+            console.log("Auth?", authService)
+            await authService.login('test@datavysta.com', 'password');
             setError(null);
             setIsAuthenticated(true);
             return true;
@@ -37,51 +32,39 @@ function App() {
             setIsAuthenticated(false);
             return false;
         }
-    }, []);
+    }, [authService]);
 
-    useEffect(() => {
-        if (isAuthenticated && !wasAuthenticated.current) {
-            setTick(t => t + 1);
-        }
-        wasAuthenticated.current = isAuthenticated;
-    }, [isAuthenticated]);
-
-    useEffect(() => {
-        async function initAuth() {
-            try {
-                const isValid = clientRef.current["auth"].isAuthenticated();
-                if (isValid) {
-                    setIsAuthenticated(true);
-                } else {
-                    await login();
-                }
-            } catch (err) {
-                console.error('Init auth error:', err);
-                await login();
-            }
-        }
-        initAuth();
-    }, [login]);
-
-    const content = isAuthenticated ? (
-        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <PageController 
-                client={clientRef.current}
-                currentView={currentView}
-                onViewChange={setCurrentView}
-                tick={tick}
-            />
-        </div>
-    ) : (
-        <div style={{ padding: '20px' }}>
-            <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
-            <button onClick={login}>Retry Login</button>
-        </div>
+    // Render providers and app content
+    return (
+        <>
+            {isAuthenticated ? (
+                <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+                    <PageController
+                        currentView={currentView}
+                        onViewChange={setCurrentView}
+                        tick={tick}
+                    />
+                </div>
+            ) : (
+                <div style={{ padding: '20px' }}>
+                    <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
+                    <button onClick={login}>Retry Login</button>
+                </div>
+            )}
+        </>
     );
+}
 
+function App() {
     return (
         <MantineProvider>
-            {content}
+            <VystaServiceProvider config={config}>
+                {(client) => (
+                    <ServicesProvider client={client}>
+                        <AppContent />
+                    </ServicesProvider>
+                )}
+            </VystaServiceProvider>
         </MantineProvider>
     );
 }
