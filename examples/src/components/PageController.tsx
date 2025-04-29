@@ -7,9 +7,10 @@ import { FilterExample } from './FilterExample';
 import { LazyLoadListExample } from './LazyLoadListExample';
 import { EditableGridExample } from './EditableGridExample';
 import { FileUploadExample } from './FileUploadExample';
+import { ExampleUserProfile } from './ExampleUserProfile';
 import './PageController.css';
 
-export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'fileupload';
+export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'fileupload' | 'userprofile';
 
 interface PageControllerProps {
     client: VystaClient;
@@ -63,6 +64,12 @@ function Navigation({ currentView, onViewChange }: { currentView: PageView; onVi
             >
                 File Upload
             </button>
+            <button 
+                onClick={() => onViewChange('userprofile')}
+                disabled={currentView === 'userprofile'}
+            >
+                User Profile Example
+            </button>
         </div>
     );
 }
@@ -94,6 +101,8 @@ export function PageController({ client, currentView, onViewChange, tick }: Page
                             return <EditableGridExample {...commonProps} />;
                         case 'fileupload':
                             return <FileUploadExample {...commonProps} />;
+                        case 'userprofile':
+                            return <ExampleUserProfile client={client} />;
                         default:
                             return null;
                     }
