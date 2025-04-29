@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { VystaClient } from '@datavysta/vysta-client';
 import './FilterExample.css';
 import Condition from "../../../src/components/Models/Condition";
 import FilterPanel from "../../../src/components/Filter/FilterPanel";
@@ -10,7 +9,6 @@ import Fields from '../../../src/components/datavistas/fields';
 import { FieldComponentProvider } from '../../../src/components/datavistas/FieldComponentContext';
 
 interface FilterExampleProps {
-    client: VystaClient;
     tick: number;
 }
 
@@ -65,10 +63,7 @@ const orderFilterDefinitions: FilterDefinitionsByField = [
     }
 ];
 
-export function FilterExample({ 
-    client, 
-    tick 
-}: FilterExampleProps) {
+export function FilterExample({ tick }: FilterExampleProps) {
     const [conditions, setConditions] = useState<Condition[]>([]);
     const [showFilterPanel, setShowFilterPanel] = useState(true);
     const [useProductFilters, setUseProductFilters] = useState(true);

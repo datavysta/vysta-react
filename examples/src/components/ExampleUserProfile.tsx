@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { useUserProfile } from '../../../src/hooks/useUserProfile';
-import { VystaPermissionService, VystaClient } from '@datavysta/vysta-client';
+import { VystaPermissionService } from '@datavysta/vysta-client';
+import { useServices } from './ServicesProvider';
 
-interface ExampleUserProfileProps {
-  client: VystaClient;
-}
+export const ExampleUserProfile: React.FC = () => {
+  // Get the client from the service context
+  const { client } = useServices();
 
-export const ExampleUserProfile: React.FC<ExampleUserProfileProps> = ({ client }) => {
   // Create the permission service instance once per client
   const permissionService = useMemo(() => new VystaPermissionService(client), [client]);
   const apps = useMemo(() => ['Northwinds', 'BadNorthwind'], []);

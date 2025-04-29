@@ -1,26 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DataGrid } from '../../../src/components/DataGrid/DataGrid';
-import { VystaClient } from '@datavysta/vysta-client';
+import { useServices } from './ServicesProvider';
 import { ColDef } from 'ag-grid-community';
-import { ProductService } from '../services/ProductService';
 import { Product } from '../types/Product';
 import './ProductGrid.css';
 import { PageView } from '../types/PageView';
 
 interface ProductGridProps {
-    client: VystaClient;
     onViewChange: (view: PageView) => void;
     tick: number;
 }
 
-export function ProductGrid({ 
-    client, 
-    onViewChange,
-    tick 
-}: ProductGridProps) {
-    const products = React.useMemo(() => new ProductService(client), [client]);
+export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
+    const { productService } = useServices();
 
-    const columnDefs = React.useMemo<ColDef<Product>[]>(() => [
+    const columnDefs = useMemo<ColDef<Product>[]>(() => [
         { field: 'productId', headerName: 'ID' },
         { field: 'productName', headerName: 'Name' },
         { field: 'unitPrice', headerName: 'Price' },
@@ -34,7 +28,7 @@ export function ProductGrid({
                 <DataGrid<Product>
                     title="Products"
                     noun="Product"
-                    repository={products}
+                    repository={productService}
                     columnDefs={columnDefs}
                     getRowId={(product) => product.productId.toString()}
                     tick={tick}

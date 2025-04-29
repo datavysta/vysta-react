@@ -1,24 +1,17 @@
 import React, { useMemo, useState } from 'react';
 import { DataGrid } from '@datavysta/vysta-react';
-import { VystaClient } from '@datavysta/vysta-client';
-import { OrderService } from '../services/OrderService';
-import { CustomerService } from '../services/CustomerService';
+import { useServices } from './ServicesProvider';
 import { Order } from '../types/Order';
 import { ColDef, GridApi } from 'ag-grid-community';
 import { EditableFieldType } from '../../../src/components/DataGrid/types';
 import './OrderGrid.css';
 
 interface OrderGridProps {
-    client: VystaClient;
     tick: number;
 }
 
-export function OrderGrid({ 
-    client, 
-    tick 
-}: OrderGridProps) {
-    const orders = useMemo(() => new OrderService(client), [client]);
-    const customers = useMemo(() => new CustomerService(client), [client]);
+export function OrderGrid({ tick }: OrderGridProps) {
+    const { orderService, customerService } = useServices();
     const [logs, setLogs] = useState<string[]>([]);
     const [useFilter, setUseFilter] = useState(false);
     const [useInputProps, setUseInputProps] = useState(false);
@@ -33,37 +26,12 @@ export function OrderGrid({
     };
 
     const columnDefs: ColDef<Order>[] = [
-        { 
-            field: 'orderId',
-            headerName: 'ID',
-            width: 100,
-            initialSort: 'asc'
-        },
-        { 
-            field: 'customerId',
-            headerName: 'Customer',
-            flex: 1
-        },
-        { 
-            field: 'employeeId',
-            headerName: 'Employee',
-            flex: 1
-        },
-        { 
-            field: 'orderDate',
-            headerName: 'Order Date',
-            flex: 1
-        },
-        { 
-            field: 'requiredDate',
-            headerName: 'Required Date',
-            flex: 1
-        },
-        { 
-            field: 'shippedDate',
-            headerName: 'Shipped Date',
-            flex: 1
-        }
+        { field: 'orderId', headerName: 'ID', width: 100, initialSort: 'asc' },
+        { field: 'customerId', headerName: 'Customer', flex: 1 },
+        { field: 'employeeId', headerName: 'Employee', flex: 1 },
+        { field: 'orderDate', headerName: 'Order Date', flex: 1 },
+        { field: 'requiredDate', headerName: 'Required Date', flex: 1 },
+        { field: 'shippedDate', headerName: 'Shipped Date', flex: 1 }
     ];
 
     return (
@@ -116,14 +84,14 @@ export function OrderGrid({
                 <DataGrid<Order>
                     title="Orders"
                     noun="Order"
-                    repository={orders}
+                    repository={orderService}
                     columnDefs={columnDefs}
                     getRowId={(order) => order.orderId.toString()}
                     wildcardSearch={searchText}
                     editableFields={{
                         customerId: {
                             dataType: EditableFieldType.List,
-                            listService: customers,
+                            listService: customerService,
                             displayColumn: 'customerId',
                             clearable: false,
                             listOptions: {

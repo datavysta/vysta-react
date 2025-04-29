@@ -1,31 +1,22 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { LazyLoadList } from '../../../src/components/LazyLoadList/LazyLoadList';
-import { VystaClient } from '@datavysta/vysta-client';
-import { ProductService } from '../services/ProductService';
-import { CustomerService } from '../services/CustomerService';
-import { OrderService } from '../services/OrderService';
+import { useServices } from './ServicesProvider';
 import { Product } from '../types/Product';
 import { Customer } from '../types/Customer';
 import { Order } from '../types/Order';
 import { Stack } from '@mantine/core';
 
 interface LazyLoadListExampleProps {
-    client: VystaClient;
     tick: number;
 }
 
-export function LazyLoadListExample({
-    client,
-    tick
-}: LazyLoadListExampleProps) {
+export function LazyLoadListExample({ tick }: LazyLoadListExampleProps) {
     const [selectedProductId, setSelectedProductId] = useState<string | null>("1");
     const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [selectedProductId2, setSelectedProductId2] = useState<string | null>("1");
     
-    const productService = useMemo(() => new ProductService(client), [client]);
-    const customerService = useMemo(() => new CustomerService(client), [client]);
-    const orderService = useMemo(() => new OrderService(client), [client]);
+    const { productService, customerService, orderService } = useServices();
 
     return (
         <div>
