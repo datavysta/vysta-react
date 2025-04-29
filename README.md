@@ -406,6 +406,50 @@ The component provides:
 - Automatic or manual upload triggering
 - Integration with Vysta's file service
 
+## Authentication and User Profile
+
+The `useUserProfile` hook provides a unified way to fetch the current user's profile and, optionally, permissions for a list of apps/connections. It is designed to work directly with the VystaClient library and returns a single loading and error state for the entire operation.
+
+### API
+
+```ts
+import { useUserProfile } from '@datavysta/vysta-react';
+import { VystaClient, VystaPermissionService } from '@datavysta/vysta-client';
+```
+
+#### Hook Signature
+
+```ts
+function useUserProfile(options: {
+  client: VystaClient;
+  permissionService?: VystaPermissionService;
+  apps?: string[];
+}): {
+  profile: UserProfile | null;
+  permissions: Record<string, ObjectPermission> | null;
+  loading: boolean;
+  error: any;
+}
+```
+
+#### Usage Example
+
+```ts
+const client = new VystaClient({ baseUrl: '...' });
+const permissionService = new VystaPermissionService(client);
+
+const { profile, permissions, loading, error } = useUserProfile({
+  client,
+  permissionService,
+  apps: ['Northwinds'],
+});
+```
+
+- `profile`: The user's profile object (or null if not loaded).
+- `permissions`: A record mapping app/connection names to their permissions (or null if not loaded or not requested).
+- `loading`: Boolean, true while either profile or permissions are loading.
+- `error`: Any error encountered during loading.
+
 ## License
 
 MIT 
