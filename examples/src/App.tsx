@@ -6,22 +6,20 @@ import { VystaConfig } from '@datavysta/vysta-client';
 import { VystaServiceProvider, useVystaServices } from '../../src';
 
 const config: VystaConfig = {
-  baseUrl: '/api',
-  debug: true,
-  // Add other config as needed
+    baseUrl: 'http://localhost:8080',
+    debug: true,
 };
 
 function AppContent() {
     const { authService } = useVystaServices();
     const [error, setError] = useState<string | null>(null);
     const [tick, setTick] = useState(0);
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentView, setCurrentView] = useState<PageView>('products');
 
     // Authentication logic using auth service from context
     const login = useCallback(async () => {
         try {
-            console.log("Auth?", authService)
             await authService.login('test@datavysta.com', 'password');
             setError(null);
             setIsAuthenticated(true);
@@ -48,7 +46,7 @@ function AppContent() {
             ) : (
                 <div style={{ padding: '20px' }}>
                     <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
-                    <button onClick={login}>Retry Login</button>
+                    <button onClick={login}>Login</button>
                 </div>
             )}
         </>
