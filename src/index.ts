@@ -7,7 +7,4 @@ export { default as DataType } from './components/Models/DataType';
 export type { default as Condition } from './components/Models/Condition';
 export { LazyLoadList } from './components/LazyLoadList/LazyLoadList';
 export type { LazyLoadListProps } from './components/LazyLoadList/types';
-export { useUserProfile } from './hooks/useUserProfile';
-export type { UseUserProfileOptions, UseUserProfileResult } from './hooks/useUserProfile';
-export { VystaServiceProvider, useVystaServices } from './services/VystaServiceProvider';
-export { AuthService } from './services/AuthService'; 
+export { VystaServiceProvider, useVystaServices } from './services/VystaServiceProvider'; 

@@ -11,16 +11,16 @@ const config: VystaConfig = {
 };
 
 function AppContent() {
-    const { authService } = useVystaServices();
+    const { auth } = useVystaServices();
     const [error, setError] = useState<string | null>(null);
     const [tick, setTick] = useState(0);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentView, setCurrentView] = useState<PageView>('products');
 
-    // Authentication logic using auth service from context
+    // Authentication logic using auth object from context
     const login = useCallback(async () => {
         try {
-            await authService.login('test@datavysta.com', 'password');
+            await auth.login('test@datavysta.com', 'password');
             setError(null);
             setIsAuthenticated(true);
             return true;
@@ -30,13 +30,25 @@ function AppContent() {
             setIsAuthenticated(false);
             return false;
         }
-    }, [authService]);
+    }, [auth]);
+
+    const logout = useCallback(async () => {
+        try {
+            await auth.logout();
+            setIsAuthenticated(false);
+        } catch (err) {
+            setError('Failed to logout.');
+        }
+    }, [auth]);
 
     // Render providers and app content
     return (
         <>
             {isAuthenticated ? (
                 <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ padding: '10px', background: '#f5f5f5', borderBottom: '1px solid #ddd' }}>
+                        <button onClick={logout}>Logout</button>
+                    </div>
                     <PageController
                         currentView={currentView}
                         onViewChange={setCurrentView}
@@ -46,7 +58,8 @@ function AppContent() {
             ) : (
                 <div style={{ padding: '20px' }}>
                     <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
-                    <button onClick={login}>Login</button>
+                    <button onClick={login} style={{ marginRight: '10px' }}>Login</button>
+                    <button onClick={logout}>Logout</button>
                 </div>
             )}
         </>

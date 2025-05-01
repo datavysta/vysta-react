@@ -7,6 +7,7 @@ export interface UseUserProfileOptions {
   client: VystaClient;
   permissionService?: VystaPermissionService;
   apps?: string[]; // List of app/connection names to fetch permissions for
+  tick?: number; // Optional: triggers refresh when changed
 }
 
 // Hook return type
@@ -21,7 +22,7 @@ export interface UseUserProfileResult {
 export function useUserProfile(
   options: UseUserProfileOptions
 ): UseUserProfileResult {
-  const { client, permissionService, apps } = options;
+  const { client, permissionService, apps, tick } = options;
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [permissions, setPermissions] = useState<Record<string, ObjectPermission> | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,8 +51,12 @@ export function useUserProfile(
           // Fetch permissions for each app concurrently
           const perms = await Promise.all(
             appsMemo.map(async (app) => {
-              const perm = await permissionService.getConnectionPermissions(app);
-              return [app, perm] as [string, ObjectPermission];
+              try {
+                const perm = await permissionService.getConnectionPermissions(app);
+                return [app, perm] as [string, ObjectPermission];
+              } catch (err) {
+                return [app, null];
+              }
             })
           );
           permissionsResult = Object.fromEntries(perms);
@@ -76,8 +81,8 @@ export function useUserProfile(
     return () => {
       isMounted = false;
     };
-    // Only re-run if services or apps change
-  }, [client, permissionService, appsMemo]);
+    // Only re-run if services, apps, or tick change
+  }, [client, permissionService, appsMemo, tick]);
 
   // Helper: Returns true if the cached permissions for the app include the 'SELECT' grant
   const canSelectConnection = (app: string): boolean => {

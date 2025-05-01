@@ -1,13 +1,19 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { VystaClient, VystaConfig, VystaRoleService, VystaPermissionService } from '@datavysta/vysta-client';
-import { useUserProfile } from '../hooks/useUserProfile';
-import { AuthService } from './AuthService';
+import { useAuth, AuthWrapper } from '../hooks/useAuth';
 
 export interface VystaServiceContextValue {
   roleService: VystaRoleService;
   permissionService: VystaPermissionService;
-  userProfile: ReturnType<typeof useUserProfile>;
-  authService: AuthService;
+  profile: ReturnType<typeof useAuth>["profile"];
+  permissions: ReturnType<typeof useAuth>["permissions"];
+  canSelectConnection: ReturnType<typeof useAuth>["canSelectConnection"];
+  isAuthenticated: boolean;
+  profileLoading: boolean;
+  profileError: any;
+  loginLoading: boolean;
+  loginError: any;
+  auth: AuthWrapper;
 }
 
 const VystaServiceContext = createContext<VystaServiceContextValue | undefined>(undefined);
@@ -20,18 +26,38 @@ export interface VystaServiceProviderProps {
 
 export const VystaServiceProvider: React.FC<VystaServiceProviderProps> = ({ config, children, apps }) => {
   // Memoize the client and core services
-  const client = useMemo(() => new VystaClient(config), [config]);
+  const client = useMemo(() => {
+    return new VystaClient(config);
+  }, [config]);
   const roleService = useMemo(() => new VystaRoleService(client), [client]);
   const permissionService = useMemo(() => new VystaPermissionService(client), [client]);
-  const authService = useMemo(() => new AuthService(client), [client]);
-  const userProfile = useUserProfile({ client, permissionService, apps });
+
+  // Use the new useAuth hook, passing apps and permissionService
+  const {
+    profile,
+    permissions,
+    canSelectConnection,
+    isAuthenticated,
+    profileLoading,
+    profileError,
+    loginLoading,
+    loginError,
+    auth,
+  } = useAuth({ client, permissionService, apps });
 
   const value = useMemo(() => ({
     roleService,
     permissionService,
-    userProfile,
-    authService,
-  }), [roleService, permissionService, userProfile, authService]);
+    profile,
+    permissions,
+    canSelectConnection,
+    isAuthenticated,
+    profileLoading,
+    profileError,
+    loginLoading,
+    loginError,
+    auth,
+  }), [roleService, permissionService, profile, permissions, canSelectConnection, isAuthenticated, profileLoading, profileError, loginLoading, loginError, auth]);
 
   return (
     <VystaServiceContext.Provider value={value}>
