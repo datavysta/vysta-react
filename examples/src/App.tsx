@@ -1,33 +1,26 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { VystaClient } from '@datavysta/vysta-client';
+import React, { useEffect, useState, useCallback } from 'react';
 import { MantineProvider } from '@mantine/core';
 import { PageController, PageView } from './components/PageController';
+import { ServicesProvider } from './components/ServicesProvider';
+import { VystaConfig } from '@datavysta/vysta-client';
+import { VystaServiceProvider, useVystaServices } from '../../src';
 
-function App() {
+const config: VystaConfig = {
+    baseUrl: 'http://localhost:8080',
+    debug: true,
+};
+
+function AppContent() {
+    const { auth } = useVystaServices();
     const [error, setError] = useState<string | null>(null);
     const [tick, setTick] = useState(0);
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentView, setCurrentView] = useState<PageView>('products');
-    const wasAuthenticated = useRef(true);
-    
-    const clientRef = useRef(new VystaClient({ 
-        baseUrl: 'http://localhost:8080',
-        debug: false,
-        errorHandler: {
-            onError(error: Error) {
-                if (error.message === 'Authentication refresh failed') {
-                    setIsAuthenticated(false);
-                    login();
-                } else {
-                    console.error('Non-auth error:', error);
-                }
-            }
-        }
-    }));
 
+    // Authentication logic using auth object from context
     const login = useCallback(async () => {
         try {
-            await clientRef.current.login('test@datavysta.com', 'password');
+            await auth.login('test@datavysta.com', 'password');
             setError(null);
             setIsAuthenticated(true);
             return true;
@@ -37,51 +30,52 @@ function App() {
             setIsAuthenticated(false);
             return false;
         }
-    }, []);
+    }, [auth]);
 
-    useEffect(() => {
-        if (isAuthenticated && !wasAuthenticated.current) {
-            setTick(t => t + 1);
+    const logout = useCallback(async () => {
+        try {
+            await auth.logout();
+            setIsAuthenticated(false);
+        } catch (err) {
+            setError('Failed to logout.');
         }
-        wasAuthenticated.current = isAuthenticated;
-    }, [isAuthenticated]);
+    }, [auth]);
 
-    useEffect(() => {
-        async function initAuth() {
-            try {
-                const isValid = clientRef.current["auth"].isAuthenticated();
-                if (isValid) {
-                    setIsAuthenticated(true);
-                } else {
-                    await login();
-                }
-            } catch (err) {
-                console.error('Init auth error:', err);
-                await login();
-            }
-        }
-        initAuth();
-    }, [login]);
-
-    const content = isAuthenticated ? (
-        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <PageController 
-                client={clientRef.current}
-                currentView={currentView}
-                onViewChange={setCurrentView}
-                tick={tick}
-            />
-        </div>
-    ) : (
-        <div style={{ padding: '20px' }}>
-            <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
-            <button onClick={login}>Retry Login</button>
-        </div>
+    // Render providers and app content
+    return (
+        <>
+            {isAuthenticated ? (
+                <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ padding: '10px', background: '#f5f5f5', borderBottom: '1px solid #ddd' }}>
+                        <button onClick={logout}>Logout</button>
+                    </div>
+                    <PageController
+                        currentView={currentView}
+                        onViewChange={setCurrentView}
+                        tick={tick}
+                    />
+                </div>
+            ) : (
+                <div style={{ padding: '20px' }}>
+                    <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
+                    <button onClick={login} style={{ marginRight: '10px' }}>Login</button>
+                    <button onClick={logout}>Logout</button>
+                </div>
+            )}
+        </>
     );
+}
 
+function App() {
     return (
         <MantineProvider>
-            {content}
+            <VystaServiceProvider config={config}>
+                {(client) => (
+                    <ServicesProvider client={client}>
+                        <AppContent />
+                    </ServicesProvider>
+                )}
+            </VystaServiceProvider>
         </MantineProvider>
     );
 }

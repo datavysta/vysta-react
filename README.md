@@ -63,6 +63,105 @@ function ProductList() {
   );
 }
 
+## VystaServiceProvider (Core Service Context)
+
+`VystaServiceProvider` is a core feature that provides the VystaClient instance and core Vysta services (roles, permissions, user profile, and authentication) to your app via React context.
+
+**Usage Example:**
+
+```tsx
+import { VystaServiceProvider, useVystaServices } from '@datavysta/vysta-react';
+import { VystaConfig } from '@datavysta/vysta-client';
+
+const config: VystaConfig = {
+  baseUrl: '/api',
+  debug: true,
+};
+
+function App() {
+  return (
+    <VystaServiceProvider config={config} apps={["Northwinds"]}>
+      <YourApp />
+    </VystaServiceProvider>
+  );
+}
+
+// In any child component:
+function MyComponent() {
+  const {
+    roleService,
+    permissionService,
+    profile,
+    permissions,
+    canSelectConnection,
+    isAuthenticated,
+    profileLoading,
+    profileError,
+    loginLoading,
+    loginError,
+    auth,
+  } = useVystaServices();
+
+  // Example: login
+  const handleLogin = async () => {
+    await auth.login('user@example.com', 'password');
+  };
+
+  // Example: logout
+  const handleLogout = async () => {
+    await auth.logout();
+  };
+
+  // Example: get sign-in methods
+  const signInMethods = await auth.getSignInMethods();
+
+  // ...use any of the above context values as needed
+}
+```
+
+> **Note:** `VystaServiceProvider` provides the following via context (using `useVystaServices`):
+> - `roleService`: VystaRoleService instance
+> - `permissionService`: VystaPermissionService instance
+> - `profile`: The user's profile object (or null if not loaded)
+> - `permissions`: A record mapping app/connection names to their permissions (or null if not loaded or not requested)
+> - `canSelectConnection`: Helper to check if the user has SELECT permission for a given app
+> - `isAuthenticated`: Boolean, true if a user profile is loaded
+> - `profileLoading`: Boolean, true while profile/permissions are loading
+> - `profileError`: Any error encountered during profile/permissions loading
+> - `loginLoading`: Boolean, true while a login/logout is in progress
+> - `loginError`: Any error encountered during login/logout
+> - `auth`: An object with authentication methods:
+>   - `login(username, password)`
+>   - `logout()`
+>   - `getSignInMethods()`
+>   - `getAuthorizeUrl(providerId)`
+>   - `exchangeToken(token)`
+
+> Always use the context-based approach for authentication, user, and permissions state. Direct use of internal hooks is not supported in the public API.
+
+## Authentication and User Profile (Context-based Access)
+
+Authentication, user profile, and permissions are now accessed exclusively via the `VystaServiceProvider` and the `useVystaServices` context hook. This ensures a single source of truth for authentication and user state throughout your app.
+
+- `profile`: The user's profile object (or null if not loaded).
+- `permissions`: A record mapping app/connection names to their permissions (or null if not loaded or not requested).
+- `canSelectConnection`: Helper to check if the user has SELECT permission for a given app.
+- `profileLoading`: Boolean, true while profile/permissions are loading.
+- `profileError`: Any error encountered during profile/permissions loading.
+- `loginLoading`: Boolean, true while a login/logout is in progress.
+- `loginError`: Any error encountered during login/logout.
+- `isAuthenticated`: Boolean, true if a user profile is loaded.
+- `auth`: An object with authentication methods:
+  - `login(username, password)`
+  - `logout()`
+  - `getSignInMethods()`
+  - `getAuthorizeUrl(providerId)`
+  - `exchangeToken(token)`
+- `roleService`: VystaRoleService instance for role management.
+- `permissionService`: VystaPermissionService instance for permission management.
+
+> **Note:** Direct use of internal hooks is not supported in the public API. Always use the context-based approach for authentication and user state.
+
 ## FilterPanel Component
 
 The FilterPanel component provides a powerful and flexible filtering interface for your data.
@@ -405,50 +504,6 @@ The component provides:
 - Upload progress bar
 - Automatic or manual upload triggering
 - Integration with Vysta's file service
-
-## Authentication and User Profile
-
-The `useUserProfile` hook provides a unified way to fetch the current user's profile and, optionally, permissions for a list of apps/connections. It is designed to work directly with the VystaClient library and returns a single loading and error state for the entire operation.
-
-### API
-
-```ts
-import { useUserProfile } from '@datavysta/vysta-react';
-import { VystaClient, VystaPermissionService } from '@datavysta/vysta-client';
-```
-
-#### Hook Signature
-
-```ts
-function useUserProfile(options: {
-  client: VystaClient;
-  permissionService?: VystaPermissionService;
-  apps?: string[];
-}): {
-  profile: UserProfile | null;
-  permissions: Record<string, ObjectPermission> | null;
-  loading: boolean;
-  error: any;
-}
-```
-
-#### Usage Example
-
-```ts
-const client = new VystaClient({ baseUrl: '...' });
-const permissionService = new VystaPermissionService(client);
-
-const { profile, permissions, loading, error } = useUserProfile({
-  client,
-  permissionService,
-  apps: ['Northwinds'],
-});
-```
-
-- `profile`: The user's profile object (or null if not loaded).
-- `permissions`: A record mapping app/connection names to their permissions (or null if not loaded or not requested).
-- `loading`: Boolean, true while either profile or permissions are loading.
-- `error`: Any error encountered during loading.
 
 ## License
 

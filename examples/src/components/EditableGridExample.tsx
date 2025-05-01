@@ -1,22 +1,17 @@
 import React, { useMemo } from 'react';
 import { DataGrid } from '@datavysta/vysta-react';
-import { VystaClient } from '@datavysta/vysta-client';
-import { ProductService } from '../services/ProductService';
+import { useServices } from './ServicesProvider';
 import { Product } from '../types/Product';
 import { ColDef } from 'ag-grid-community';
 import { EditableFieldType } from '../../../src/components/DataGrid/types';
 import './EditableGridExample.css';
 
 interface EditableGridExampleProps {
-    client: VystaClient;
     tick: number;
 }
 
-export function EditableGridExample({
-    client,
-    tick
-}: EditableGridExampleProps) {
-    const productService = useMemo(() => new ProductService(client), [client]);
+export function EditableGridExample({ tick }: EditableGridExampleProps) {
+    const { productService } = useServices();
 
     const columnDefs = useMemo<ColDef<Product>[]>(() => [
         { 

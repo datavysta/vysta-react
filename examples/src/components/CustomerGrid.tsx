@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { DataGrid } from '@datavysta/vysta-react';
-import { VystaClient } from '@datavysta/vysta-client';
-import { CustomerService } from '../services/CustomerService';
+import { useServices } from './ServicesProvider';
 import { Customer } from '../types/Customer';
 import { ColDef } from 'ag-grid-community';
 import './CustomerGrid.css';
@@ -13,15 +12,11 @@ import { FilterDefinitionsByField } from '../../../src/components/Filter/FilterD
 import { FieldComponentProvider } from '../../../src/components/datavistas/FieldComponentContext';
 
 interface CustomerGridProps {
-    client: VystaClient;
     tick: number;
 }
 
-export function CustomerGrid({ 
-    client,
-    tick 
-}: CustomerGridProps) {
-    const customers = useMemo(() => new CustomerService(client), [client]);
+export function CustomerGrid({ tick }: CustomerGridProps) {
+    const { customerService } = useServices();
     const [conditions, setConditions] = useState<Condition[]>([]);
     const [showFilterModal, setShowFilterModal] = useState(false);
 
@@ -103,7 +98,7 @@ export function CustomerGrid({
                 <DataGrid<Customer>
                     title="Customers"
                     noun="Customer"
-                    repository={customers}
+                    repository={customerService}
                     columnDefs={columnDefs}
                     getRowId={(customer) => customer.customerId.toString()}
                     gridOptions={{

@@ -1,19 +1,14 @@
-import React, { useMemo } from 'react';
-import { VystaClient } from '@datavysta/vysta-client';
+import React from 'react';
 import { FileUpload } from '../../../src/components/FileUpload/FileUpload';
-import { NorthwindFileService } from '../services/NorthwindFileService';
+import { useServices } from './ServicesProvider';
 import './FileUploadExample.css';
 
 interface FileUploadExampleProps {
-    client: VystaClient;
     tick: number;
 }
 
-export function FileUploadExample({ 
-    client,
-    tick 
-}: FileUploadExampleProps) {
-    const fileService = useMemo(() => new NorthwindFileService(client), [client]);
+export function FileUploadExample({ tick }: FileUploadExampleProps) {
+    const { fileService } = useServices();
 
     return (
         <div className="example-container">

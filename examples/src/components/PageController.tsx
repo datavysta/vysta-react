@@ -1,5 +1,4 @@
 import React from 'react';
-import { VystaClient } from '@datavysta/vysta-client';
 import { ProductGrid } from './ProductGrid';
 import { CustomerGrid } from './CustomerGrid';
 import { OrderGrid } from './OrderGrid';
@@ -13,7 +12,6 @@ import './PageController.css';
 export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'fileupload' | 'userprofile';
 
 interface PageControllerProps {
-    client: VystaClient;
     currentView: PageView;
     onViewChange: (view: PageView) => void;
     tick: number;
@@ -74,9 +72,8 @@ function Navigation({ currentView, onViewChange }: { currentView: PageView; onVi
     );
 }
 
-export function PageController({ client, currentView, onViewChange, tick }: PageControllerProps) {
+export function PageController({ currentView, onViewChange, tick }: PageControllerProps) {
     const commonProps = {
-        client,
         tick,
         onViewChange
     };
@@ -102,7 +99,7 @@ export function PageController({ client, currentView, onViewChange, tick }: Page
                         case 'fileupload':
                             return <FileUploadExample {...commonProps} />;
                         case 'userprofile':
-                            return <ExampleUserProfile client={client} />;
+                            return <ExampleUserProfile />;
                         default:
                             return null;
                     }
