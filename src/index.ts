@@ -1,3 +1,4 @@
+export type { EditableFieldType, EditableFieldConfig } from './components/DataGrid/types';
 export { DataGrid } from './components/DataGrid/DataGrid';
 export { FileUpload } from './components/FileUpload/FileUpload';
 export type { DataGridProps, DataGridStyles } from './components/DataGrid/DataGrid';
