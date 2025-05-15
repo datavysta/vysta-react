@@ -64,7 +64,7 @@ const FilterRightHandSide: FC<IFilterProps> = ({
 		dataType
 	};
 
-	let fieldProperty: IFieldProperty = {
+	const fieldProperty: IFieldProperty = {
 		...baseFieldProperty,
 		name: 'right',
 		onChange: onChangeRunner.bind(
@@ -77,7 +77,7 @@ const FilterRightHandSide: FC<IFilterProps> = ({
 		),
 	};
 
-	let fieldPropertyStart: IFieldProperty = {
+	const fieldPropertyStart: IFieldProperty = {
 		...baseFieldProperty,
 		name: 'start',
 		onChange: onChangeRunner.bind(
@@ -90,7 +90,7 @@ const FilterRightHandSide: FC<IFilterProps> = ({
 		),
 	};
 
-	let fieldPropertyStop: IFieldProperty = {
+	const fieldPropertyStop: IFieldProperty = {
 		...baseFieldProperty,
 		name: 'stop',
 		onChange: onChangeRunner.bind(

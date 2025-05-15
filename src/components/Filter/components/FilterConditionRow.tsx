@@ -4,7 +4,7 @@ import FilterAutocomplete, {
 } from './FilterAutocomplete';
 import FilterComparisonOperator from './FilterComparisonOperator';
 import FilterRightHandSide from './FilterRightHandSide';
-import FilterOperator from './FilterOperator';;
+import FilterOperator from './FilterOperator';
 import Condition from '../../Models/Condition';
 import ComparisonOperator from '../../Models/ComparisonOperator';
 import DataType from '../../Models/DataType';
