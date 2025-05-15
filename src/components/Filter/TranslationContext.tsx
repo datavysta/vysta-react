@@ -2,7 +2,7 @@ import React, { createContext, useContext } from 'react';
 
 export interface TranslationService {
     t: (key: string) => string;
-    i18n?: any;
+    i18n?: Record<string, unknown>;
     tReady?: boolean;
 }
 
@@ -22,4 +22,4 @@ export const TranslationProvider: React.FC<{
     <TranslationContext.Provider value={service}>
         {children}
     </TranslationContext.Provider>
-); 
+);  

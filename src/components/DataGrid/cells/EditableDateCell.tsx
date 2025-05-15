@@ -4,7 +4,7 @@ import { BaseEditableCell } from './BaseEditableCell';
 
 export class EditableDateCell extends BaseEditableCell {
     render() {
-        const options = (this.props as any).dateOptions || {};
+        const options = (this.props as Record<string, unknown>).dateOptions || {};
         
         return (
             <DatePickerInput
@@ -51,4 +51,4 @@ export class EditableDateCell extends BaseEditableCell {
             />
         );
     }
-} 
+}  

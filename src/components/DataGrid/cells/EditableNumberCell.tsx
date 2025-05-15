@@ -3,7 +3,7 @@ import { BaseEditableCell } from './BaseEditableCell';
 
 export class EditableNumberCell extends BaseEditableCell {
     render() {
-        const options = (this.props as any).numberOptions || {};
+        const options = (this.props as Record<string, unknown>).numberOptions || {};
         
         return (
             <NumberInput
@@ -53,4 +53,4 @@ export class EditableNumberCell extends BaseEditableCell {
             />
         );
     }
-} 
+}  

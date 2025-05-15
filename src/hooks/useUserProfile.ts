@@ -15,7 +15,7 @@ export interface UseUserProfileResult {
   profile: UserProfile | null;
   permissions: Record<string, ObjectPermission> | null;
   loading: boolean;
-  error: any;
+  error: unknown;
   canSelectConnection: (app: string) => boolean;
 }
 
@@ -26,7 +26,7 @@ export function useUserProfile(
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [permissions, setPermissions] = useState<Record<string, ObjectPermission> | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<unknown>(null);
 
   if (!client) {
     throw new Error("Client required for hook");
@@ -98,4 +98,4 @@ export function useUserProfile(
     error,
     canSelectConnection,
   };
-} 
+}    

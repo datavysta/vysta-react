@@ -80,12 +80,13 @@ const Filter: FC<IFilterProps> = ({
 							createNewCondition(condition as GroupCondition)
 						}
 						onChange={onChange}
-						children={renderChildren(
+						showNestedConditionButton={true}
+					>
+						{renderChildren(
 							(condition as GroupCondition).children,
 							firstConditionGroup && index === 0
 						)}
-						showNestedConditionButton={true}
-					/>
+					</FilterGroup>
 				)}
 			</div>
 		));

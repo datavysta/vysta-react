@@ -4,6 +4,7 @@ import {
 	ColDef,
 	GridApi,
 	GridOptions,
+	GridReadyEvent,
 	ICellRendererParams,
 	IGetRowsParams,
 	RowClassParams,
@@ -54,7 +55,7 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	supportInsert?: boolean;
 	supportDelete?: boolean;
 	deleteButton?: (onDelete: () => void) => React.ReactNode;
-	filters?: { [K in keyof T]?: any };
+	filters?: { [K in keyof T]?: Record<string, unknown> };
 	conditions?: Condition[];
 	inputProperties?: {
 		[key: string]: string;
@@ -76,36 +77,36 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	editableFields?: {
 		[K in keyof U]?: EditableFieldConfig;
 	};
-	noRowsComponent?: React.ComponentType<any>;
-	loadingComponent?: React.ComponentType<any>;
+	noRowsComponent?: React.ComponentType<Record<string, unknown>>;
+	loadingComponent?: React.ComponentType<Record<string, unknown>>;
 }
 
 export function DataGrid<T extends object, U extends T = T>({
-	                                           title,
-	                                           noun,
-	                                           repository,
-	                                           columnDefs,
-	                                           gridOptions,
-	                                           supportRegularDownload = false,
-	                                           supportInsert = false,
-	                                           supportDelete = false,
-	                                           deleteButton,
-	                                           filters,
-	                                           conditions,
-	                                           inputProperties,
-	                                           wildcardSearch,
-	                                           toolbarItems,
-	                                           onDataFirstLoaded,
-	                                           onDataLoaded,
-	                                           getRowId,
-	                                           theme,
-	                                           tick = 0,
-	                                           styles = {},
-	                                           editService,
-	                                           editableFields,
-	                                           noRowsComponent,
-	                                           loadingComponent,
-                                           }: DataGridProps<T, U>) {
+    title,
+    noun,
+    repository,
+    columnDefs,
+    gridOptions,
+    supportRegularDownload = false,
+    supportInsert = false,
+    supportDelete = false,
+    deleteButton,
+    filters,
+    conditions,
+    inputProperties,
+    wildcardSearch,
+    toolbarItems,
+    onDataFirstLoaded,
+    onDataLoaded,
+    getRowId,
+    theme,
+    tick = 0,
+    styles = {},
+    editService,
+    editableFields,
+    noRowsComponent,
+    loadingComponent,
+}: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
 	const dataFirstLoadedRef = useRef(false);
@@ -146,7 +147,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		if (!id) return;
 
 		// Type guard to ensure repository has delete capability
-		if (!('delete' in repository) || typeof (repository as any).delete !== 'function') {
+		if (!('delete' in repository) || typeof (repository as IDataService<T, U>).delete !== 'function') {
 			console.error('Repository does not support delete operations');
 			return;
 		}
@@ -166,7 +167,7 @@ export function DataGrid<T extends object, U extends T = T>({
 			const order: OrderBy<T> = {};
 			const gridApi = gridApiRef.current;
 			if (gridApi) {
-				const sortModel = (gridApi as any).getColumnState() as SortModelItem[];
+				const sortModel = (gridApi as GridApi<U>).getColumnState() as SortModelItem[];
 				if (sortModel?.length > 0) {
 					for (const sort of sortModel) {
 						const key = sort.colId;
@@ -276,7 +277,7 @@ export function DataGrid<T extends object, U extends T = T>({
 			if (col.field && !col.field.startsWith('_')) {
 				acc.push(String(col.field));
 			}
-			const children = (col as any).children as ColDef[] | undefined;
+			const children = (col as Record<string, unknown>).children as ColDef<U>[] | undefined;
 			if (children) {
 				acc.push(...getFieldsFromColDefs(children));
 			}
@@ -298,7 +299,7 @@ export function DataGrid<T extends object, U extends T = T>({
 					}
 				}
 
-				const primaryKey = (repository as any).primaryKey as keyof T | Array<keyof T>;
+				const primaryKey = (repository as unknown as Record<string, unknown>).primaryKey as keyof T | Array<keyof T>;
 				const select = [...new Set([
 					...getFieldsFromColDefs(columnDefs),
 					...(primaryKey ? (Array.isArray(primaryKey) ? primaryKey : [primaryKey]) : [])
@@ -379,7 +380,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 	}, [tick, filters, conditions, inputProperties]);
 
-	const onGridReady = (params: any) => {
+	const onGridReady = (params: GridReadyEvent<U>) => {
 		if (isMountedRef.current) {
 			gridApiRef.current = params.api;
 			params.api.updateGridOptions({datasource: dataSource});
@@ -426,4 +427,4 @@ export function DataGrid<T extends object, U extends T = T>({
 			</div>
 		</div>
 	);
-} 
+}                                          

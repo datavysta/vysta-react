@@ -5,7 +5,7 @@ export enum ObjectType {
 	Procedure = 'Procedure',
 	SystemDataType = 'SystemDataType',
 	UserDefinedDataType = 'UserDefinedDataType',
-	Constraint = 'UserDefinedDataType',
+	Constraint = 'Constraint',
 	Query = 'Query',
 }
 

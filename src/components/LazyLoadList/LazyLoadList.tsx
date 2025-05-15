@@ -49,7 +49,7 @@ export function LazyLoadList<T extends object>({
     const [totalCount, setTotalCount] = useState<number | undefined>(undefined);
     const [totalLoaded, setTotalLoaded] = useState(0);
 
-    const effectivePrimaryKey = ((repository as any).primaryKey || 'id') as keyof T;
+    const effectivePrimaryKey = ((repository as unknown as Record<string, unknown>).primaryKey || 'id') as keyof T;
     const effectiveFilters = useMemo(() => filters || {}, [filters]);
     const effectiveOrderBy = useMemo(() => orderBy || { [displayColumn]: 'asc' }, [orderBy, displayColumn]);
     const selectedOption = options.find(opt => String(opt[effectivePrimaryKey]) === value);
@@ -86,7 +86,7 @@ export function LazyLoadList<T extends object>({
         }
         
         const hasValue = options.some(opt => String(opt[effectivePrimaryKey]) === value);
-        const hasTempValue = options.some(opt => (opt as any).__isTemp && String(opt[effectivePrimaryKey]) === value);
+        const hasTempValue = options.some(opt => (opt as Record<string, unknown>).__isTemp && String(opt[effectivePrimaryKey]) === value);
         
         if (isMountedRef.current) {
             setLoading(!hasValue && !hasTempValue);
@@ -98,7 +98,7 @@ export function LazyLoadList<T extends object>({
         if (!value || !isMountedRef.current) return;
 
         const hasValue = options.some(opt => String(opt[effectivePrimaryKey]) === value);
-        const hasTempValue = options.some(opt => (opt as any).__isTemp && String(opt[effectivePrimaryKey]) === value);
+        const hasTempValue = options.some(opt => (opt as Record<string, unknown>).__isTemp && String(opt[effectivePrimaryKey]) === value);
         
         // Add temporary option if value not found and we're not querying for details
         if (!hasValue && !hasTempValue && (disableInitialValueLoad || displayColumn === effectivePrimaryKey) && isMountedRef.current) {
@@ -107,7 +107,7 @@ export function LazyLoadList<T extends object>({
                 [displayColumn]: value,
                 __isTemp: true
             } as unknown as T;
-            setOptions(prev => [tempItem, ...prev.filter(opt => !(opt as any).__isTemp)]);
+            setOptions(prev => [tempItem, ...prev.filter(opt => !(opt as Record<string, unknown>).__isTemp)]);
         }
     }, [value, options, effectivePrimaryKey, displayColumn, disableInitialValueLoad]);
 
@@ -138,7 +138,7 @@ export function LazyLoadList<T extends object>({
 
         // Skip if value exists in loaded results (non-temp)
         const valueInResults = options.some(opt => 
-            !(opt as any).__isTemp && 
+            !(opt as Record<string, unknown>).__isTemp && 
             String(opt[effectivePrimaryKey]) === value
         );
         if (valueInResults) {
@@ -176,7 +176,7 @@ export function LazyLoadList<T extends object>({
             let valueData: T;
             
             if ('getById' in repository) {
-                valueData = await (repository as any).getById(value);
+                valueData = await (repository as unknown as { getById: (id: string) => Promise<T> }).getById(value);
             } else {
                 const result = await repository.getAll({
                     filters: { 
@@ -204,7 +204,7 @@ export function LazyLoadList<T extends object>({
             // If we already have options loaded, merge the temp item with existing options
             setOptions(prev => {
                 // Remove any previous temp items
-                const filtered = prev.filter(item => !(item as any).__isTemp);
+                const filtered = prev.filter(item => !(item as Record<string, unknown>).__isTemp);
                 return [tempItem, ...filtered];
             });
             setResolvedItems(new Set([value]));
@@ -376,7 +376,7 @@ export function LazyLoadList<T extends object>({
         return items
             .filter(item => {
                 // Filter out temporary items
-                return !(item as any).__isTemp;
+                return !(item as Record<string, unknown>).__isTemp;
             })
             .map((item) => {
                 const itemId = String(item[effectivePrimaryKey]);
@@ -442,7 +442,7 @@ export function LazyLoadList<T extends object>({
                         classNames={{ input: moduleStyles.searchInput }}
                     />
                 )}
-                {(loading || options.some(opt => !(opt as any).__isTemp)) && (
+                {(loading || options.some(opt => !(opt as Record<string, unknown>).__isTemp)) && (
                     <ScrollArea.Autosize
                         mah="30vh"
                         type="scroll"
@@ -464,7 +464,7 @@ export function LazyLoadList<T extends object>({
                                     renderOptions(items)
                                 )
                             ))}
-                            {!loading && (!options.length || options.every(item => (item as any).__isTemp)) && (
+                            {!loading && (!options.length || options.every(item => (item as Record<string, unknown>).__isTemp)) && (
                                 <Combobox.Empty>No options found</Combobox.Empty>
                             )}
                         </Combobox.Options>
@@ -473,4 +473,4 @@ export function LazyLoadList<T extends object>({
             </Combobox.Dropdown>
         </Combobox>
     );
-} 
+}                          

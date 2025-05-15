@@ -16,11 +16,11 @@ interface IFilterProps {
 }
 
 const FilterExpressionRightHandSide: FC<IFilterProps> = ({
-	                                                         label,
-	                                                         onChange,
-	                                                         data,
-	                                                         expressionCondition,
-                                                         }: IFilterProps) => {
+    label,
+    onChange,
+    data,
+    expressionCondition,
+}: IFilterProps) => {
 	const {comparisonOperator} = expressionCondition;
 
 	const isComparisonOperatorBetweenOrNotBetween =

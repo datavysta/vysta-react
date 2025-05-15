@@ -1,6 +1,6 @@
 import {DependencyList, useEffect, useRef} from 'react';
 
-const useUpdateEffect = (effect: Function, dependencies: DependencyList | undefined) => {
+const useUpdateEffect = (effect: () => void, dependencies: DependencyList | undefined) => {
 	const isFirstRender = useRef(true);
 
 	useEffect(() => {
@@ -9,8 +9,7 @@ const useUpdateEffect = (effect: Function, dependencies: DependencyList | undefi
 			return;
 		}
 
-		effect();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		return effect();
 	}, dependencies);
 };
 
