@@ -60,7 +60,7 @@ const FilterPanel: FC<IFilterProps> = ({
 				const selectColumns = definition.loaderColumns || ["id", "name"];
 				try {
 					const options = await definition.loader({ limit: 5000, select: selectColumns });
-					const validValues = options.data.map(option => {
+					const validValues = options.data.map((option: Record<string, unknown>) => {
 						const key = selectColumns[0] as keyof typeof option;
 						return option[key];
 					});

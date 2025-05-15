@@ -1,4 +1,4 @@
-import {IReadonlyDataService} from "../../../../vysta-client";
+import {IReadonlyDataService} from '@datavysta/vysta-client';
 import DataType from "../Models/DataType";
 
 type FilterDefinition<TBase, TSummary extends TBase> = {
