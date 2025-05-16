@@ -28,5 +28,5 @@
 
 .grid-container {
   flex: 1;
-  min-height: 0;  // Important for flex child scrolling
+  min-height: 0;  /* Important for flex child scrolling */
 } 
