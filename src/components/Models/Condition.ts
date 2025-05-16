@@ -35,7 +35,7 @@ export const newCondition = (
 	values: !value || !value.length ? [] : Array.isArray(value) ?  value : [value],
 });
 
-export const deleteConditionProperties = (arr: any[]) => {
+export const deleteConditionProperties = (arr: Partial<Condition>[]) => {
 	arr.forEach((obj) => {
 		delete obj.id;
 		delete obj.valid;

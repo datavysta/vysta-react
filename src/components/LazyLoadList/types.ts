@@ -41,7 +41,7 @@ export interface LazyLoadListProps<T extends object> {
     /**
      * Filters to apply to the data service
      */
-    filters?: { [K in keyof T]?: any };
+    filters?: { [K in keyof T]?: Record<string, unknown> };
 
     /**
      * Additional input properties for the data service
@@ -112,4 +112,4 @@ export interface LazyLoadListProps<T extends object> {
 export interface LoaderResult<T> {
     data: T[];
     count?: number;
-} 
+}  

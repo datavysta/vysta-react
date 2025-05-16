@@ -5,9 +5,9 @@ import { VystaClient, VystaPermissionService } from '@datavysta/vysta-client';
 export interface AuthWrapper {
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  getSignInMethods: () => Promise<any>;
+  getSignInMethods: () => Promise<unknown[]>;
   getAuthorizeUrl: (providerId: string) => Promise<string>;
-  exchangeToken: (token: string) => Promise<any>;
+  exchangeToken: (token: string) => Promise<unknown>;
 }
 
 export interface UseAuthOptions {
@@ -21,9 +21,9 @@ export interface UseAuthResult {
   permissions: Record<string, ObjectPermission> | null;
   canSelectConnection: (app: string) => boolean;
   profileLoading: boolean;
-  profileError: any;
+  profileError: unknown;
   loginLoading: boolean;
-  loginError: any;
+  loginError: unknown;
   isAuthenticated: boolean;
   auth: AuthWrapper;
 }
@@ -32,9 +32,9 @@ export function useAuth({ client, permissionService, apps }: UseAuthOptions): Us
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [permissions, setPermissions] = useState<Record<string, ObjectPermission> | null>(null);
   const [profileLoading, setProfileLoading] = useState<boolean>(true);
-  const [profileError, setProfileError] = useState<any>(null);
+  const [profileError, setProfileError] = useState<unknown>(null);
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
-  const [loginError, setLoginError] = useState<any>(null);
+  const [loginError, setLoginError] = useState<unknown>(null);
   const [tick, setTick] = useState(0);
 
   // Helper: fetch profile and permissions
@@ -126,4 +126,4 @@ export function useAuth({ client, permissionService, apps }: UseAuthOptions): Us
     isAuthenticated,
     auth,
   };
-} 
+}          

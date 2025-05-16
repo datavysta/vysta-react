@@ -12,6 +12,6 @@ type FilterDefinition<TBase, TSummary extends TBase> = {
     staticData?: boolean;
 };
 
-export type FilterDefinitionWrapper = FilterDefinition<any, any>;
+export type FilterDefinitionWrapper = FilterDefinition<Record<string, unknown>, Record<string, unknown>>;
 
 export type FilterDefinitionsByField = FilterDefinitionWrapper[];

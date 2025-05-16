@@ -3,7 +3,7 @@ import { BaseEditableCell } from './BaseEditableCell';
 import type { IReadonlyDataService } from '@datavysta/vysta-client';
 
 interface ListConfig {
-    listService: IReadonlyDataService<any>;
+    listService: IReadonlyDataService<Record<string, unknown>>;
     displayColumn: string;
     clearable?: boolean;
 }
@@ -11,7 +11,7 @@ interface ListConfig {
 export class EditableListCell extends BaseEditableCell {
     render() {
         const { listService, displayColumn, clearable } = this.props as unknown as ListConfig;
-        const options = (this.props as any).listOptions || {};
+        const options = (this.props as Record<string, unknown>).listOptions || {};
 
         return (
             <LazyLoadList
@@ -31,4 +31,4 @@ export class EditableListCell extends BaseEditableCell {
             />
         );
     }
-} 
+}    

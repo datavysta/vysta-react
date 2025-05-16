@@ -1,7 +1,7 @@
 interface IProperty {
 	design?: boolean;
-	data?: any;
-	onPropertyChanged?(propertyName: string, value: any): void;
+	data?: Record<string, unknown>;
+	onPropertyChanged?(propertyName: string, value: unknown): void;
 }
 
 export default IProperty;

@@ -13,10 +13,10 @@ export enum EditableFieldType {
 export interface EditableFieldConfig {
     dataType: EditableFieldType;
     // For list type
-    listService?: IReadonlyDataService<any>;
+    listService?: IReadonlyDataService<Record<string, unknown>>;
     displayColumn?: string;
     clearable?: boolean;
-    listOptions?: Partial<LazyLoadListProps<any>>;
+    listOptions?: Partial<LazyLoadListProps<Record<string, unknown>>>;
     // For number type
     numberOptions?: Partial<NumberInputProps>;
     // For date type

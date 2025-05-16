@@ -1,4 +1,4 @@
-export function isEmpty(value: any): boolean {
+export function isEmpty(value: unknown): boolean {
     if (value == null) return true;
     
     if (Array.isArray(value) || typeof value === 'string') {
@@ -16,4 +16,4 @@ export function isEmpty(value: any): boolean {
     return false;
 }
 
-export default isEmpty; 
+export default isEmpty;  

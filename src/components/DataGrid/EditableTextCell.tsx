@@ -76,3 +76,5 @@ export const EditableTextCell = forwardRef((
         />
     );
 }); 
+
+EditableTextCell.displayName = 'EditableTextCell';  

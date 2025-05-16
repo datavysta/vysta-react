@@ -78,7 +78,7 @@ export default class ExpressionCondition implements Condition {
 							conditionMode,
 							condition
 						),
-				  ];
+                  ];
 		} else {
 			condition.startExpression = value;
 		}

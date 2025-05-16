@@ -10,9 +10,9 @@ export interface VystaServiceContextValue {
   canSelectConnection: ReturnType<typeof useAuth>["canSelectConnection"];
   isAuthenticated: boolean;
   profileLoading: boolean;
-  profileError: any;
+  profileError: unknown;
   loginLoading: boolean;
-  loginError: any;
+  loginError: unknown;
   auth: AuthWrapper;
 }
 
@@ -70,4 +70,4 @@ export function useVystaServices(): VystaServiceContextValue {
   const ctx = useContext(VystaServiceContext);
   if (!ctx) throw new Error('useVystaServices must be used within a VystaServiceProvider');
   return ctx;
-} 
+}  
