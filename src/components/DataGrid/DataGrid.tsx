@@ -12,7 +12,8 @@ import {
 	ModuleRegistry,
 	InfiniteRowModelModule,
 	SortModelItem, TextEditorModule, ColumnApiModule,
-	ColumnResizedEvent
+	ColumnResizedEvent,
+	Column
 } from 'ag-grid-community';
 import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
 import type {OrderBy, SortDirection, IReadonlyDataService, IDataService, SelectColumn} from '@datavysta/vysta-client';
@@ -90,7 +91,7 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	/**
 	 * Optional custom render for the aggregate summary row. If not provided, a default row is rendered.
 	 */
-	renderAggregateFooter?: (summary: Record<string, any>) => React.ReactNode;
+	renderAggregateFooter?: (summary: Record<string, unknown>) => React.ReactNode;
 }
 
 export function DataGrid<T extends object, U extends T = T>({
@@ -125,7 +126,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
 	const dataFirstLoadedRef = useRef(false);
 	const isMountedRef = useRef(true);
-	const [aggregateSummary, setAggregateSummary] = useState<Record<string, any> | null>(null);
+	const [aggregateSummary, setAggregateSummary] = useState<Record<string, unknown> | null>(null);
 	const [footerColWidths, setFooterColWidths] = useState<Record<string, number>>({});
 
 	// Track component mount status
@@ -366,12 +367,12 @@ export function DataGrid<T extends object, U extends T = T>({
 
 	// Helper to update footer column widths from AG Grid ColumnApi
 	const updateFooterColWidths = (api: GridApi<U>) => {
-		let columns = api.getAllDisplayedColumns?.() ?? [];
+		let columns: Column[] = api.getAllDisplayedColumns?.() ?? [];
 		if (!columns || columns.length === 0) {
-			columns = api.getColumns?.() ?? [];
+			columns = api.getColumns?.() ?? [] as Column[];
 		}
 		const widths: Record<string, number> = {};
-		columns.forEach((col: any) => {
+		columns.forEach((col: Column) => {
 			const field = col.getColDef().field;
 			if (field) widths[String(field)] = col.getActualWidth();
 		});
@@ -450,7 +451,7 @@ export function DataGrid<T extends object, U extends T = T>({
 					q: wildcardSearch
 				});
 				if (!cancelled) {
-					setAggregateSummary(result.data?.[0] || null);
+					setAggregateSummary((result.data?.[0] as Record<string, unknown>) || null);
 				}
 			} catch (e) {
 				if (!cancelled) setAggregateSummary(null);
@@ -498,13 +499,10 @@ export function DataGrid<T extends object, U extends T = T>({
 					};
 					// format value using col.valueFormatter if available
 					let displayValue: string = value;
-					if (value !== '' && col && 'valueFormatter' in col && col.valueFormatter) {
+					if (value !== '' && col && 'valueFormatter' in col && typeof col.valueFormatter === 'function') {
 						try {
-							const vf = col.valueFormatter as any;
-							if (typeof vf === 'function') {
-								displayValue = vf({ value });
-							}
-						} catch { /* ignore formatter errors */ }
+							displayValue = String((col.valueFormatter as (p: { value: unknown }) => string)({ value }));
+						} catch {/* ignore formatter errors */}
 					}
 					return (
 						<div
