@@ -95,4 +95,31 @@
 .downloadButton:disabled {
     background-color: #e0e0e0;
     cursor: not-allowed;
+}
+
+.aggregateFooter {
+    background: #f8fafc;
+    border-top: 1px solid #e0e0e0;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #222;
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+}
+
+.aggregateFooterCell {
+    text-align: left;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.5rem 1rem;
+}
+
+.aggregateValue {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 } 

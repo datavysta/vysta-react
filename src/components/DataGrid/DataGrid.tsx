@@ -11,10 +11,11 @@ import {
 	GetRowIdParams,
 	ModuleRegistry,
 	InfiniteRowModelModule,
-	SortModelItem, TextEditorModule,
+	SortModelItem, TextEditorModule, ColumnApiModule,
+	ColumnResizedEvent
 } from 'ag-grid-community';
 import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
-import type {OrderBy, SortDirection, IReadonlyDataService, IDataService} from '@datavysta/vysta-client';
+import type {OrderBy, SortDirection, IReadonlyDataService, IDataService, SelectColumn} from '@datavysta/vysta-client';
 import {FileType} from '@datavysta/vysta-client';
 import moduleStyles from './DataGrid.module.css';
 import type Condition from '../Models/Condition';
@@ -27,7 +28,8 @@ import { EditableListCell } from './cells/EditableListCell';
 
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
-	TextEditorModule
+	TextEditorModule,
+	ColumnApiModule
 ]);
 
 export interface DataGridStyles {
@@ -43,6 +45,7 @@ export interface DataGridStyles {
 	createButton?: React.CSSProperties;
 	downloadButton?: React.CSSProperties;
 	deleteButton?: React.CSSProperties;
+	aggregateFooter?: React.CSSProperties;
 }
 
 export interface DataGridProps<T extends object, U extends T = T> {
@@ -79,6 +82,15 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	};
 	noRowsComponent?: React.ComponentType<Record<string, unknown>>;
 	loadingComponent?: React.ComponentType<Record<string, unknown>>;
+	/**
+	 * Columns to aggregate and show as a summary/footer row below the grid.
+	 * Uses Vysta aggregate queries (AVG, SUM, etc). See SelectColumn in @datavysta/vysta-client.
+	 */
+	aggregateSelect?: SelectColumn<T>[];
+	/**
+	 * Optional custom render for the aggregate summary row. If not provided, a default row is rendered.
+	 */
+	renderAggregateFooter?: (summary: Record<string, any>) => React.ReactNode;
 }
 
 export function DataGrid<T extends object, U extends T = T>({
@@ -106,11 +118,15 @@ export function DataGrid<T extends object, U extends T = T>({
     editableFields,
     noRowsComponent,
     loadingComponent,
+    aggregateSelect,
+    renderAggregateFooter,
 }: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
 	const dataFirstLoadedRef = useRef(false);
 	const isMountedRef = useRef(true);
+	const [aggregateSummary, setAggregateSummary] = useState<Record<string, any> | null>(null);
+	const [footerColWidths, setFooterColWidths] = useState<Record<string, number>>({});
 
 	// Track component mount status
 	useEffect(() => {
@@ -348,6 +364,32 @@ export function DataGrid<T extends object, U extends T = T>({
 		return params.data ? getRowId(params.data) : '';
 	}, [getRowId]);
 
+	// Helper to update footer column widths from AG Grid ColumnApi
+	const updateFooterColWidths = (api: GridApi<U>) => {
+		let columns = api.getAllDisplayedColumns?.() ?? [];
+		if (!columns || columns.length === 0) {
+			columns = api.getColumns?.() ?? [];
+		}
+		const widths: Record<string, number> = {};
+		columns.forEach((col: any) => {
+			const field = col.getColDef().field;
+			if (field) widths[String(field)] = col.getActualWidth();
+		});
+		setFooterColWidths(prev =>
+			Object.keys(widths).length !== Object.keys(prev).length ||
+			Object.entries(widths).some(([k, v]) => prev[k] !== v)
+				? widths
+				: prev
+		);
+	};
+
+	// Use only onColumnResized to update footer widths
+	const onColumnResized = (event: ColumnResizedEvent<U>) => {
+		if (event.api) {
+			updateFooterColWidths(event.api as GridApi<U>);
+		}
+	};
+
 	const actualGridOptions = useMemo<GridOptions<U>>(() => {
 		const { components: gridOptionsComponents, ...restGridOptions } = gridOptions || {};
 		
@@ -370,6 +412,7 @@ export function DataGrid<T extends object, U extends T = T>({
 			suppressNoRowsOverlay: !noRowsComponent,
 			loadingOverlay: loadingComponent,
 			suppressLoadingOverlay: !loadingComponent,
+			onColumnResized,
 		};
 	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns, noRowsComponent, loadingComponent]);
 
@@ -383,13 +426,100 @@ export function DataGrid<T extends object, U extends T = T>({
 	const onGridReady = (params: GridReadyEvent<U>) => {
 		if (isMountedRef.current) {
 			gridApiRef.current = params.api;
-			params.api.updateGridOptions({datasource: dataSource});
-
+			params.api.updateGridOptions({ datasource: dataSource });
 			if (typeof gridOptions?.onGridReady === 'function') {
 				gridOptions.onGridReady(params);
 			}
 		}
 	};
+
+	// Fetch aggregate summary when aggregateSelect or filters/conditions change
+	useEffect(() => {
+		let cancelled = false;
+		if (!aggregateSelect) {
+			setAggregateSummary(null);
+			return;
+		}
+		(async () => {
+			try {
+				const result = await repository.query({
+					select: aggregateSelect,
+					filters,
+					conditions,
+					inputProperties,
+					q: wildcardSearch
+				});
+				if (!cancelled) {
+					setAggregateSummary(result.data?.[0] || null);
+				}
+			} catch (e) {
+				if (!cancelled) setAggregateSummary(null);
+			}
+		})();
+		return () => { cancelled = true; };
+	}, [aggregateSelect, filters, conditions, inputProperties, wildcardSearch, repository]);
+
+	// Require all aggregateSelect entries to have an alias
+	if (aggregateSelect) {
+		const missingAlias = aggregateSelect.find(sel => !sel.alias);
+		if (missingAlias) {
+			throw new Error('All aggregateSelect entries must have an alias. Missing for: ' + String(missingAlias.name ?? 'unknown'));
+		}
+	}
+
+	// Helper to render the aggregate summary row
+	function renderAggregateFooterRow() {
+		if (!aggregateSummary) return null;
+		return (
+			<div style={{ display: 'flex', width: '100%' }}>
+				{modifiedColDefs.map((col, idx) => {
+					const field = typeof col.field === 'string' || typeof col.field === 'number'
+						? String(col.field)
+						: String(idx);
+					// Find the aggregate for this column by name
+					const agg = aggregateSelect?.find(sel => sel.name === field);
+					// Use alias for lookup (always present and string)
+					const value = agg && aggregateSummary[agg.alias!] != null
+						? String(aggregateSummary[agg.alias!])
+						: '';
+					// Try to get the width from the AG Grid column API if missing
+					let width = footerColWidths[field];
+					if (!width && gridApiRef.current) {
+						const agCol = gridApiRef.current.getColumnDef(field);
+						if (agCol && typeof agCol.width === 'number') {
+							width = agCol.width;
+						}
+					}
+					const style = {
+						width: width ?? col.width ?? undefined,
+						flex: col.flex ?? undefined,
+						minWidth: col.minWidth ?? undefined,
+						maxWidth: col.maxWidth ?? undefined,
+					};
+					// format value using col.valueFormatter if available
+					let displayValue: string = value;
+					if (value !== '' && col && 'valueFormatter' in col && col.valueFormatter) {
+						try {
+							const vf = col.valueFormatter as any;
+							if (typeof vf === 'function') {
+								displayValue = vf({ value });
+							}
+						} catch { /* ignore formatter errors */ }
+					}
+					return (
+						<div
+							key={field}
+							className={moduleStyles.aggregateFooterCell}
+							data-field={field}
+							style={style}
+						>
+							<span className={moduleStyles.aggregateValue}>{displayValue}</span>
+						</div>
+					);
+				})}
+			</div>
+		);
+	}
 
 	return (
 		<div className={moduleStyles.container} style={styles.container}>
@@ -425,6 +555,11 @@ export function DataGrid<T extends object, U extends T = T>({
 					theme={theme}
 				/>
 			</div>
+			{aggregateSelect && aggregateSummary && (
+				<div className={moduleStyles.aggregateFooter} style={styles.aggregateFooter}>
+					{renderAggregateFooter ? renderAggregateFooter(aggregateSummary) : renderAggregateFooterRow()}
+				</div>
+			)}
 		</div>
 	);
 }                                          
