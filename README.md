@@ -394,6 +394,53 @@ function ProductList() {
 }
 ```
 
+### Aggregate Summary Row (Footer)
+
+DataGrid supports showing a summary/footer row with aggregate values (SUM, AVG, etc) using the Vysta aggregate query API. This is useful for totals, averages, and other summary statistics.
+
+#### Usage Example
+
+```tsx
+import { DataGrid } from '@datavysta/vysta-react';
+import { Aggregate, SelectColumn } from '@datavysta/vysta-client';
+
+const aggregateSelect: SelectColumn<Product>[] = [
+  { name: 'unitPrice', aggregate: Aggregate.AVG, alias: 'avgUnitPrice' },
+  { name: 'unitsInStock', aggregate: Aggregate.SUM, alias: 'totalUnitsInStock' },
+];
+
+<DataGrid<Product>
+  title="Products"
+  noun="Product"
+  repository={productService}
+  columnDefs={columnDefs}
+  getRowId={(product) => product.productId.toString()}
+  aggregateSelect={aggregateSelect}
+/>
+```
+
+- The summary row appears below the grid and updates with filters, search, etc.
+- By default, the row matches columns by field name or alias. You can customize rendering with the `renderAggregateFooter` prop.
+- The summary row is not part of the grid (not a pinned row), so it is always visible below the grid.
+
+#### Details & Customization
+
+- **Column value formatting**: The footer automatically applies the column's `valueFormatter` (if provided in your `columnDefs`). This lets you format numbers, currency, dates, etc., exactly the same way as in the grid cells.
+- **Alias required**: Every `SelectColumn` in `aggregateSelect` must have an `alias`. The alias is used to look up the aggregate value in the server response.
+- **Column matching**: The footer places the aggregate under the column whose `field` equals the `name` in the `SelectColumn`. The `alias` can be anything you like.
+- **Fully custom footer**: Provide a `renderAggregateFooter` prop to supply your own React node. You receive the raw `summary` object (keyed by alias) and can render any layout, charts, or styled components you need.
+
+#### Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `aggregateSelect` | `SelectColumn<T>[]` | Columns/aggregates to fetch and show in the summary row |
+| `renderAggregateFooter` | `(summary: Record<string, any>) => React.ReactNode` | Optional custom render for the summary row |
+| `styles.aggregateFooter` | `React.CSSProperties` | Custom style for the summary/footer row |
+| `styles.aggregateValue` | `React.CSSProperties` | Style override for the `<span>` that holds each formatted value |
+
+See the [@datavysta/vysta-client](https://www.npmjs.com/package/@datavysta/vysta-client) docs for more on `Aggregate` and `SelectColumn`.
+
 ## LazyLoadList Component
 
 The LazyLoadList component provides a searchable, lazy-loading dropdown list that efficiently loads data from a Vysta service.

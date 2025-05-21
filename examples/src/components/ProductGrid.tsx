@@ -5,6 +5,7 @@ import { ColDef } from 'ag-grid-community';
 import { Product } from '../types/Product';
 import './ProductGrid.css';
 import { PageView } from '../types/PageView';
+import { Aggregate, SelectColumn } from '@datavysta/vysta-client';
 
 interface ProductGridProps {
     onViewChange: (view: PageView) => void;
@@ -17,9 +18,14 @@ export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
     const columnDefs = useMemo<ColDef<Product>[]>(() => [
         { field: 'productId', headerName: 'ID' },
         { field: 'productName', headerName: 'Name' },
-        { field: 'unitPrice', headerName: 'Price' },
+        { field: 'unitPrice', headerName: 'Price', valueFormatter: ({ value }) => value && `$${Number(value).toFixed(2)}` },
         { field: 'unitsInStock', headerName: 'Stock' },
         { field: 'discontinued', headerName: 'Discontinued' }
+    ], []);
+
+    const aggregateSelect = useMemo<SelectColumn<Product>[]>(() => [
+        { name: 'unitPrice', aggregate: Aggregate.AVG, alias: 'avgUnitPrice' },
+        { name: 'unitsInStock', aggregate: Aggregate.SUM, alias: 'totalUnitsInStock' },
     ], []);
 
     return (
@@ -32,6 +38,7 @@ export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
                     columnDefs={columnDefs}
                     getRowId={(product) => product.productId.toString()}
                     tick={tick}
+                    aggregateSelect={aggregateSelect}
                 />
             </div>
         </div>
