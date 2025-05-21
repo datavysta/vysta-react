@@ -178,7 +178,11 @@ export function DataGrid<T extends object, U extends T = T>({
 
 			const select = [...new Set(
 				columnDefs
-					.filter(col => col.field && !col.field.startsWith('_'))
+					.filter(col => {
+						return col.field && 
+							!col.field.startsWith('_') && 
+							!(col as { suppressCsvExport?: boolean }).suppressCsvExport;
+					})
 					.map(col => String(col.field) as keyof T)
 			)];
 
@@ -427,4 +431,4 @@ export function DataGrid<T extends object, U extends T = T>({
 			</div>
 		</div>
 	);
-}                                          
+}                                                                                                                                                                                                                                                            
