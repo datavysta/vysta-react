@@ -15,12 +15,28 @@ interface ProductGridProps {
 export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
     const { productService } = useServices();
 
+    const defaultColDef = useMemo<ColDef>(() => ({ minWidth: 150 }), []);
+
     const columnDefs = useMemo<ColDef<Product>[]>(() => [
         { field: 'productId', headerName: 'ID' },
         { field: 'productName', headerName: 'Name' },
         { field: 'unitPrice', headerName: 'Price', valueFormatter: ({ value }) => value && `$${Number(value).toFixed(2)}` },
         { field: 'unitsInStock', headerName: 'Stock' },
-        { field: 'discontinued', headerName: 'Discontinued' }
+        { field: 'discontinued', headerName: 'Discontinued' },
+        { headerName: 'Price 2', colId: 'price2', valueGetter: () => 'hello' },
+        { headerName: 'Stock 2', colId: 'stock2', valueGetter: () => 'hello' },
+        { headerName: 'Name 2', colId: 'name2', valueGetter: () => 'hello' },
+        { headerName: 'Price 3', colId: 'price3', valueGetter: () => 'hello' },
+        { headerName: 'Stock 3', colId: 'stock3', valueGetter: () => 'hello' },
+        { headerName: 'Name 3', colId: 'name3', valueGetter: () => 'hello' },
+        { headerName: 'Price 4', colId: 'price4', valueGetter: () => 'hello' },
+        { headerName: 'Stock 4', colId: 'stock4', valueGetter: () => 'hello' },
+        { headerName: 'Name 4', colId: 'name4', valueGetter: () => 'hello' },
+        { headerName: 'Price 5', colId: 'price5', valueGetter: () => 'hello' },
+        { headerName: 'Stock 5', colId: 'stock5', valueGetter: () => 'hello' },
+        { headerName: 'Name 5', colId: 'name5', valueGetter: () => 'hello' },
+        { field: 'unitsInStock', headerName: 'Stock Duplicate 1' },
+        { field: 'unitsInStock', headerName: 'Stock Duplicate 2' },
     ], []);
 
     const aggregateSelect = useMemo<SelectColumn<Product>[]>(() => [
@@ -36,6 +52,7 @@ export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
                     noun="Product"
                     repository={productService}
                     columnDefs={columnDefs}
+                    gridOptions={{ defaultColDef }}
                     getRowId={(product) => product.productId.toString()}
                     tick={tick}
                     aggregateSelect={aggregateSelect}

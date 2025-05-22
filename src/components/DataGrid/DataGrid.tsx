@@ -13,7 +13,8 @@ import {
 	InfiniteRowModelModule,
 	SortModelItem, TextEditorModule, ColumnApiModule,
 	ColumnResizedEvent,
-	Column
+	Column,
+	BodyScrollEvent
 } from 'ag-grid-community';
 import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
 import type {OrderBy, SortDirection, IReadonlyDataService, IDataService, SelectColumn} from '@datavysta/vysta-client';
@@ -127,7 +128,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	const dataFirstLoadedRef = useRef(false);
 	const isMountedRef = useRef(true);
 	const [aggregateSummary, setAggregateSummary] = useState<Record<string, unknown> | null>(null);
-	const [footerColWidths, setFooterColWidths] = useState<Record<string, number>>({});
+	const aggregateFooterRef = useRef<HTMLDivElement>(null);
 
 	// Track component mount status
 	useEffect(() => {
@@ -140,8 +141,9 @@ export function DataGrid<T extends object, U extends T = T>({
 	const defaultColDef = useMemo<ColDef>(() => ({
 		sortable: true,
 		resizable: true,
-		flex: 1
-	}), []);
+		flex: 1,
+		...(gridOptions?.defaultColDef || {}),
+	}), [gridOptions]);
 
 	const actionsCellRenderer = useCallback((params: ICellRendererParams<U>) => {
 		if (!supportDelete || !params.data) return null;
@@ -384,15 +386,9 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 		const widths: Record<string, number> = {};
 		columns.forEach((col: Column) => {
-			const field = col.getColDef().field;
-			if (field) widths[String(field)] = col.getActualWidth();
+			const colId = col.getColId();
+			if (colId) widths[String(colId)] = col.getActualWidth();
 		});
-		setFooterColWidths(prev =>
-			Object.keys(widths).length !== Object.keys(prev).length ||
-			Object.entries(widths).some(([k, v]) => prev[k] !== v)
-				? widths
-				: prev
-		);
 	};
 
 	// Use only onColumnResized to update footer widths
@@ -401,6 +397,14 @@ export function DataGrid<T extends object, U extends T = T>({
 			updateFooterColWidths(event.api as GridApi<U>);
 		}
 	};
+
+	// Sync aggregate footer scroll with grid scroll using AG Grid's onBodyScroll event
+	const handleBodyScroll = useCallback((event: BodyScrollEvent) => {
+		if (aggregateFooterRef.current) {
+			aggregateFooterRef.current.scrollLeft = event.left;
+			console.log('AG Grid onBodyScroll:', event.left);
+		}
+	}, []);
 
 	const actualGridOptions = useMemo<GridOptions<U>>(() => {
 		const { components: gridOptionsComponents, ...restGridOptions } = gridOptions || {};
@@ -425,8 +429,9 @@ export function DataGrid<T extends object, U extends T = T>({
 			loadingOverlay: loadingComponent,
 			suppressLoadingOverlay: !loadingComponent,
 			onColumnResized,
+			onBodyScroll: handleBodyScroll,
 		};
-	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns, noRowsComponent, loadingComponent]);
+	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns, noRowsComponent, loadingComponent, handleBodyScroll]);
 
 	useEffect(() => {
 		if (isMountedRef.current) {
@@ -481,45 +486,37 @@ export function DataGrid<T extends object, U extends T = T>({
 
 	// Helper to render the aggregate summary row
 	function renderAggregateFooterRow() {
-		if (!aggregateSummary) return null;
+		if (!aggregateSummary || !gridApiRef.current) return null;
+		const columns = gridApiRef.current.getAllDisplayedColumns?.() ?? [];
 		return (
-			<div style={{ display: 'flex', width: '100%' }}>
-				{modifiedColDefs.map((col, idx) => {
-					const field = typeof col.field === 'string' || typeof col.field === 'number'
-						? String(col.field)
-						: String(idx);
+			<div style={{ display: 'flex' }}>
+				{columns.map(col => {
+					const colId = col.getColId();
+					const colDef = col.getColDef();
+					const width = col.getActualWidth();
 					// Find the aggregate for this column by name
-					const agg = aggregateSelect?.find(sel => sel.name === field);
-					// Use alias for lookup (always present and string)
+					const agg = aggregateSelect?.find(sel => sel.name === (colDef.field ? String(colDef.field) : undefined));
 					const value = agg && aggregateSummary[agg.alias!] != null
 						? String(aggregateSummary[agg.alias!])
 						: '';
-					// Try to get the width from the AG Grid column API if missing
-					let width = footerColWidths[field];
-					if (!width && gridApiRef.current) {
-						const agCol = gridApiRef.current.getColumnDef(field);
-						if (agCol && typeof agCol.width === 'number') {
-							width = agCol.width;
-						}
-					}
 					const style = {
-						width: width ?? col.width ?? undefined,
-						flex: col.flex ?? undefined,
-						minWidth: col.minWidth ?? undefined,
-						maxWidth: col.maxWidth ?? undefined,
+						width,
+						minWidth: width,
+						maxWidth: width,
+						flex: 'none',
 					};
-					// format value using col.valueFormatter if available
+					// format value using colDef.valueFormatter if available
 					let displayValue: string = value;
-					if (value !== '' && col && 'valueFormatter' in col && typeof col.valueFormatter === 'function') {
+					if (value !== '' && colDef && 'valueFormatter' in colDef && typeof colDef.valueFormatter === 'function') {
 						try {
-							displayValue = String((col.valueFormatter as (p: { value: unknown }) => string)({ value }));
+							displayValue = String((colDef.valueFormatter as (p: { value: unknown }) => string)({ value }));
 						} catch {/* ignore formatter errors */}
 					}
 					return (
 						<div
-							key={field}
+							key={colId}
 							className={moduleStyles.aggregateFooterCell}
-							data-field={field}
+							data-field={colId}
 							style={style}
 						>
 							<span className={moduleStyles.aggregateValue}>{displayValue}</span>
@@ -565,7 +562,11 @@ export function DataGrid<T extends object, U extends T = T>({
 				/>
 			</div>
 			{aggregateSelect && aggregateSummary && (
-				<div className={moduleStyles.aggregateFooter} style={styles.aggregateFooter}>
+				<div
+					className={moduleStyles.aggregateFooter}
+					style={{ ...styles.aggregateFooter, overflowX: 'hidden', width: '100%' }}
+					ref={aggregateFooterRef}
+				>
 					{renderAggregateFooter ? renderAggregateFooter(aggregateSummary) : renderAggregateFooterRow()}
 				</div>
 			)}
