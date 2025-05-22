@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { DateInput } from '@mantine/dates';
+import { DateInput, DateValue } from '@mantine/dates';
 import IFieldProperty from '../../../Models/public/fieldproperty';
 
 export const DateField: FC<IFieldProperty> = ({
@@ -32,7 +32,7 @@ export const DateField: FC<IFieldProperty> = ({
             placeholder={placeholder}
             description={description}
             value={value ? new Date(value) : null}
-            onChange={(date: Date | null) => onChange?.(date ? date.toISOString() : '')}
+            onChange={(date: DateValue) => onChange?.(date instanceof Date ? date.toISOString() : date || '')}
             onBlur={onBlur}
             onFocus={onFocus}
             valueFormat="YYYY-MM-DD"
@@ -40,4 +40,4 @@ export const DateField: FC<IFieldProperty> = ({
     );
 };
 
-export default DateField; 
+export default DateField;      
