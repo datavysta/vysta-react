@@ -55,6 +55,11 @@ export function LazyLoadList<T extends object>({
     const selectedOption = options.find(opt => String(opt[effectivePrimaryKey]) === value);
     const displayValue = selectedOption ? String(selectedOption[displayColumn]) : '';
 
+    // Reset valueResolved when value changes to allow loading of new values
+    useEffect(() => {
+        setValueResolved(false);
+    }, [value, tick]);
+
     const combobox = useCombobox({
         onDropdownClose: () => {
             combobox.resetSelectedOption();
@@ -149,7 +154,7 @@ export function LazyLoadList<T extends object>({
         }
 
         loadValueData();
-    }, [value, displayColumn, effectivePrimaryKey, disableInitialValueLoad, options]);
+    }, [value, valueResolved, displayColumn, effectivePrimaryKey, disableInitialValueLoad, options]);
 
     // Load options when search changes or tick changes
     useEffect(() => {
