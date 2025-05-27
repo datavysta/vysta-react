@@ -1,8 +1,8 @@
-import {IReadonlyDataService} from '@datavysta/vysta-client';
+import type { IReadonlyDataService } from '@datavysta/vysta-client';
 import DataType from "../Models/DataType";
 
-type FilterDefinition<TBase, TSummary extends TBase> = {
-    loader?: IReadonlyDataService<TBase, TSummary>['getAll'];
+export type FilterDefinition<TBase, TSummary extends TBase> = {
+    repository?: IReadonlyDataService<TBase, TSummary>;
     loaderColumns?: string[]; // Custom column names (e.g., ["id", "code", "siteGroupName", "name"])
     targetFieldName?: string;
     label?: string;

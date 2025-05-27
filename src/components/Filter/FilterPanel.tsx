@@ -56,15 +56,18 @@ const FilterPanel: FC<IFilterProps> = ({
 			}
 
 			const definition = filterDefinitions.find(def => def.targetFieldName === condition.columnName);
-			if (definition?.loader) {
+			if (definition?.repository) {
 				const selectColumns = definition.loaderColumns || ["id", "name"];
 				try {
-					const options = await definition.loader({ limit: 5000, select: selectColumns });
+					const options = await definition.repository.getAll({ limit: 5000, select: selectColumns });
 					const validValues = options.data.map((option: Record<string, unknown>) => {
 						const key = selectColumns[0] as keyof typeof option;
 						return option[key];
 					});
-					condition.values = condition.values.filter(value => validValues.includes(value));
+					const filteredValues = condition.values.filter(value =>
+						validValues.map(String).includes(String(value))
+					);
+					condition.values = filteredValues;
 				} catch (error) {
 					console.error('Error loading options for validation:', error);
 				}

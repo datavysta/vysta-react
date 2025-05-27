@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import './FilterExample.css';
 import Condition from "../../../src/components/Models/Condition";
 import FilterPanel from "../../../src/components/Filter/FilterPanel";
@@ -7,6 +7,8 @@ import { FilterDefinitionsByField } from "../../../src/components/Filter/FilterD
 import CustomToggleComponent from '../../../src/components/datavistas/fields/CustomToggleComponent';
 import Fields from '../../../src/components/datavistas/fields';
 import { FieldComponentProvider } from '../../../src/components/datavistas/FieldComponentContext';
+import FilterRightHandSideLoaderExample from './FilterRightHandSideLoaderExample';
+import { useServices } from './ServicesProvider';
 
 interface FilterExampleProps {
     tick: number;
@@ -135,6 +137,46 @@ export function FilterExample({ tick }: FilterExampleProps) {
                         {JSON.stringify(conditions, null, 2)}
                     </pre>
                 </div>
+                <div style={{ marginTop: '40px' }}>
+                    <FilterLoaderExample />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function FilterLoaderExample() {
+    const { productService } = useServices();
+    const [conditions, setConditions] = useState<Condition[]>([]);
+    const filterDefinitions: FilterDefinitionsByField = [
+        {
+            targetFieldName: "productId",
+            label: "Product (with loader)",
+            dataType: DataType.String,
+            repository: productService,
+            loaderColumns: ["productId", "productName"],
+        },
+        {
+            targetFieldName: "unitPrice",
+            label: "Unit Price",
+            dataType: DataType.Numeric
+        },
+    ];
+    const handleApply = useCallback((appliedConditions: Condition[]) => {
+        setConditions(appliedConditions);
+    }, []);
+    return (
+        <div className="filter-panel-container">
+            <FieldComponentProvider>
+                <FilterPanel
+                    conditions={conditions}
+                    onApply={handleApply}
+                    filterDefinitions={filterDefinitions}
+                />
+            </FieldComponentProvider>
+            <div className="json-output">
+                <h2>Filter (with loader) JSON</h2>
+                <pre>{JSON.stringify(conditions, null, 2)}</pre>
             </div>
         </div>
     );
