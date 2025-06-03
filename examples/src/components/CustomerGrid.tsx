@@ -103,6 +103,8 @@ export function CustomerGrid({ tick }: CustomerGridProps) {
                     getRowId={(customer) => customer.customerId.toString()}
                     gridOptions={{
                         alwaysShowVerticalScroll: true,
+                        cacheBlockSize: 25,
+                        paginationPageSize: 25,
                     }}
                     styles={{
                         badge: {

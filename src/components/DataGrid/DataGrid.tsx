@@ -410,12 +410,17 @@ export function DataGrid<T extends object, U extends T = T>({
 		const { components: gridOptionsComponents, ...restGridOptions } = gridOptions || {};
 		
 		return {
-			...restGridOptions,
-			columnDefs: modifiedColDefs,
-			rowModelType: 'infinite',
+			// Defaults that can be overridden by user's gridOptions
 			cacheBlockSize: 50,
 			paginationPageSize: 50,
-			defaultColDef,
+
+			// User's gridOptions (excluding components, which are merged separately)
+			...restGridOptions,
+
+			// DataGrid's specific settings that take precedence
+			rowModelType: 'infinite', // Essential for this component's design
+			columnDefs: modifiedColDefs,
+			defaultColDef, // This is the merged version from useMemo
 			components: {
 				...(gridOptionsComponents || {}),
 				actionsCellRenderer,
