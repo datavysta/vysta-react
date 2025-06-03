@@ -8,7 +8,7 @@ export class EditableNumberCell extends BaseEditableCell {
         return (
             <NumberInput
                 {...options}
-                value={Number(this.state.value)}
+                value={this.state.value === null || this.state.value === undefined || this.state.value === '' ? '' : Number(this.state.value)}
                 onChange={(value) => this.setState({ value: String(value) })}
                 autoFocus
                 onFocus={(e) => e.target.select()}
