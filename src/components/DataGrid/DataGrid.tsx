@@ -281,6 +281,12 @@ export function DataGrid<T extends object, U extends T = T>({
 							params.node.setDataValue(col.field, newValue);
 
 							params.api.refreshInfiniteCache();
+							
+							try {
+								await refreshAggregates();
+							} catch (error) {
+								console.error('Failed to refresh aggregates after cell edit:', error);
+							}
 						},
 						...fieldConfig
 					})
@@ -455,31 +461,30 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 	};
 
-	// Fetch aggregate summary when aggregateSelect or filters/conditions change
-	useEffect(() => {
-		let cancelled = false;
+	const refreshAggregates = useCallback(async () => {
 		if (!aggregateSelect) {
 			setAggregateSummary(null);
 			return;
 		}
-		(async () => {
-			try {
-				const result = await repository.query({
-					select: aggregateSelect,
-					filters,
-					conditions,
-					inputProperties,
-					q: wildcardSearch
-				});
-				if (!cancelled) {
-					setAggregateSummary((result.data?.[0] as Record<string, unknown>) || null);
-				}
-			} catch (e) {
-				if (!cancelled) setAggregateSummary(null);
+		try {
+			const result = await repository.query({
+				select: aggregateSelect,
+				filters,
+				conditions,
+				inputProperties,
+				q: wildcardSearch
+			});
+			if (isMountedRef.current) {
+				setAggregateSummary((result.data?.[0] as Record<string, unknown>) || null);
 			}
-		})();
-		return () => { cancelled = true; };
+		} catch (e) {
+			if (isMountedRef.current) setAggregateSummary(null);
+		}
 	}, [aggregateSelect, filters, conditions, inputProperties, wildcardSearch, repository]);
+
+	useEffect(() => {
+		refreshAggregates();
+	}, [refreshAggregates]);
 
 	// Require all aggregateSelect entries to have an alias
 	if (aggregateSelect) {
@@ -577,4 +582,4 @@ export function DataGrid<T extends object, U extends T = T>({
 			)}
 		</div>
 	);
-}                                                                                                                                                                                                                                                                                                                                                
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
