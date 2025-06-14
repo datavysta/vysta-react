@@ -7,6 +7,7 @@ export interface Timezone {
 
 export interface TimezoneWithGroup extends Timezone {
   _group: string;
+  _currentTime?: string;
 }
 
 export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> {
@@ -29,12 +30,14 @@ export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> 
             const group = typeof groupResponse.data === 'string' ? groupResponse.data : this.deriveGroupFromId(timezone.id);
             return {
               ...timezone,
-              _group: group
+              _group: group,
+              _currentTime: this.formatCurrentTime(timezone.id)
             } as TimezoneWithGroup;
           } catch (error) {
             return {
               ...timezone,
-              _group: this.deriveGroupFromId(timezone.id)
+              _group: this.deriveGroupFromId(timezone.id),
+              _currentTime: this.formatCurrentTime(timezone.id)
             } as TimezoneWithGroup;
           }
         })
@@ -74,5 +77,21 @@ export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> 
   private capitalizeWord(word: string): string {
     if (!word || word.length === 0) return word;
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }
+
+  private formatCurrentTime(timezoneId: string): string {
+    try {
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezoneId,
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+      return formatter.format(now);
+    } catch (error) {
+      console.warn(`Failed to format time for timezone ${timezoneId}:`, error);
+      return '';
+    }
   }
 }

@@ -107,9 +107,12 @@ export interface LazyLoadListProps<T extends object> {
      * @default true
      */
     withinPortal?: boolean;
+
+    /** Custom function to render each option */
+    renderOption?: (item: T, isActive: boolean, search: string) => React.ReactNode;
 }
 
 export interface LoaderResult<T> {
     data: T[];
     count?: number;
-}  
+}    
