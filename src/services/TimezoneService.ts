@@ -1,4 +1,10 @@
 import { VystaClient, IReadonlyDataService, DataResult } from '@datavysta/vysta-client';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export interface Timezone {
   id: string;
@@ -81,21 +87,10 @@ export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> 
 
   private formatCurrentTime(timezoneId: string): string {
     try {
-      const now = new Date();
-      const timezoneDate = new Date(now.toLocaleString('en-US', { timeZone: timezoneId }));
-      return this.formatTime(timezoneDate);
+      return dayjs().tz(timezoneId).format('h:mm A');
     } catch (error) {
       console.warn(`Failed to format time for timezone ${timezoneId}:`, error);
       return '';
     }
-  }
-
-  private formatTime(date: Date): string {
-    let hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    return `${hours}:${minutes} ${ampm}`;
   }
 }
