@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { DataGrid } from '@datavysta/vysta-react';
+import { DataGrid } from '../../../src';
 import { useServices } from './ServicesProvider';
 import { Customer } from '../types/Customer';
 import { ColDef } from 'ag-grid-community';
@@ -135,4 +135,4 @@ export function CustomerGrid({ tick }: CustomerGridProps) {
             </div>
         </div>
     );
-} 
+}  

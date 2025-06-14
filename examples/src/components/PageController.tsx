@@ -7,9 +7,10 @@ import { LazyLoadListExample } from './LazyLoadListExample';
 import { EditableGridExample } from './EditableGridExample';
 import { FileUploadExample } from './FileUploadExample';
 import { ExampleUserProfile } from './ExampleUserProfile';
+import { TimezoneSelectorExample } from './TimezoneSelectorExample';
 import './PageController.css';
 
-export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'fileupload' | 'userprofile';
+export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'fileupload' | 'userprofile' | 'timezone';
 
 interface PageControllerProps {
     currentView: PageView;
@@ -68,6 +69,12 @@ function Navigation({ currentView, onViewChange }: { currentView: PageView; onVi
             >
                 User Profile Example
             </button>
+            <button 
+                onClick={() => onViewChange('timezone')}
+                disabled={currentView === 'timezone'}
+            >
+                Timezone Selector
+            </button>
         </div>
     );
 }
@@ -100,6 +107,8 @@ export function PageController({ currentView, onViewChange, tick }: PageControll
                             return <FileUploadExample {...commonProps} />;
                         case 'userprofile':
                             return <ExampleUserProfile />;
+                        case 'timezone':
+                            return <TimezoneSelectorExample {...commonProps} />;
                         default:
                             return null;
                     }
@@ -107,4 +116,4 @@ export function PageController({ currentView, onViewChange, tick }: PageControll
             </div>
         </div>
     );
-} 
+}  

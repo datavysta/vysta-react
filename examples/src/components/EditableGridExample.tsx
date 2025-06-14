@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { DataGrid } from '@datavysta/vysta-react';
+import { DataGrid } from '../../../src';
 import { useServices } from './ServicesProvider';
 import { Product } from '../types/Product';
 import { ColDef } from 'ag-grid-community';
@@ -70,4 +70,4 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
             </div>
         </div>
     );
-} 
+}  
