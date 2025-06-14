@@ -34,7 +34,7 @@ export const ServicesProvider: React.FC<ServicesProviderProps> = ({ client, chil
       customerService: new CustomerService(client),
       orderService: new OrderService(client),
       fileService: new NorthwindFileService(client),
-      timezoneService: new TimezoneService(client),
+      timezoneService: new TimezoneService(window.location.origin),
       client,
     });
   }, [client]);
@@ -61,4 +61,4 @@ export function useServices(): AppServiceContext {
     throw new Error('useServices must be used within a ServicesProvider or services are not yet initialized');
   }
   return ctx;
-}      
+}        

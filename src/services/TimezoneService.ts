@@ -1,4 +1,4 @@
-import { VystaClient, IReadonlyDataService, DataResult } from '@datavysta/vysta-client';
+import { IReadonlyDataService, DataResult } from '@datavysta/vysta-client';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -17,23 +17,42 @@ export interface TimezoneWithGroup extends Timezone {
 }
 
 export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> {
-  private client: VystaClient;
+  private baseUrl: string;
   private basePath = 'api/admin/i18n/timezone';
 
-  constructor(client: VystaClient) {
-    this.client = client;
+  constructor(baseUrl: string = '') {
+    this.baseUrl = baseUrl;
   }
 
   async getAll(params: Record<string, unknown> = {}): Promise<DataResult<TimezoneWithGroup>> {
     try {
-      const timezonesResponse = await this.client.get<Timezone>(this.basePath, params);
-      const timezones: Timezone[] = Array.isArray(timezonesResponse.data) ? timezonesResponse.data : (timezonesResponse.data ? [timezonesResponse.data] : []);
+      const url = new URL(`${this.baseUrl}/${this.basePath}`);
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          url.searchParams.append(key, String(value));
+        }
+      });
+
+      const timezonesResponse = await fetch(url.toString());
+      if (!timezonesResponse.ok) {
+        throw new Error(`HTTP ${timezonesResponse.status}: ${timezonesResponse.statusText}`);
+      }
+      
+      const timezonesData = await timezonesResponse.json();
+      const timezones: Timezone[] = Array.isArray(timezonesData) ? timezonesData : (timezonesData ? [timezonesData] : []);
       
       const timezonesWithGroups: TimezoneWithGroup[] = await Promise.all(
         timezones.map(async (timezone: Timezone) => {
           try {
-            const groupResponse = await this.client.get<string>(`${this.basePath}/${encodeURIComponent(timezone.id)}/group`);
-            const group = typeof groupResponse.data === 'string' ? groupResponse.data : this.deriveGroupFromId(timezone.id);
+            const groupUrl = `${this.baseUrl}/${this.basePath}/${encodeURIComponent(timezone.id)}/group`;
+            const groupResponse = await fetch(groupUrl);
+            let group = this.deriveGroupFromId(timezone.id);
+            
+            if (groupResponse.ok) {
+              const groupData = await groupResponse.text();
+              group = groupData || this.deriveGroupFromId(timezone.id);
+            }
+            
             return {
               ...timezone,
               _group: group,
