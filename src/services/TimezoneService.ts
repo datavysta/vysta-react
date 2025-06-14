@@ -82,16 +82,20 @@ export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> 
   private formatCurrentTime(timezoneId: string): string {
     try {
       const now = new Date();
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: timezoneId,
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-      return formatter.format(now);
+      const timezoneDate = new Date(now.toLocaleString('en-US', { timeZone: timezoneId }));
+      return this.formatTime(timezoneDate);
     } catch (error) {
       console.warn(`Failed to format time for timezone ${timezoneId}:`, error);
       return '';
     }
+  }
+
+  private formatTime(date: Date): string {
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${hours}:${minutes} ${ampm}`;
   }
 }
