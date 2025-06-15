@@ -23,7 +23,8 @@ export function LazyLoadList<T extends object>({
     disableInitialValueLoad = false,
     defaultOpened = false,
     autoSearchInputFocus = true,
-    withinPortal = true
+    withinPortal = true,
+    renderOption
 }: LazyLoadListProps<T>) {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -386,7 +387,6 @@ export function LazyLoadList<T extends object>({
             .map((item) => {
                 const itemId = String(item[effectivePrimaryKey]);
                 const isActive = itemId === value;
-                const displayText = String(item[displayColumn]);
                 
                 return (
                     <Combobox.Option
@@ -396,16 +396,20 @@ export function LazyLoadList<T extends object>({
                         styles={styles?.option}
                         className={moduleStyles.option}
                     >
-                        <Group gap="sm" wrap="nowrap">
-                            <Highlight highlight={search} size="sm">
-                                {displayText}
-                            </Highlight>
-                            {isActive && (
-                                <Text size="sm" c="blue">
-                                    ✓
-                                </Text>
-                            )}
-                        </Group>
+                        {renderOption ? (
+                            renderOption(item, isActive, search)
+                        ) : (
+                            <Group gap="sm" wrap="nowrap">
+                                <Highlight highlight={search} size="sm">
+                                    {String(item[displayColumn])}
+                                </Highlight>
+                                {isActive && (
+                                    <Text size="sm" c="blue">
+                                        ✓
+                                    </Text>
+                                )}
+                            </Group>
+                        )}
                     </Combobox.Option>
                 );
             });
@@ -478,4 +482,4 @@ export function LazyLoadList<T extends object>({
             </Combobox.Dropdown>
         </Combobox>
     );
-}                          
+}                                                    

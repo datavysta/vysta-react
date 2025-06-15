@@ -4,15 +4,16 @@ import { ProductService } from '../services/ProductService';
 import { CustomerService } from '../services/CustomerService';
 import { OrderService } from '../services/OrderService';
 import { NorthwindFileService } from '../services/NorthwindFileService';
-import { IServiceContext } from '../types/IServiceContext';
+import { TimezoneService } from '../../../src/services/TimezoneService';
 import { Loader, Flex } from '@mantine/core';
 
 // Extend IServiceContext for this app
-export interface AppServiceContext extends IServiceContext {
+export interface AppServiceContext {
   productService: ProductService;
   customerService: CustomerService;
   orderService: OrderService;
   fileService: NorthwindFileService;
+  timezoneService: TimezoneService;
   client: VystaClient;
 }
 
@@ -33,6 +34,7 @@ export const ServicesProvider: React.FC<ServicesProviderProps> = ({ client, chil
       customerService: new CustomerService(client),
       orderService: new OrderService(client),
       fileService: new NorthwindFileService(client),
+      timezoneService: new TimezoneService('http://localhost:8080'),
       client,
     });
   }, [client]);
@@ -59,4 +61,4 @@ export function useServices(): AppServiceContext {
     throw new Error('useServices must be used within a ServicesProvider or services are not yet initialized');
   }
   return ctx;
-} 
+}            

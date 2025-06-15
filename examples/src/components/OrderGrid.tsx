@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { DataGrid } from '@datavysta/vysta-react';
+import { DataGrid } from '../../../src';
 import { useServices } from './ServicesProvider';
 import { Order } from '../types/Order';
 import { ColDef, GridApi } from 'ag-grid-community';
@@ -140,4 +140,4 @@ export function OrderGrid({ tick }: OrderGridProps) {
             </div>
         </div>
     );
-} 
+}  
