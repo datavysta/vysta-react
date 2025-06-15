@@ -1,4 +1,3 @@
-import { IReadonlyDataService, DataResult } from '@datavysta/vysta-client';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -16,7 +15,7 @@ export interface TimezoneWithGroup extends Timezone {
   _currentTime?: string;
 }
 
-export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> {
+export class TimezoneService {
   private baseUrl: string;
   private basePath = 'api/admin/i18n/timezone';
 
@@ -24,16 +23,11 @@ export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> 
     this.baseUrl = baseUrl;
   }
 
-  async getAll(params: Record<string, unknown> = {}): Promise<DataResult<TimezoneWithGroup>> {
+  async getAllTimezones(): Promise<TimezoneWithGroup[]> {
     try {
-      const url = new URL(`${this.baseUrl}/${this.basePath}`);
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          url.searchParams.append(key, String(value));
-        }
-      });
-
-      const timezonesResponse = await fetch(url.toString());
+      const url = `${this.baseUrl}/${this.basePath}`;
+      const timezonesResponse = await fetch(url);
+      
       if (!timezonesResponse.ok) {
         throw new Error(`HTTP ${timezonesResponse.status}: ${timezonesResponse.statusText}`);
       }
@@ -41,38 +35,15 @@ export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> 
       const timezonesData = await timezonesResponse.json();
       const timezones: Timezone[] = Array.isArray(timezonesData) ? timezonesData : (timezonesData ? [timezonesData] : []);
       
-      const timezonesWithGroups: TimezoneWithGroup[] = await Promise.all(
-        timezones.map(async (timezone: Timezone) => {
-          try {
-            const groupUrl = `${this.baseUrl}/${this.basePath}/${encodeURIComponent(timezone.id)}/group`;
-            const groupResponse = await fetch(groupUrl);
-            let group = this.deriveGroupFromId(timezone.id);
-            
-            if (groupResponse.ok) {
-              const groupData = await groupResponse.text();
-              group = groupData || this.deriveGroupFromId(timezone.id);
-            }
-            
-            return {
-              ...timezone,
-              _group: group,
-              _currentTime: this.formatCurrentTime(timezone.id)
-            } as TimezoneWithGroup;
-          } catch (error) {
-            return {
-              ...timezone,
-              _group: this.deriveGroupFromId(timezone.id),
-              _currentTime: this.formatCurrentTime(timezone.id)
-            } as TimezoneWithGroup;
-          }
-        })
-      );
+      const timezonesWithGroups: TimezoneWithGroup[] = timezones.map((timezone: Timezone) => {
+        return {
+          ...timezone,
+          _group: this.deriveGroupFromId(timezone.id),
+          _currentTime: this.formatCurrentTime(timezone.id)
+        } as TimezoneWithGroup;
+      });
 
-      return {
-        data: timezonesWithGroups,
-        count: timezonesWithGroups.length,
-        error: null
-      };
+      return timezonesWithGroups;
     } catch (error) {
       console.error('Error loading timezones:', error);
       
@@ -133,20 +104,8 @@ export class TimezoneService implements IReadonlyDataService<TimezoneWithGroup> 
         }
       ];
 
-      return {
-        data: sampleTimezones,
-        count: sampleTimezones.length,
-        error: null
-      };
+      return sampleTimezones;
     }
-  }
-
-  async query(params: Record<string, unknown> = {}): Promise<DataResult<TimezoneWithGroup>> {
-    return this.getAll(params);
-  }
-
-  async download(): Promise<Blob> {
-    throw new Error('Download not supported for timezone service');
   }
 
   private deriveGroupFromId(timezoneId: string): string {

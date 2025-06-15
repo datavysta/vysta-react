@@ -1,53 +1,103 @@
-import { Group, Highlight, Text } from '@mantine/core';
-import { LazyLoadList } from '../LazyLoadList/LazyLoadList';
-import { LazyLoadListProps } from '../LazyLoadList/types';
+import React, { useState, useEffect } from 'react';
+import { Select, Group, Text, Loader } from '@mantine/core';
 import { TimezoneService, TimezoneWithGroup } from '../../services/TimezoneService';
 
-export interface TimezoneSelectorProps extends Omit<LazyLoadListProps<TimezoneWithGroup>, 'repository' | 'displayColumn' | 'groupBy'> {
+export interface TimezoneSelectorProps {
   timezoneService: TimezoneService;
-  
+  value?: string | null;
+  onChange?: (value: string | null) => void;
   groupByRegion?: boolean;
-  
   displayColumn?: keyof TimezoneWithGroup;
+  label?: string;
+  placeholder?: string;
+  searchable?: boolean;
+  clearable?: boolean;
+  disabled?: boolean;
+  error?: string;
 }
 
 export function TimezoneSelector({
   timezoneService,
+  value,
+  onChange,
   groupByRegion = true,
   displayColumn = 'displayName',
   label = 'Select Timezone',
-  ...props
+  placeholder = 'Select timezone...',
+  searchable = true,
+  clearable = true,
+  disabled = false,
+  error
 }: TimezoneSelectorProps) {
-  const renderTimezoneOption = (item: TimezoneWithGroup, isActive: boolean, search: string) => (
-    <Group justify="space-between" wrap="nowrap" w="100%">
-      <Highlight highlight={search} size="sm">
-        {String(item[displayColumn])}
-      </Highlight>
-      <Group gap="xs" wrap="nowrap">
-        {item._currentTime && (
-          <Text size="sm" c="dimmed">
-            {item._currentTime}
-          </Text>
-        )}
-        {isActive && (
-          <Text size="sm" c="blue">
-            ✓
-          </Text>
-        )}
+  const [timezones, setTimezones] = useState<TimezoneWithGroup[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadTimezones = async () => {
+      try {
+        setLoading(true);
+        const data = await timezoneService.getAllTimezones();
+        setTimezones(data);
+      } catch (error) {
+        console.error('Failed to load timezones:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTimezones();
+  }, [timezoneService]);
+
+  const selectData = React.useMemo(() => {
+    if (groupByRegion) {
+      const grouped = timezones.reduce((acc, timezone) => {
+        const group = timezone._group;
+        if (!acc[group]) {
+          acc[group] = [];
+        }
+        acc[group].push({
+          value: timezone.id,
+          label: `${String(timezone[displayColumn])}${timezone._currentTime ? ` - ${timezone._currentTime}` : ''}`,
+          group: group
+        });
+        return acc;
+      }, {} as Record<string, Array<{ value: string; label: string; group: string }>>);
+
+      return Object.entries(grouped).map(([group, items]) => ({
+        group,
+        items: items.sort((a, b) => a.label.localeCompare(b.label))
+      }));
+    } else {
+      return timezones
+        .map(timezone => ({
+          value: timezone.id,
+          label: `${String(timezone[displayColumn])}${timezone._currentTime ? ` - ${timezone._currentTime}` : ''}`
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    }
+  }, [timezones, groupByRegion, displayColumn]);
+
+  if (loading) {
+    return (
+      <Group gap="xs">
+        <Loader size="sm" />
+        <Text size="sm">Loading timezones...</Text>
       </Group>
-    </Group>
-  );
+    );
+  }
 
   return (
-    <LazyLoadList<TimezoneWithGroup>
-      repository={timezoneService}
-      displayColumn={displayColumn}
-      groupBy={groupByRegion ? '_group' : undefined}
+    <Select
       label={label}
-      searchable={true}
-      clearable={true}
-      renderOption={renderTimezoneOption}
-      {...props}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      data={selectData}
+      searchable={searchable}
+      clearable={clearable}
+      disabled={disabled}
+      error={error}
+      maxDropdownHeight={300}
     />
   );
 }
