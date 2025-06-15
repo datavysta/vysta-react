@@ -49,6 +49,10 @@ export function TimezoneSelector({
   }, [timezoneService]);
 
   const selectData = React.useMemo(() => {
+    if (!timezones || timezones.length === 0) {
+      return [];
+    }
+
     if (groupByRegion) {
       const grouped = timezones.reduce((acc, timezone) => {
         const group = timezone._group;
@@ -57,11 +61,10 @@ export function TimezoneSelector({
         }
         acc[group].push({
           value: timezone.id,
-          label: `${String(timezone[displayColumn])}${timezone._currentTime ? ` - ${timezone._currentTime}` : ''}`,
-          group: group
+          label: `${String(timezone[displayColumn])}${timezone._currentTime ? ` - ${timezone._currentTime}` : ''}`
         });
         return acc;
-      }, {} as Record<string, Array<{ value: string; label: string; group: string }>>);
+      }, {} as Record<string, Array<{ value: string; label: string }>>);
 
       return Object.entries(grouped).map(([group, items]) => ({
         group,
