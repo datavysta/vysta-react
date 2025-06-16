@@ -14,4 +14,4 @@ export { TimezoneSelector } from './components/TimezoneSelector';
 export type { TimezoneSelectorProps } from './components/TimezoneSelector';
 export { TimezoneService } from './services/TimezoneService';
 export type { Timezone, TimezoneWithGroup } from './services/TimezoneService';
-export { VystaServiceProvider, useVystaServices } from './services/VystaServiceProvider';                
+export { VystaServiceProvider, useVystaServices } from './services/VystaServiceProvider';    
