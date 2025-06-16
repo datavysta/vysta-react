@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DataGrid } from '../../../src/components/DataGrid/DataGrid';
 import { useServices } from './ServicesProvider';
 import { ColDef } from 'ag-grid-community';
@@ -14,6 +14,7 @@ interface ProductGridProps {
 
 export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
     const { productService } = useServices();
+    const [rowCount, setRowCount] = useState<number>(0);
 
     const defaultColDef = useMemo<ColDef>(() => ({ minWidth: 150 }), []);
 
@@ -46,6 +47,9 @@ export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
 
     return (
         <div className="example-container">
+            <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '4px' }}>
+                <strong>Row Count Callback Test:</strong> Current row count: <span style={{ color: '#007bff', fontWeight: 'bold' }}>{rowCount}</span>
+            </div>
             <div className="grid-container">
                 <DataGrid<Product>
                     title="Products"
@@ -56,8 +60,12 @@ export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
                     getRowId={(product) => product.productId.toString()}
                     tick={tick}
                     aggregateSelect={aggregateSelect}
+                    onRowCountChange={(count) => {
+                        console.log('Row count changed:', count);
+                        setRowCount(count);
+                    }}
                 />
             </div>
         </div>
     );
-} 
+}    
