@@ -9,10 +9,10 @@ export class EditableDateCell extends BaseEditableCell {
         return (
             <DatePickerInput
                 {...options}
-                value={new Date(this.state.value)}
+                value={this.state.value}
                 onChange={(date) => {
                     if (date) {
-                        this.setState({ value: date.toISOString() }, this.handleSave);
+                        this.setState({ value: date }, this.handleSave);
                     }
                 }}
                 autoFocus
@@ -51,4 +51,4 @@ export class EditableDateCell extends BaseEditableCell {
             />
         );
     }
-}  
+}    

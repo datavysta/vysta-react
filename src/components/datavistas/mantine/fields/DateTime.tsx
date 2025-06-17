@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { DateTimePicker } from '@mantine/dates';
+import { DateTimePicker, DateValue } from '@mantine/dates';
 import IFieldProperty from '../../../Models/public/fieldproperty';
 
 export const DateTimeField: FC<IFieldProperty> = ({
@@ -32,11 +32,11 @@ export const DateTimeField: FC<IFieldProperty> = ({
             placeholder={placeholder}
             description={description}
             value={value ? new Date(value) : null}
-            onChange={(date: Date | null) => onChange?.(date ? date.toISOString() : '')}
+            onChange={(date: DateValue) => onChange?.(date instanceof Date ? date.toISOString() : date || '')}
             onBlur={onBlur}
             onFocus={onFocus}
         />
     );
 };
 
-export default DateTimeField; 
+export default DateTimeField;      
