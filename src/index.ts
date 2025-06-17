@@ -2,6 +2,7 @@ export { EditableFieldType } from './components/DataGrid/types';
 export { DataGrid } from './components/DataGrid/DataGrid';
 export { FileUpload } from './components/FileUpload/FileUpload';
 export type { DataGridProps, DataGridStyles } from './components/DataGrid/DataGrid';
+export type OnRowCountChangeCallback = (count: number) => void;
 export { default as FilterPanel } from './components/Filter/FilterPanel';
 export type { FilterDefinitionsByField } from './components/Filter/FilterDefinitionsByField';
 export { default as DataType } from './components/Models/DataType';
