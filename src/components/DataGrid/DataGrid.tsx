@@ -93,6 +93,11 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	 * Optional custom render for the aggregate summary row. If not provided, a default row is rendered.
 	 */
 	renderAggregateFooter?: (summary: Record<string, unknown>) => React.ReactNode;
+	/**
+	 * Called whenever the row count changes due to filter updates, data changes, etc.
+	 * Receives the current row count.
+	 */
+	onRowCountChange?: (count: number) => void;
 }
 
 export function DataGrid<T extends object, U extends T = T>({
@@ -122,6 +127,7 @@ export function DataGrid<T extends object, U extends T = T>({
     loadingComponent,
     aggregateSelect,
     renderAggregateFooter,
+    onRowCountChange,
 }: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
@@ -408,7 +414,6 @@ export function DataGrid<T extends object, U extends T = T>({
 	const handleBodyScroll = useCallback((event: BodyScrollEvent) => {
 		if (aggregateFooterRef.current) {
 			aggregateFooterRef.current.scrollLeft = event.left;
-			console.log('AG Grid onBodyScroll:', event.left);
 		}
 	}, []);
 
@@ -482,9 +487,16 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 	}, [aggregateSelect, filters, conditions, inputProperties, wildcardSearch, repository]);
 
+	// Refresh aggregates whenever dependencies change (filters, etc.)
 	useEffect(() => {
 		refreshAggregates();
 	}, [refreshAggregates]);
+
+	useEffect(() => {
+		if (onRowCountChange && lastKnownRowCount >= 0) {
+			onRowCountChange(lastKnownRowCount);
+		}
+	}, [lastKnownRowCount, onRowCountChange]);
 
 	// Require all aggregateSelect entries to have an alias
 	if (aggregateSelect) {
@@ -582,4 +594,4 @@ export function DataGrid<T extends object, U extends T = T>({
 			)}
 		</div>
 	);
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+}

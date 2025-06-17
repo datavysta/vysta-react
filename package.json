@@ -71,7 +71,7 @@
     }
   },
   "dependencies": {
-    "@datavysta/vysta-client": "^1.0.33",
+    "@datavysta/vysta-client": "^1.0.34",
     "@uppy/core": "^4.4.2",
     "@uppy/dashboard": "^4.3.2",
     "@uppy/drag-drop": "^4.1.1",
@@ -94,7 +94,7 @@
     "@vitejs/plugin-react": "^4.0.0",
     "ag-grid-community": "^33.1.0",
     "ag-grid-react": "^33.1.0",
-    "cpx": "^1.5.0",
+    "cpx2": "^3.0.0",
     "eslint": "^8.57.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -102,9 +102,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^5.0.0",
-    "vite": "^5.0.0",
-    "vite-plugin-dts": "^3.0.0",
-    "vitest": "^1.0.0"
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.3"
   },
   "repository": {
     "type": "git",
