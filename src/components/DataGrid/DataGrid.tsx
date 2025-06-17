@@ -408,7 +408,6 @@ export function DataGrid<T extends object, U extends T = T>({
 	const handleBodyScroll = useCallback((event: BodyScrollEvent) => {
 		if (aggregateFooterRef.current) {
 			aggregateFooterRef.current.scrollLeft = event.left;
-			console.log('AG Grid onBodyScroll:', event.left);
 		}
 	}, []);
 
