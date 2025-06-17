@@ -8,6 +8,7 @@ import { VystaServiceProvider, useVystaServices } from '../../src';
 const config: VystaConfig = {
     baseUrl: 'http://localhost:8080',
     debug: true,
+    cache: true,
 };
 
 function AppContent() {
