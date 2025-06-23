@@ -24,7 +24,8 @@ export function LazyLoadList<T extends object>({
     defaultOpened = false,
     autoSearchInputFocus = true,
     withinPortal = true,
-    renderOption
+    renderOption,
+    useCache = false
 }: LazyLoadListProps<T>) {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -190,7 +191,8 @@ export function LazyLoadList<T extends object>({
                         [effectivePrimaryKey]: { eq: value } 
                     },
                     select: Array.from(new Set([effectivePrimaryKey, displayColumn])) as (keyof T)[],
-                    limit: 2
+                    limit: 2,
+                    useCache
                 });
                 
                 if (result.data.length === 0) {
@@ -239,7 +241,8 @@ export function LazyLoadList<T extends object>({
                 q: searchable && debouncedSearch ? debouncedSearch : undefined,
                 filters: effectiveFilters,
                 inputProperties,
-                recordCount: true
+                recordCount: true,
+                useCache
             });
 
             if (!isMountedRef.current) return;
@@ -309,7 +312,8 @@ export function LazyLoadList<T extends object>({
         inputProperties,
         selectedOption,
         value,
-        resolvedItems
+        resolvedItems,
+        useCache
     ]);
 
     const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {

@@ -98,6 +98,10 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	 * Receives the current row count.
 	 */
 	onRowCountChange?: (count: number) => void;
+	/**
+	 * Enable caching for this DataGrid's queries. Defaults to false.
+	 */
+	useCache?: boolean;
 }
 
 export function DataGrid<T extends object, U extends T = T>({
@@ -128,6 +132,7 @@ export function DataGrid<T extends object, U extends T = T>({
     aggregateSelect,
     renderAggregateFooter,
     onRowCountChange,
+    useCache = false,
 }: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
@@ -356,7 +361,8 @@ export function DataGrid<T extends object, U extends T = T>({
 					conditions,
 					inputProperties,
 					recordCount: startRow === 0,
-					q: wildcardSearch
+					q: wildcardSearch,
+					useCache
 				});
 
 				// Guard against updates after unmounting
@@ -477,7 +483,8 @@ export function DataGrid<T extends object, U extends T = T>({
 				filters,
 				conditions,
 				inputProperties,
-				q: wildcardSearch
+				q: wildcardSearch,
+				useCache
 			});
 			if (isMountedRef.current) {
 				setAggregateSummary((result.data?.[0] as Record<string, unknown>) || null);
@@ -485,7 +492,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		} catch (e) {
 			if (isMountedRef.current) setAggregateSummary(null);
 		}
-	}, [aggregateSelect, filters, conditions, inputProperties, wildcardSearch, repository]);
+	}, [aggregateSelect, filters, conditions, inputProperties, wildcardSearch, repository, useCache]);
 
 	// Refresh aggregates whenever dependencies change (filters, etc.)
 	useEffect(() => {

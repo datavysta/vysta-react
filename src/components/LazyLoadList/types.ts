@@ -110,6 +110,11 @@ export interface LazyLoadListProps<T extends object> {
 
     /** Custom function to render each option */
     renderOption?: (item: T, isActive: boolean, search: string) => React.ReactNode;
+
+    /**
+     * Enable caching for this LazyLoadList's queries. Defaults to false.
+     */
+    useCache?: boolean;
 }
 
 export interface LoaderResult<T> {

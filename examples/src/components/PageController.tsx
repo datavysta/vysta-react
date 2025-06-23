@@ -8,9 +8,10 @@ import { EditableGridExample } from './EditableGridExample';
 import { FileUploadExample } from './FileUploadExample';
 import { ExampleUserProfile } from './ExampleUserProfile';
 import { TimezoneSelectorExample } from './TimezoneSelectorExample';
+import { CachingTestExample } from './CachingTestExample';
 import './PageController.css';
 
-export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'fileupload' | 'userprofile' | 'timezone';
+export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'fileupload' | 'userprofile' | 'timezone' | 'cachingtest';
 
 interface PageControllerProps {
     currentView: PageView;
@@ -75,6 +76,12 @@ function Navigation({ currentView, onViewChange }: { currentView: PageView; onVi
             >
                 Timezone Selector
             </button>
+            <button 
+                onClick={() => onViewChange('cachingtest')}
+                disabled={currentView === 'cachingtest'}
+            >
+                Caching Test
+            </button>
         </div>
     );
 }
@@ -109,6 +116,8 @@ export function PageController({ currentView, onViewChange, tick }: PageControll
                             return <ExampleUserProfile />;
                         case 'timezone':
                             return <TimezoneSelectorExample {...commonProps} />;
+                        case 'cachingtest':
+                            return <CachingTestExample {...commonProps} />;
                         default:
                             return null;
                     }
