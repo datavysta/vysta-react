@@ -84,6 +84,18 @@ export function LazyLoadList<T extends object>({
         }
     });
 
+    // Open dropdown on mount if defaultOpened is true
+    useEffect(() => {
+        if (defaultOpened && isMountedRef.current) {
+            // Small delay to ensure component is fully mounted
+            setTimeout(() => {
+                if (isMountedRef.current) {
+                    combobox.openDropdown();
+                }
+            }, 0);
+        }
+    }, []); // Only run on mount
+
     // Show loading when we have a value but no option for it yet
     useEffect(() => {
         if (!value || !isMountedRef.current) {
@@ -435,6 +447,7 @@ export function LazyLoadList<T extends object>({
                 combobox.closeDropdown();
             }}
             styles={styles?.combobox}
+            position="bottom-start"
         >
             <Combobox.Target>
                 <InputBase
@@ -451,7 +464,13 @@ export function LazyLoadList<T extends object>({
                 </InputBase>
             </Combobox.Target>
 
-            <Combobox.Dropdown>
+            <Combobox.Dropdown
+                style={{
+                    minWidth: 'max-content',
+                    width: 'auto',
+                    maxWidth: '500px'
+                }}
+            >
                 {searchable && (
                     <Combobox.Search
                         ref={searchInputRef}

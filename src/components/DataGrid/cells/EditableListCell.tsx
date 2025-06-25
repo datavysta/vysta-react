@@ -9,34 +9,11 @@ interface ListConfig {
 }
 
 export class EditableListCell extends BaseEditableCell {
-    private hasOpenedDropdown = false;
-
     getValue() {
         // Get the field name and look up the value from the row data
         const fieldName = this.props.colDef?.field;
         const value = fieldName && this.props.data ? this.props.data[fieldName] : this.props.value;
         return value || '';
-    }
-
-    componentDidMount() {
-        // Open dropdown after a short delay to ensure everything is rendered
-        setTimeout(() => {
-            if (this.hasOpenedDropdown) return;
-            
-            // Try to click the input to open the dropdown
-            const button = document.querySelector('.mantine-InputBase-input[type="button"]') as HTMLButtonElement;
-            if (button) {
-                this.hasOpenedDropdown = true;
-                
-                // Prevent focus loss by focusing the button first
-                button.focus();
-                
-                // Use a small delay to ensure focus is established
-                setTimeout(() => {
-                    button.click();
-                }, 50);
-            }
-        }, 100);
     }
 
     // Tell AG Grid this is a popup editor
