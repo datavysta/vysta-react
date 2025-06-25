@@ -1,8 +1,12 @@
-export interface Product {
+export interface Products {
     productId: number;
     productName: string;
-    unitPrice: number;
-    unitsInStock: number;
-    quantityPerUnit: string;
+    supplierId?: number;
+    categoryId?: number;
+    quantityPerUnit?: string;
+    unitPrice?: number;
+    unitsInStock?: number;
+    unitsOnOrder?: number;
+    reorderLevel?: number;
     discontinued: boolean;
-} 
+}
