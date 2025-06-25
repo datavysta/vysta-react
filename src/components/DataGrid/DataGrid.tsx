@@ -11,7 +11,7 @@ import {
 	GetRowIdParams,
 	ModuleRegistry,
 	InfiniteRowModelModule,
-	SortModelItem, TextEditorModule, ColumnApiModule,
+	SortModelItem, TextEditorModule, ColumnApiModule, CustomEditorModule,
 	ColumnResizedEvent,
 	Column,
 	BodyScrollEvent
@@ -31,7 +31,8 @@ import { EditableListCell } from './cells/EditableListCell';
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
 	TextEditorModule,
-	ColumnApiModule
+	ColumnApiModule,
+	CustomEditorModule
 ]);
 
 export interface DataGridStyles {
@@ -277,6 +278,7 @@ export function DataGrid<T extends object, U extends T = T>({
 					...col,
 					editable: true,
 					cellEditor,
+					cellEditorPopup: fieldConfig?.dataType === EditableFieldType.List,
 					cellEditorParams: (params: ICellRendererParams<U>) => ({
 						onSave: async (newValue: string) => {
 							if (!col.field || !params.data) return;
@@ -288,7 +290,9 @@ export function DataGrid<T extends object, U extends T = T>({
 								[col.field]: newValue
 							} as Partial<T>);
 
-							params.api.stopEditing();
+							if (fieldConfig?.dataType !== EditableFieldType.List) {
+								params.api.stopEditing();
+							}
 							params.node.setDataValue(col.field, newValue);
 
 							params.api.refreshInfiniteCache();
@@ -452,6 +456,7 @@ export function DataGrid<T extends object, U extends T = T>({
 			suppressLoadingOverlay: !loadingComponent,
 			onColumnResized,
 			onBodyScroll: handleBodyScroll,
+			popupParent: hasEditableColumns ? document.body : undefined,
 		};
 	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns, noRowsComponent, loadingComponent, handleBodyScroll]);
 
