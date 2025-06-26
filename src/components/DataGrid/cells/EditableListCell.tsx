@@ -13,12 +13,21 @@ export class EditableListCell extends BaseEditableCell {
     getValue() {
         // Get the field name and look up the value from the row data
         const fieldName = this.props.colDef?.field;
-        const value = fieldName && this.props.data ? this.props.data[fieldName] : this.props.value;
         
-        // If props.value is different from data value, it means props.value is the display value
-        // In that case, use the data value (the actual ID)
-        if (fieldName && this.props.data && this.props.data[fieldName] !== this.props.value) {
-            return String(this.props.data[fieldName]) || '';
+        // Check local edits first (same logic as DataGrid's cellEditorParams)
+        const rowId = this.props.data ? (this.props as any).getRowId?.(this.props.data) : null;
+        const localEdits = rowId ? this.props.context?.localEdits?.current?.get(rowId) : null;
+        
+        let value;
+        if (localEdits && fieldName && fieldName in localEdits) {
+            // Use the local edit value
+            value = localEdits[fieldName];
+        } else if (fieldName && this.props.data) {
+            // Use the original data value
+            value = this.props.data[fieldName];
+        } else {
+            // Fallback to props.value
+            value = this.props.value;
         }
         
         return String(value) || '';
@@ -35,16 +44,6 @@ export class EditableListCell extends BaseEditableCell {
     }
 
     handleChange = (newValue: string | null) => {
-        // Only log for first row
-        if (this.props.node?.rowIndex === 0) {
-            console.log('EditableListCell handleChange (row 0):', {
-                newValue,
-                oldValue: this.state.value,
-                field: this.props.colDef?.field,
-                currentData: this.props.data
-            });
-        }
-        
         // Only update and save if the value actually changed
         if (newValue === this.state.value) {
             return;
@@ -52,9 +51,6 @@ export class EditableListCell extends BaseEditableCell {
         
         this.setState({ value: newValue || '' }, () => {
             if (this.isDirty) {
-                if (this.props.node?.rowIndex === 0) {
-                    console.log('EditableListCell: Saving value (row 0)', newValue);
-                }
                 this.handleSave().then(() => {
                     // Lists are funny - this delay prevents premature closing
                     setTimeout(() => {
@@ -78,15 +74,7 @@ export class EditableListCell extends BaseEditableCell {
         // Get the display value from props if it was passed by DataGrid
         const initialDisplayValue = (this.props as any).displayValue;
         
-        if (this.props.node?.rowIndex === 0) {
-            console.log('EditableListCell render (row 0):', {
-                currentValue,
-                initialDisplayValue,
-                propsValue: this.props.value,
-                displayValue: (this.props as any).displayValue,
-                height: this.props.node?.rowHeight || undefined,
-            });
-        }
+
 
         return (
             <LazyLoadList

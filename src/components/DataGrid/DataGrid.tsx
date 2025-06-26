@@ -321,10 +321,22 @@ export function DataGrid<T extends object, U extends T = T>({
 					cellEditor,
 					cellEditorPopup: fieldConfig?.dataType === EditableFieldType.List,
 					cellEditorParams: (params: ICellRendererParams<U>) => {
-						// Get the raw value from the data
-						const rawValue = originalCol.field && params.data 
-							? (params.data as any)[originalCol.field]
-							: params.value;
+						// Get the raw value, checking local edits first
+						const rowId = params.data ? getRowId(params.data) : null;
+						const localEdits = rowId ? params.context?.localEdits?.current?.get(rowId) : null;
+						const fieldName = originalCol.field as string;
+						
+						let rawValue;
+						if (localEdits && fieldName && fieldName in localEdits) {
+							// Use the local edit value
+							rawValue = localEdits[fieldName];
+						} else if (originalCol.field && params.data) {
+							// Use the original data value
+							rawValue = (params.data as any)[originalCol.field];
+						} else {
+							// Fallback to params.value
+							rawValue = params.value;
+						}
 
 			
 						
@@ -347,25 +359,15 @@ export function DataGrid<T extends object, U extends T = T>({
 							}
 						}
 						
-						// Log what we're doing (only for first row to avoid spam)
-						if (params.node?.rowIndex === 0) {
-							console.log('=== DataGrid cellEditorParams (row 0) ===');
-							console.log('Field:', originalCol.field);
-							console.log('Data type:', fieldConfig?.dataType);
-							console.log('Has valueGetter:', !!originalCol.valueGetter);
-							console.log('Has column:', !!params.column);
-							console.log('Raw value:', rawValue);
-							console.log('Display value:', displayValue);
-							console.log('Display differs from raw:', displayValue !== rawValue);
-							console.log('Params.value:', params.value);
-							console.log('=========================================');
-						}
+
 						
 						return {
 							// Pass the raw value
 							value: rawValue,
 							// Pass the display value if it's different from raw value
 							displayValue: displayValue !== rawValue ? displayValue : undefined,
+							// Pass getRowId so cell editors can access local edits
+							getRowId,
 							onSave: async (newValue: string) => {
 							if (!originalCol.field || !params.data) return;
 							
@@ -378,11 +380,6 @@ export function DataGrid<T extends object, U extends T = T>({
 
 							if (fieldConfig?.dataType !== EditableFieldType.List) {
 								params.api.stopEditing();
-							}
-							
-							// Update the data directly on the node
-							if (params.node.rowIndex === 0) {
-								console.log('DataGrid: Before update', originalCol.field, params.node.data);
 							}
 							
 							// Create a new data object with the updated value
@@ -400,11 +397,6 @@ export function DataGrid<T extends object, U extends T = T>({
 							
 							// Use setData to update the node
 							params.node.setData(updatedData);
-							
-							if (params.node.rowIndex === 0) {
-								console.log('DataGrid: After update', originalCol.field, params.node.data);
-								console.log('DataGrid: Local edits for row', id, localEditsRef.current.get(id));
-							}
 							
 							// Refresh cells to trigger valueGetters
 							params.api.refreshCells({
@@ -456,7 +448,6 @@ export function DataGrid<T extends object, U extends T = T>({
 		getRows: async (params: IGetRowsParams) => {
 			const {startRow, endRow, sortModel} = params;
 			const limit = endRow - startRow;
-			console.log('DataGrid: dataSource.getRows called', { startRow, endRow });
 
 			try {
 				const order: OrderBy<T> = {};
@@ -498,8 +489,23 @@ export function DataGrid<T extends object, U extends T = T>({
 					const rowId = getRowId(row);
 					const localEdits = localEditsRef.current.get(rowId);
 					if (localEdits) {
-						console.log('DataGrid: Applying local edits to row', rowId, localEdits);
-						return { ...row, ...localEdits };
+						// Check if the server data already includes our local edits
+						let serverHasUpdates = true;
+						for (const [field, localValue] of Object.entries(localEdits)) {
+							if ((row as any)[field] !== localValue) {
+								serverHasUpdates = false;
+								break;
+							}
+						}
+						
+						if (serverHasUpdates) {
+							// Server has the updates, clear local edits
+							localEditsRef.current.delete(rowId);
+							return row;
+						} else {
+							// Keep local edits until server catches up
+							return { ...row, ...localEdits };
+						}
 					}
 					return row;
 				});
@@ -594,7 +600,6 @@ export function DataGrid<T extends object, U extends T = T>({
 
 	useEffect(() => {
 		if (isMountedRef.current) {
-			console.log('DataGrid: Updating datasource due to:', { tick, filters, conditions, inputProperties });
 			dataFirstLoadedRef.current = false;
 			// Clear local edits when filters/conditions change since we're loading a different dataset
 			localEditsRef.current.clear();
