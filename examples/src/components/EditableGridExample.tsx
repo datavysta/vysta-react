@@ -136,6 +136,10 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
                         }
                     }}
                     tick={tick}
+                    onSaveComplete={(params) => {
+                        // Refresh the grid's infinite cache to load fresh data
+                        params.gridApi.refreshInfiniteCache();
+                    }}
                 />
             </div>
         </div>

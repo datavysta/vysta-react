@@ -104,6 +104,18 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	 * Enable caching for this DataGrid's queries. Defaults to false.
 	 */
 	useCache?: boolean;
+	/**
+	 * Called after a cell edit is successfully saved.
+	 * @param params Object containing the field, old value, new value, row data, and row ID
+	 */
+	onSaveComplete?: (params: {
+		field: string;
+		oldValue: any;
+		newValue: any;
+		rowId: string;
+		rowData: U;
+		gridApi: GridApi<U>;
+	}) => void;
 }
 
 export function DataGrid<T extends object, U extends T = T>({
@@ -135,6 +147,7 @@ export function DataGrid<T extends object, U extends T = T>({
     renderAggregateFooter,
     onRowCountChange,
     useCache = false,
+    onSaveComplete,
 }: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
@@ -373,6 +386,7 @@ export function DataGrid<T extends object, U extends T = T>({
 							
 							const service = editService || repository as IDataService<T, U>;
 							const id = getRowId(params.data);
+							const oldValue = rawValue; // Capture the old value before update
 
 							await service.update(id, {
 								[originalCol.field as string]: newValue
@@ -408,6 +422,18 @@ export function DataGrid<T extends object, U extends T = T>({
 								await refreshAggregates();
 							} catch (error) {
 								console.error('Failed to refresh aggregates after cell edit:', error);
+							}
+							
+							// Call the onSaveComplete callback if provided
+							if (onSaveComplete) {
+								onSaveComplete({
+									field: originalCol.field as string,
+									oldValue,
+									newValue,
+									rowId: id,
+									rowData: updatedData,
+									gridApi: params.api
+								});
 							}
 													},
 							...fieldConfig
