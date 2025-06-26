@@ -22,6 +22,7 @@ export function LazyLoadList<T extends object>({
     clearable = true,
     disableInitialValueLoad = false,
     defaultOpened = false,
+    initialDisplayValue,
     autoSearchInputFocus = true,
     withinPortal = true,
     renderOption,
@@ -56,7 +57,7 @@ export function LazyLoadList<T extends object>({
     const effectiveFilters = useMemo(() => filters || {}, [filters]);
     const effectiveOrderBy = useMemo(() => orderBy || { [displayColumn]: 'asc' }, [orderBy, displayColumn]);
     const selectedOption = options.find(opt => String(opt[effectivePrimaryKey]) === value);
-    const displayValue = selectedOption ? String(selectedOption[displayColumn]) : '';
+    const displayValue = selectedOption ? String(selectedOption[displayColumn]) : (initialDisplayValue || '');
 
     // Reset valueResolved when value changes to allow loading of new values
     useEffect(() => {
@@ -75,26 +76,15 @@ export function LazyLoadList<T extends object>({
             combobox.updateSelectedOptionIndex('active');
 
             if (autoSearchInputFocus && isMountedRef.current) {
+                // Use a longer timeout to ensure the dropdown and search input are fully rendered
                 setTimeout(() => {
                     if (isMountedRef.current && searchInputRef.current) {
                         searchInputRef.current.focus();
                     }
-                }, 0);
+                }, 50);
             }
         }
     });
-
-    // Open dropdown on mount if defaultOpened is true
-    useEffect(() => {
-        if (defaultOpened && isMountedRef.current) {
-            // Small delay to ensure component is fully mounted
-            setTimeout(() => {
-                if (isMountedRef.current) {
-                    combobox.openDropdown();
-                }
-            }, 0);
-        }
-    }, []); // Only run on mount
 
     // Show loading when we have a value but no option for it yet
     useEffect(() => {
@@ -136,11 +126,19 @@ export function LazyLoadList<T extends object>({
     useEffect(() => {
         if (!value || valueResolved || !isMountedRef.current) return;
         
-        // Skip loading if disabled or if display matches key
-        if (disableInitialValueLoad || 
+        // Skip loading if any of these conditions are true:
+        if (
+            // 1. Initial value loading is explicitly disabled
+            disableInitialValueLoad || 
+            // 2. No display column is specified (nothing to look up)
             !displayColumn || 
+            // 3. Display column is same as primary key (e.g. both are 'id')
             displayColumn === effectivePrimaryKey || 
-            value === displayValue) {
+            // 4. Current value already equals what we want to display
+            value === displayValue ||
+            // 5. We have an initial display value provided
+            initialDisplayValue
+        ) {
             if (isMountedRef.current) {
                 setValueResolved(true);
                 if (defaultOpened) {
@@ -165,12 +163,20 @@ export function LazyLoadList<T extends object>({
         if (valueInResults) {
             if (isMountedRef.current) {
                 setValueResolved(true);
+                if (defaultOpened) {
+                    // Open dropdown since value is already in results
+                    setTimeout(() => {
+                        if (isMountedRef.current) {
+                            combobox.openDropdown();
+                        }
+                    }, 0);
+                }
             }
             return;
         }
 
         loadValueData();
-    }, [value, valueResolved, displayColumn, effectivePrimaryKey, disableInitialValueLoad, options]);
+    }, [value, valueResolved, displayColumn, effectivePrimaryKey, disableInitialValueLoad, options, initialDisplayValue]);
 
     // Load options when search changes or tick changes
     useEffect(() => {

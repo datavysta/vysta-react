@@ -58,8 +58,22 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
                 const supplierId = params.data?.supplierId;
                 if (!supplierId) return '';
                 
+                // Only log for first row
+                if (params.node?.rowIndex === 0) {
+                    /*console.log("Supplier valueGetter (row 0):", {
+                        supplierId,
+                        type: typeof supplierId,
+                        supplierMapKeys: Object.keys(supplierMap).slice(0, 5),
+                        mapKeysType: Object.keys(supplierMap).length > 0 ? typeof Object.keys(supplierMap)[0] : 'no keys',
+                        found: supplierMap[supplierId],
+                        tryString: supplierMap[String(supplierId)],
+                        tryNumber: supplierMap[Number(supplierId)]
+                    });*/
+
+                }
                 // Return the company name from our cached map
-                return supplierMap[supplierId] || `Supplier ${supplierId}`;
+                // Try both number and string keys since AG Grid might pass either
+                return supplierMap[supplierId] || supplierMap[String(supplierId)] || `Supplier ${supplierId}`;
             },
             // The valueGetter is for display only, the actual field value is still supplierId
             valueSetter: (params) => {
@@ -97,6 +111,7 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
                             listService: supplierService as any,
                             displayColumn: 'companyName',
                             clearable: true,
+                            useCache: false,
                             listOptions: {
                                 searchable: true,
                                 pageSize: 10

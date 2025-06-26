@@ -11,7 +11,7 @@ import {
 	GetRowIdParams,
 	ModuleRegistry,
 	InfiniteRowModelModule,
-	SortModelItem, TextEditorModule, ColumnApiModule, CustomEditorModule,
+	SortModelItem, TextEditorModule, ColumnApiModule, CustomEditorModule, RenderApiModule,
 	ColumnResizedEvent,
 	Column,
 	BodyScrollEvent
@@ -32,7 +32,8 @@ ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
 	TextEditorModule,
 	ColumnApiModule,
-	CustomEditorModule
+	CustomEditorModule,
+	RenderApiModule
 ]);
 
 export interface DataGridStyles {
@@ -141,6 +142,8 @@ export function DataGrid<T extends object, U extends T = T>({
 	const isMountedRef = useRef(true);
 	const [aggregateSummary, setAggregateSummary] = useState<Record<string, unknown> | null>(null);
 	const aggregateFooterRef = useRef<HTMLDivElement>(null);
+	// Track local edits to preserve them when data is reloaded
+	const localEditsRef = useRef<Map<string, Partial<U>>>(new Map());
 
 	// Track component mount status
 	useEffect(() => {
@@ -258,8 +261,46 @@ export function DataGrid<T extends object, U extends T = T>({
 
 	const modifiedColDefs = useMemo(() => {
 		const cols = columnDefs.map(col => {
-			if (col.field && editableFields?.[(col.field as unknown) as keyof U]) {
-				const fieldConfig = editableFields[(col.field as unknown) as keyof U];
+			// Wrap valueGetter to check local edits first
+			const originalCol = { ...col };
+			if (col.field && !col.valueGetter) {
+				// If there's a field but no valueGetter, create one that checks local edits
+				originalCol.valueGetter = (params) => {
+					if (!params.data) return undefined;
+					const rowId = getRowId(params.data);
+					const localEdits = params.context?.localEdits?.current?.get(rowId);
+					const fieldName = col.field as string;
+					
+					// Check if we have a local edit for this field
+					if (localEdits && fieldName in localEdits) {
+						return localEdits[fieldName];
+					}
+					
+					// Otherwise return the original value
+					return (params.data as any)[fieldName];
+				};
+			} else if (col.valueGetter && typeof col.valueGetter === 'function') {
+				// If there's already a valueGetter function, wrap it
+				const originalValueGetter = col.valueGetter;
+				originalCol.valueGetter = (params) => {
+					if (!params.data) return undefined;
+					const rowId = getRowId(params.data);
+					const localEdits = params.context?.localEdits?.current?.get(rowId);
+					const fieldName = col.field as string;
+					
+					// Check if we have a local edit for this field
+					if (localEdits && fieldName && fieldName in localEdits) {
+						// Update the data with local edit before calling original valueGetter
+						const dataWithEdit = { ...params.data, [fieldName]: localEdits[fieldName] };
+						return originalValueGetter({ ...params, data: dataWithEdit });
+					}
+					
+					// Otherwise call the original valueGetter
+					return originalValueGetter(params);
+				};
+			}
+			if (originalCol.field && editableFields?.[(originalCol.field as unknown) as keyof U]) {
+				const fieldConfig = editableFields[(originalCol.field as unknown) as keyof U];
 				const cellEditor = (() => {
 					switch (fieldConfig?.dataType) {
 						case EditableFieldType.Number:
@@ -275,39 +316,114 @@ export function DataGrid<T extends object, U extends T = T>({
 				})();
 
 				return {
-					...col,
+					...originalCol,
 					editable: true,
 					cellEditor,
 					cellEditorPopup: fieldConfig?.dataType === EditableFieldType.List,
-					cellEditorParams: (params: ICellRendererParams<U>) => ({
-						onSave: async (newValue: string) => {
-							if (!col.field || !params.data) return;
+					cellEditorParams: (params: ICellRendererParams<U>) => {
+						// Get the raw value from the data
+						const rawValue = originalCol.field && params.data 
+							? (params.data as any)[originalCol.field]
+							: params.value;
+
+			
+						
+						// Get the display value if there's a valueGetter
+						let displayValue: any = undefined;
+						if (originalCol.valueGetter && typeof originalCol.valueGetter === 'function' && params.column) {
+							try {
+								// Create a ValueGetterParams object with the required getValue function
+								const valueGetterParams = {
+									...params,
+									column: params.column,
+									getValue: (field: string) => {
+										return params.data ? (params.data as any)[field] : undefined;
+									}
+								};
+								displayValue = originalCol.valueGetter(valueGetterParams as any);
+							} catch (e) {
+								// If valueGetter fails, we'll just not have a display value
+								console.warn('Failed to get display value from valueGetter:', e);
+							}
+						}
+						
+						// Log what we're doing (only for first row to avoid spam)
+						if (params.node?.rowIndex === 0) {
+							console.log('=== DataGrid cellEditorParams (row 0) ===');
+							console.log('Field:', originalCol.field);
+							console.log('Data type:', fieldConfig?.dataType);
+							console.log('Has valueGetter:', !!originalCol.valueGetter);
+							console.log('Has column:', !!params.column);
+							console.log('Raw value:', rawValue);
+							console.log('Display value:', displayValue);
+							console.log('Display differs from raw:', displayValue !== rawValue);
+							console.log('Params.value:', params.value);
+							console.log('=========================================');
+						}
+						
+						return {
+							// Pass the raw value
+							value: rawValue,
+							// Pass the display value if it's different from raw value
+							displayValue: displayValue !== rawValue ? displayValue : undefined,
+							onSave: async (newValue: string) => {
+							if (!originalCol.field || !params.data) return;
 							
 							const service = editService || repository as IDataService<T, U>;
 							const id = getRowId(params.data);
 
 							await service.update(id, {
-								[col.field]: newValue
+								[originalCol.field as string]: newValue
 							} as Partial<T>);
 
 							if (fieldConfig?.dataType !== EditableFieldType.List) {
 								params.api.stopEditing();
 							}
-							params.node.setDataValue(col.field, newValue);
-
-							params.api.refreshInfiniteCache();
+							
+							// Update the data directly on the node
+							if (params.node.rowIndex === 0) {
+								console.log('DataGrid: Before update', originalCol.field, params.node.data);
+							}
+							
+							// Create a new data object with the updated value
+							const updatedData = {
+								...params.data,
+								[originalCol.field as string]: newValue
+							};
+							
+							// Track the local edit FIRST before updating the node
+							const existingEdits = localEditsRef.current.get(id) || {};
+							localEditsRef.current.set(id, {
+								...existingEdits,
+								[originalCol.field as string]: newValue
+							} as Partial<U>);
+							
+							// Use setData to update the node
+							params.node.setData(updatedData);
+							
+							if (params.node.rowIndex === 0) {
+								console.log('DataGrid: After update', originalCol.field, params.node.data);
+								console.log('DataGrid: Local edits for row', id, localEditsRef.current.get(id));
+							}
+							
+							// Refresh cells to trigger valueGetters
+							params.api.refreshCells({
+								rowNodes: [params.node],
+								force: true
+							});
 							
 							try {
 								await refreshAggregates();
 							} catch (error) {
 								console.error('Failed to refresh aggregates after cell edit:', error);
 							}
-						},
-						...fieldConfig
-					})
+													},
+							...fieldConfig
+						};
+					}
 				};
 			}
-			return col;  // Don't modify non-editable columns
+			return originalCol;  // Return the column with wrapped valueGetter
 		});
 
 		if (supportDelete) {
@@ -340,6 +456,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		getRows: async (params: IGetRowsParams) => {
 			const {startRow, endRow, sortModel} = params;
 			const limit = endRow - startRow;
+			console.log('DataGrid: dataSource.getRows called', { startRow, endRow });
 
 			try {
 				const order: OrderBy<T> = {};
@@ -376,8 +493,19 @@ export function DataGrid<T extends object, U extends T = T>({
 					setLastKnownRowCount(result.count);
 				}
 
+				// Apply any local edits to the fetched data
+				const dataWithLocalEdits = result.data.map(row => {
+					const rowId = getRowId(row);
+					const localEdits = localEditsRef.current.get(rowId);
+					if (localEdits) {
+						console.log('DataGrid: Applying local edits to row', rowId, localEdits);
+						return { ...row, ...localEdits };
+					}
+					return row;
+				});
+
 				const lastRow = result.data.length < limit ? startRow + result.data.length : undefined;
-				params.successCallback(result.data, lastRow);
+				params.successCallback(dataWithLocalEdits, lastRow);
 
 				if (!dataFirstLoadedRef.current && gridApiRef.current && isMountedRef.current) {
 					onDataFirstLoaded?.(gridApiRef.current);
@@ -457,12 +585,19 @@ export function DataGrid<T extends object, U extends T = T>({
 			onColumnResized,
 			onBodyScroll: handleBodyScroll,
 			popupParent: hasEditableColumns ? document.body : undefined,
+			context: {
+				...(restGridOptions.context || {}),
+				localEdits: localEditsRef
+			}
 		};
 	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns, noRowsComponent, loadingComponent, handleBodyScroll]);
 
 	useEffect(() => {
 		if (isMountedRef.current) {
+			console.log('DataGrid: Updating datasource due to:', { tick, filters, conditions, inputProperties });
 			dataFirstLoadedRef.current = false;
+			// Clear local edits when filters/conditions change since we're loading a different dataset
+			localEditsRef.current.clear();
 			gridApiRef.current?.updateGridOptions({datasource: dataSource});
 		}
 	}, [tick, filters, conditions, inputProperties]);

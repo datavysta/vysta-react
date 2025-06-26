@@ -16,6 +16,7 @@ export interface EditableFieldConfig {
     listService?: IReadonlyDataService<Record<string, unknown>>;
     displayColumn?: string;
     clearable?: boolean;
+    useCache?: boolean;
     listOptions?: Partial<LazyLoadListProps<Record<string, unknown>>>;
     // For number type
     numberOptions?: Partial<NumberInputProps>;
