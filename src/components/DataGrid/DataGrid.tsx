@@ -206,22 +206,23 @@ export function DataGrid<T extends object, U extends T = T>({
 				}
 			}
 
-			const select = [...new Set(
-				columnDefs
-					.filter(col => {
-						if (!col.field || col.field.startsWith('_')) return false;
-						
-						const cellClass = col.cellClass;
-						if (typeof cellClass === 'string') {
-							return cellClass !== 'no-download';
-						} else if (Array.isArray(cellClass)) {
-							return !cellClass.includes('no-download');
-						}
-						
-						return true;
-					})
-					.map(col => String(col.field) as keyof T)
-			)];
+			const select: SelectColumn<T>[] = columnDefs
+				.filter(col => {
+					if (!col.field || col.field.startsWith('_')) return false;
+					
+					const cellClass = col.cellClass;
+					if (typeof cellClass === 'string') {
+						return cellClass !== 'no-download';
+					} else if (Array.isArray(cellClass)) {
+						return !cellClass.includes('no-download');
+					}
+					
+					return true;
+				})
+				.map(col => ({
+					name: String(col.field) as keyof T,
+					alias: (col.headerName || String(col.field)).replace(/,/g, '')
+				}));
 
 			const blob = await repository.download({
 				select,
