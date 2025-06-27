@@ -13,23 +13,7 @@ export class EditableListCell extends BaseEditableCell {
     getValue() {
         // Get the field name and look up the value from the row data
         const fieldName = this.props.colDef?.field;
-        
-        // Check local edits first (same logic as DataGrid's cellEditorParams)
-        const rowId = this.props.data ? (this.props as any).getRowId?.(this.props.data) : null;
-        const localEdits = rowId ? this.props.context?.localEdits?.current?.get(rowId) : null;
-        
-        let value;
-        if (localEdits && fieldName && fieldName in localEdits) {
-            // Use the local edit value
-            value = localEdits[fieldName];
-        } else if (fieldName && this.props.data) {
-            // Use the original data value
-            value = this.props.data[fieldName];
-        } else {
-            // Fallback to props.value
-            value = this.props.value;
-        }
-        
+        const value = fieldName && this.props.data ? this.props.data[fieldName] : this.props.value;
         return String(value) || '';
     }
 
@@ -72,7 +56,7 @@ export class EditableListCell extends BaseEditableCell {
         const currentValue = this.getValue();
         
         // Get the display value from props if it was passed by DataGrid
-        const initialDisplayValue = (this.props as any).displayValue;
+        const initialDisplayValue = (this.props as Record<string, unknown>).displayValue as string | undefined;
         
 
 

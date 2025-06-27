@@ -60,7 +60,7 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
                 
                 // Only log for first row
                 if (params.node?.rowIndex === 0) {
-                    /*console.log("Supplier valueGetter (row 0):", {
+                    console.log("Supplier valueGetter (row 0):", {
                         supplierId,
                         type: typeof supplierId,
                         supplierMapKeys: Object.keys(supplierMap).slice(0, 5),
@@ -68,7 +68,7 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
                         found: supplierMap[supplierId],
                         tryString: supplierMap[String(supplierId)],
                         tryNumber: supplierMap[Number(supplierId)]
-                    });*/
+                    });
 
                 }
                 // Return the company name from our cached map
@@ -137,8 +137,10 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
                     }}
                     tick={tick}
                     onSaveComplete={(params) => {
-                        // Refresh the grid's infinite cache to load fresh data
-                        params.gridApi.refreshInfiniteCache();
+                        // Add a small delay to ensure the save is fully processed
+                        setTimeout(() => {
+                            params.gridApi.refreshInfiniteCache();
+                        }, 100);
                     }}
                 />
             </div>
