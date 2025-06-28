@@ -10,11 +10,15 @@ const UuidComponent: FC<IFieldProperty> = ({
 	onChange
 }) => {
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		onChange && onChange(e.target.value);
+		if (onChange) {
+			onChange(e.target.value);
+		}
 	};
 
 	const handleGenerateUuid = () => {
-		onChange && onChange(crypto.randomUUID());
+		if (onChange) {
+			onChange(crypto.randomUUID());
+		}
 	};
 
 	if (readOnly) {

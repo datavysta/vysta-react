@@ -3,6 +3,7 @@ import { VystaClient } from '@datavysta/vysta-client';
 import { ProductService } from '../services/ProductService';
 import { CustomerService } from '../services/CustomerService';
 import { OrderService } from '../services/OrderService';
+import { SupplierService } from '../services/SupplierService';
 import { NorthwindFileService } from '../services/NorthwindFileService';
 import { TimezoneService } from '../../../src/services/TimezoneService';
 import { Loader, Flex } from '@mantine/core';
@@ -12,6 +13,7 @@ export interface AppServiceContext {
   productService: ProductService;
   customerService: CustomerService;
   orderService: OrderService;
+  supplierService: SupplierService;
   fileService: NorthwindFileService;
   timezoneService: TimezoneService;
   client: VystaClient;
@@ -33,6 +35,7 @@ export const ServicesProvider: React.FC<ServicesProviderProps> = ({ client, chil
       productService: new ProductService(client),
       customerService: new CustomerService(client),
       orderService: new OrderService(client),
+      supplierService: new SupplierService(client),
       fileService: new NorthwindFileService(client),
       timezoneService: new TimezoneService('http://localhost:8080'),
       client,

@@ -13,12 +13,16 @@ const NumericComponent: FC<IFieldProperty> = ({
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		if (value === '') {
-			onChange && onChange('');
+			if (onChange) {
+				onChange('');
+			}
 			return;
 		}
 		const num = parseFloat(value);
 		if (!isNaN(num)) {
-			onChange && onChange(num.toString());
+			if (onChange) {
+				onChange(num.toString());
+			}
 		}
 	};
 

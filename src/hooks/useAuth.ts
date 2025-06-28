@@ -50,7 +50,7 @@ export function useAuth({ client, permissionService, apps }: UseAuthOptions): Us
             try {
               const perm = await permissionService.getConnectionPermissions(app);
               return [app, perm] as [string, ObjectPermission];
-            } catch (err) {
+            } catch {
               return [app, null];
             }
           })

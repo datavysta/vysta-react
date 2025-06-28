@@ -12,7 +12,9 @@ const ToggleComponent: FC<IFieldProperty> = ({
 	const { t } = useTranslationContext();
 
 	const handleChange = (checked: boolean) => {
-		onChange && onChange(checked.toString());
+		if (onChange) {
+			onChange(checked.toString());
+		}
 	};
 
 	if (readOnly) {

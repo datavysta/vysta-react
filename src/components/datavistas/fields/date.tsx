@@ -11,7 +11,9 @@ const DateComponent: FC<IFieldProperty> = ({
 	onChange
 }) => {
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		onChange && onChange(event.target.value ? formatDate(new Date(event.target.value)) : '');
+		if (onChange) {
+			onChange(event.target.value ? formatDate(new Date(event.target.value)) : '');
+		}
 	};
 
 	if (readOnly) {

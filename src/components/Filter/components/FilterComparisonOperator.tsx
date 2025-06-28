@@ -29,14 +29,15 @@ const FilterComparisonOperator: FC<IFilterComparisonOperatorProps> = ({
 
 	useEffect(() => {
 		const operators = getAllOperators();
-		dataType
-			? setDataTypeOperators(operators, dataType)
-			: setOperators(operators);
+		if (dataType) {
+			setDataTypeOperators(operators, dataType);
+		} else {
+			setOperators(operators);
+		}
 	}, [dataType]);
 
 	const getAllOperators = () =>
 		Object.values(ComparisonOperator)
-			//.filter(_ => _ != ComparisonOperator.Equal && _ != ComparisonOperator.NotEqual)
 			.map((key: string) => ({
 				value: key as ComparisonOperator,
 				label: t(key),
