@@ -557,7 +557,7 @@ export function DataGrid<T extends object, U extends T = T>({
 			if (isMountedRef.current) {
 				setAggregateSummary((result.data?.[0] as Record<string, unknown>) || null);
 			}
-		} catch (e) {
+		} catch {
 			if (isMountedRef.current) setAggregateSummary(null);
 		}
 	}, [aggregateSelect, filters, conditions, inputProperties, wildcardSearch, repository, useCache]);
