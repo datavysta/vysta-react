@@ -58,19 +58,6 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
                 const supplierId = params.data?.supplierId;
                 if (!supplierId) return '';
                 
-                // Only log for first row
-                if (params.node?.rowIndex === 0) {
-                    console.log("Supplier valueGetter (row 0):", {
-                        supplierId,
-                        type: typeof supplierId,
-                        supplierMapKeys: Object.keys(supplierMap).slice(0, 5),
-                        mapKeysType: Object.keys(supplierMap).length > 0 ? typeof Object.keys(supplierMap)[0] : 'no keys',
-                        found: supplierMap[supplierId],
-                        tryString: supplierMap[String(supplierId)],
-                        tryNumber: supplierMap[Number(supplierId)]
-                    });
-
-                }
                 // Return the company name from our cached map
                 // Try both number and string keys since AG Grid might pass either
                 return supplierMap[supplierId] || supplierMap[String(supplierId)] || `Supplier ${supplierId}`;
