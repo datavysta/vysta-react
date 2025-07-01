@@ -13,7 +13,9 @@ const CheckboxComponent: FC<IFieldProperty> = ({
 	const { t } = useTranslationContext();
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		onChange && onChange(e.target.checked.toString());
+		if (onChange) {
+			onChange(e.target.checked.toString());
+		}
 	};
 
 	if (readOnly) {

@@ -6,7 +6,9 @@ function useFocus<T extends HTMLInputElement | HTMLTextAreaElement | HTMLButtonE
 	useEffect(() => {
 		if (focus !== undefined && focus > -1 && inputRef.current) {
 			inputRef.current.focus();
-			'select' in inputRef.current && inputRef.current.select();
+			if ('select' in inputRef.current) {
+				inputRef.current.select();
+			}
 		}
 	}, [focus, inputRef.current]);
 

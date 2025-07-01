@@ -97,6 +97,9 @@ export interface LazyLoadListProps<T extends object> {
     /** Whether the list should be opened by default */
     defaultOpened?: boolean;
 
+    /** Pre-calculated display value to avoid initial lookup */
+    initialDisplayValue?: string;
+
     /** Styles for the list components in the format of Mantine's theme */
     styles?: LazyLoadListStyles;
 

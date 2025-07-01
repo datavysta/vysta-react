@@ -22,6 +22,7 @@ export function LazyLoadList<T extends object>({
     clearable = true,
     disableInitialValueLoad = false,
     defaultOpened = false,
+    initialDisplayValue,
     autoSearchInputFocus = true,
     withinPortal = true,
     renderOption,
@@ -43,6 +44,7 @@ export function LazyLoadList<T extends object>({
     const [debouncedSearch] = useDebouncedValue(search, 300);
     const [options, setOptions] = useState<T[]>([]);
     const [loading, setLoading] = useState(false);
+    const [optionsLoading, setOptionsLoading] = useState(false);
     const [offset, setOffset] = useState(0);
     const [moreDataExists, setMoreDataExists] = useState(true);
     const [valueResolved, setValueResolved] = useState(false);
@@ -55,7 +57,7 @@ export function LazyLoadList<T extends object>({
     const effectiveFilters = useMemo(() => filters || {}, [filters]);
     const effectiveOrderBy = useMemo(() => orderBy || { [displayColumn]: 'asc' }, [orderBy, displayColumn]);
     const selectedOption = options.find(opt => String(opt[effectivePrimaryKey]) === value);
-    const displayValue = selectedOption ? String(selectedOption[displayColumn]) : '';
+    const displayValue = selectedOption ? String(selectedOption[displayColumn]) : (initialDisplayValue || '');
 
     // Reset valueResolved when value changes to allow loading of new values
     useEffect(() => {
@@ -74,11 +76,12 @@ export function LazyLoadList<T extends object>({
             combobox.updateSelectedOptionIndex('active');
 
             if (autoSearchInputFocus && isMountedRef.current) {
+                // Use a longer timeout to ensure the dropdown and search input are fully rendered
                 setTimeout(() => {
                     if (isMountedRef.current && searchInputRef.current) {
                         searchInputRef.current.focus();
                     }
-                }, 0);
+                }, 50);
             }
         }
     });
@@ -96,9 +99,10 @@ export function LazyLoadList<T extends object>({
         const hasTempValue = options.some(opt => (opt as Record<string, unknown>).__isTemp && String(opt[effectivePrimaryKey]) === value);
         
         if (isMountedRef.current) {
-            setLoading(!hasValue && !hasTempValue);
+            // Only show loading if we don't have the value and it's not resolved yet
+            setLoading(!hasValue && !hasTempValue && !valueResolved);
         }
-    }, [value, options, effectivePrimaryKey]);
+    }, [value, options, effectivePrimaryKey, valueResolved]);
 
     // Handle value changes and add temporary option if needed
     useEffect(() => {
@@ -122,11 +126,19 @@ export function LazyLoadList<T extends object>({
     useEffect(() => {
         if (!value || valueResolved || !isMountedRef.current) return;
         
-        // Skip loading if disabled or if display matches key
-        if (disableInitialValueLoad || 
+        // Skip loading if any of these conditions are true:
+        if (
+            // 1. Initial value loading is explicitly disabled
+            disableInitialValueLoad || 
+            // 2. No display column is specified (nothing to look up)
             !displayColumn || 
+            // 3. Display column is same as primary key (e.g. both are 'id')
             displayColumn === effectivePrimaryKey || 
-            value === displayValue) {
+            // 4. Current value already equals what we want to display
+            value === displayValue ||
+            // 5. We have an initial display value provided
+            initialDisplayValue
+        ) {
             if (isMountedRef.current) {
                 setValueResolved(true);
                 if (defaultOpened) {
@@ -151,12 +163,20 @@ export function LazyLoadList<T extends object>({
         if (valueInResults) {
             if (isMountedRef.current) {
                 setValueResolved(true);
+                if (defaultOpened) {
+                    // Open dropdown since value is already in results
+                    setTimeout(() => {
+                        if (isMountedRef.current) {
+                            combobox.openDropdown();
+                        }
+                    }, 0);
+                }
             }
             return;
         }
 
         loadValueData();
-    }, [value, valueResolved, displayColumn, effectivePrimaryKey, disableInitialValueLoad, options]);
+    }, [value, valueResolved, displayColumn, effectivePrimaryKey, disableInitialValueLoad, options, initialDisplayValue]);
 
     // Load options when search changes or tick changes
     useEffect(() => {
@@ -217,18 +237,23 @@ export function LazyLoadList<T extends object>({
             });
             setResolvedItems(new Set([value]));
             setValueResolved(true);
+            setLoading(false);
         } catch (error) {
             if (!isMountedRef.current) return;
             
             console.error('Error loading value data:', error);
             setError(error instanceof Error ? error.message : 'Failed to load value data');
+            setLoading(false);
         }
     };
 
     const loadOptions = useCallback(async (incremental: boolean) => {
-        if (loading || (!incremental && !combobox.dropdownOpened) || !isMountedRef.current) return;
+        // Use optionsLoading instead of loading to prevent conflicts with value loading
+        if (optionsLoading || (!incremental && !combobox.dropdownOpened) || !isMountedRef.current) {
+            return;
+        }
 
-        setLoading(true);
+        setOptionsLoading(true);
         setError(null);
         const useOffset = incremental ? offset : 0;
 
@@ -294,11 +319,11 @@ export function LazyLoadList<T extends object>({
             setMoreDataExists(false);
         } finally {
             if (isMountedRef.current) {
-                setLoading(false);
+                setOptionsLoading(false);
             }
         }
     }, [
-        loading,
+        optionsLoading,
         combobox.dropdownOpened,
         offset,
         effectivePrimaryKey,
@@ -317,7 +342,7 @@ export function LazyLoadList<T extends object>({
     ]);
 
     const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-        if (error || loading || !isMountedRef.current) return;
+        if (error || optionsLoading || !isMountedRef.current) return;
         
         const target = event.target as HTMLElement;
         const bottom = Math.abs(
@@ -327,7 +352,7 @@ export function LazyLoadList<T extends object>({
         if (bottom && moreDataExists) {
             loadOptions(true);
         }
-    }, [error, loading, moreDataExists, offset, totalLoaded, totalCount, loadOptions]);
+    }, [error, optionsLoading, moreDataExists, offset, totalLoaded, totalCount, loadOptions]);
 
     const groupedOptions = groupBy
         ? options.reduce((acc, item) => {
@@ -339,7 +364,7 @@ export function LazyLoadList<T extends object>({
         : { 'Items': options };
 
     const getRightSection = () => {
-        if (loading) {
+        if (loading || optionsLoading) {
             return (
                 <Loader 
                     size="sm" 
@@ -428,6 +453,7 @@ export function LazyLoadList<T extends object>({
                 combobox.closeDropdown();
             }}
             styles={styles?.combobox}
+            position="bottom-start"
         >
             <Combobox.Target>
                 <InputBase
@@ -444,7 +470,13 @@ export function LazyLoadList<T extends object>({
                 </InputBase>
             </Combobox.Target>
 
-            <Combobox.Dropdown>
+            <Combobox.Dropdown
+                style={{
+                    minWidth: 'max-content',
+                    width: 'auto',
+                    maxWidth: '500px'
+                }}
+            >
                 {searchable && (
                     <Combobox.Search
                         ref={searchInputRef}
@@ -455,7 +487,7 @@ export function LazyLoadList<T extends object>({
                         classNames={{ input: moduleStyles.searchInput }}
                     />
                 )}
-                {(loading || options.some(opt => !(opt as Record<string, unknown>).__isTemp)) && (
+                {((loading || optionsLoading) || options.some(opt => !(opt as Record<string, unknown>).__isTemp)) && (
                     <ScrollArea.Autosize
                         mah="30vh"
                         type="scroll"

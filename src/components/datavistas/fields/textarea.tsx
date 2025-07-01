@@ -11,7 +11,9 @@ const TextareaComponent: FC<IFieldProperty> = ({
 	onChange
 }) => {
 	const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-		onChange && onChange(e.target.value);
+		if (onChange) {
+			onChange(e.target.value);
+		}
 	};
 
 	if (readOnly) {

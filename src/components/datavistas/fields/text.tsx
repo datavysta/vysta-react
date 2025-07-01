@@ -11,7 +11,9 @@ const TextComponent: FC<IFieldProperty> = ({
 	onChange
 }) => {
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		onChange && onChange(e.target.value);
+		if (onChange) {
+			onChange(e.target.value);
+		}
 	};
 
 	if (readOnly) {

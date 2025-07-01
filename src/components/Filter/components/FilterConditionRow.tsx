@@ -112,8 +112,9 @@ const FilterConditionRow: FC<IFilterProps> = ({
 	}, [expressionCondition]);
 
 	useEffect(() => {
-		isComparisonOperatorNullOrNotNull &&
+		if (isComparisonOperatorNullOrNotNull) {
 			setExpressionCondition({ ...expressionCondition, values: [] });
+		}
 	}, [comparisonOperator]);
 
 	const handleLeftSideChange = (value: string) => {

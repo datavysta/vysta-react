@@ -11,10 +11,11 @@ import {
 	GetRowIdParams,
 	ModuleRegistry,
 	InfiniteRowModelModule,
-	SortModelItem, TextEditorModule, ColumnApiModule,
+	SortModelItem, TextEditorModule, ColumnApiModule, CustomEditorModule, RenderApiModule,
 	ColumnResizedEvent,
 	Column,
-	BodyScrollEvent
+	BodyScrollEvent,
+	ValueGetterParams
 } from 'ag-grid-community';
 import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
 import type {OrderBy, SortDirection, IReadonlyDataService, IDataService, SelectColumn} from '@datavysta/vysta-client';
@@ -31,7 +32,9 @@ import { EditableListCell } from './cells/EditableListCell';
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
 	TextEditorModule,
-	ColumnApiModule
+	ColumnApiModule,
+	CustomEditorModule,
+	RenderApiModule
 ]);
 
 export interface DataGridStyles {
@@ -102,6 +105,18 @@ export interface DataGridProps<T extends object, U extends T = T> {
 	 * Enable caching for this DataGrid's queries. Defaults to false.
 	 */
 	useCache?: boolean;
+	/**
+	 * Called after a cell edit is successfully saved.
+	 * @param params Object containing the field, old value, new value, row data, and row ID
+	 */
+	onSaveComplete?: (params: {
+		field: string;
+		oldValue: unknown;
+		newValue: unknown;
+		rowId: string;
+		rowData: U;
+		gridApi: GridApi<U>;
+	}) => void;
 }
 
 export function DataGrid<T extends object, U extends T = T>({
@@ -133,6 +148,7 @@ export function DataGrid<T extends object, U extends T = T>({
     renderAggregateFooter,
     onRowCountChange,
     useCache = false,
+    onSaveComplete,
 }: DataGridProps<T, U>) {
 	const gridApiRef = useRef<GridApi<U> | null>(null);
 	const [lastKnownRowCount, setLastKnownRowCount] = useState<number>(-1);
@@ -258,8 +274,9 @@ export function DataGrid<T extends object, U extends T = T>({
 
 	const modifiedColDefs = useMemo(() => {
 		const cols = columnDefs.map(col => {
-			if (col.field && editableFields?.[(col.field as unknown) as keyof U]) {
-				const fieldConfig = editableFields[(col.field as unknown) as keyof U];
+			const originalCol = { ...col };
+			if (originalCol.field && editableFields?.[(originalCol.field as unknown) as keyof U]) {
+				const fieldConfig = editableFields[(originalCol.field as unknown) as keyof U];
 				const cellEditor = (() => {
 					switch (fieldConfig?.dataType) {
 						case EditableFieldType.Number:
@@ -275,36 +292,85 @@ export function DataGrid<T extends object, U extends T = T>({
 				})();
 
 				return {
-					...col,
+					...originalCol,
 					editable: true,
 					cellEditor,
-					cellEditorParams: (params: ICellRendererParams<U>) => ({
-						onSave: async (newValue: string) => {
-							if (!col.field || !params.data) return;
+					cellEditorPopup: fieldConfig?.dataType === EditableFieldType.List,
+					cellEditorParams: (params: ICellRendererParams<U>) => {
+						// Get the raw value from the data
+						const rawValue = originalCol.field && params.data 
+							? (params.data as Record<string, unknown>)[originalCol.field]
+							: params.value;
+
+			
+						
+						// Get the display value if there's a valueGetter
+						let displayValue: unknown = undefined;
+						if (originalCol.valueGetter && typeof originalCol.valueGetter === 'function' && params.column) {
+							try {
+								// Create a ValueGetterParams object with the required getValue function
+								const valueGetterParams = {
+									...params,
+									column: params.column,
+									getValue: (field: string) => {
+										return params.data ? (params.data as Record<string, unknown>)[field] : undefined;
+									}
+								};
+								displayValue = originalCol.valueGetter(valueGetterParams as ValueGetterParams<U>);
+							} catch (e) {
+								// If valueGetter fails, we'll just not have a display value
+								console.warn('Failed to get display value from valueGetter:', e);
+							}
+						}
+						
+
+						
+						return {
+							// Pass the raw value
+							value: rawValue,
+							// Pass the display value if it's different from raw value
+							displayValue: displayValue !== rawValue ? displayValue : undefined,
+							// Pass getRowId so cell editors can access local edits
+							getRowId,
+							onSave: async (newValue: string) => {
+							if (!originalCol.field || !params.data) return;
 							
 							const service = editService || repository as IDataService<T, U>;
 							const id = getRowId(params.data);
+							const oldValue = rawValue; // Capture the old value before update
 
 							await service.update(id, {
-								[col.field]: newValue
+								[originalCol.field as string]: newValue
 							} as Partial<T>);
 
-							params.api.stopEditing();
-							params.node.setDataValue(col.field, newValue);
-
-							params.api.refreshInfiniteCache();
+							if (fieldConfig?.dataType !== EditableFieldType.List) {
+								params.api.stopEditing();
+							}
 							
 							try {
 								await refreshAggregates();
 							} catch (error) {
 								console.error('Failed to refresh aggregates after cell edit:', error);
 							}
-						},
-						...fieldConfig
-					})
+							
+							// Call the onSaveComplete callback if provided
+							if (onSaveComplete) {
+								onSaveComplete({
+									field: originalCol.field as string,
+									oldValue,
+									newValue,
+									rowId: id,
+									rowData: params.data,
+									gridApi: params.api
+								});
+							}
+													},
+							...fieldConfig
+						};
+					}
 				};
 			}
-			return col;  // Don't modify non-editable columns
+			return originalCol;  // Return the column with wrapped valueGetter
 		});
 
 		if (supportDelete) {
@@ -453,6 +519,7 @@ export function DataGrid<T extends object, U extends T = T>({
 			suppressLoadingOverlay: !loadingComponent,
 			onColumnResized,
 			onBodyScroll: handleBodyScroll,
+			popupParent: hasEditableColumns ? document.body : undefined
 		};
 	}, [modifiedColDefs, defaultColDef, gridOptions, getRowIdHandler, hasEditableColumns, noRowsComponent, loadingComponent, handleBodyScroll]);
 
@@ -466,6 +533,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	const onGridReady = (params: GridReadyEvent<U>) => {
 		if (isMountedRef.current) {
 			gridApiRef.current = params.api;
+
 			params.api.updateGridOptions({ datasource: dataSource });
 			if (typeof gridOptions?.onGridReady === 'function') {
 				gridOptions.onGridReady(params);
@@ -490,7 +558,7 @@ export function DataGrid<T extends object, U extends T = T>({
 			if (isMountedRef.current) {
 				setAggregateSummary((result.data?.[0] as Record<string, unknown>) || null);
 			}
-		} catch (e) {
+		} catch {
 			if (isMountedRef.current) setAggregateSummary(null);
 		}
 	}, [aggregateSelect, filters, conditions, inputProperties, wildcardSearch, repository, useCache]);
