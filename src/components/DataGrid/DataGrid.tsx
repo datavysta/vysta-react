@@ -595,7 +595,7 @@ export function DataGrid<T extends object, U extends T = T>({
 					// Find the aggregate for this column by name
 					const agg = aggregateSelect?.find(sel => sel.name === (colDef.field ? String(colDef.field) : undefined));
 					const value = agg && aggregateSummary[agg.alias!] != null
-						? String(aggregateSummary[agg.alias!])
+						? aggregateSummary[agg.alias!]
 						: '';
 					const style = {
 						width,
@@ -604,7 +604,7 @@ export function DataGrid<T extends object, U extends T = T>({
 						flex: 'none',
 					};
 					// format value using colDef.valueFormatter if available
-					let displayValue: string = value;
+					let displayValue: string = value !== '' ? String(value) : '';
 					if (value !== '' && colDef && 'valueFormatter' in colDef && typeof colDef.valueFormatter === 'function') {
 						try {
 							displayValue = String((colDef.valueFormatter as (p: { value: unknown }) => string)({ value }));
