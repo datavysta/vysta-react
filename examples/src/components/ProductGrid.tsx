@@ -24,7 +24,14 @@ export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
         { field: 'unitPrice', headerName: 'Price', valueFormatter: ({ value }) => value && `$${Number(value).toFixed(2)}` },
         { field: 'unitsInStock', headerName: 'Stock' },
         { field: 'discontinued', headerName: 'Discontinued' },
-        { headerName: 'Price 2', colId: 'price2', valueGetter: () => 'hello' },
+        { 
+            field: 'unitPrice', 
+            headerName: 'Price 2 (Locale)', 
+            colId: 'price2',
+            valueFormatter: (params) => {
+                return params.value ? params.value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "";
+            }
+        },
         { headerName: 'Stock 2', colId: 'stock2', valueGetter: () => 'hello' },
         { headerName: 'Name 2', colId: 'name2', valueGetter: () => 'hello' },
         { headerName: 'Price 3', colId: 'price3', valueGetter: () => 'hello' },
@@ -68,4 +75,4 @@ export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
             </div>
         </div>
     );
-}    
+}            
