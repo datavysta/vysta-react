@@ -17,7 +17,7 @@ import {
 	BodyScrollEvent,
 	ValueGetterParams
 } from 'ag-grid-community';
-import type {Theme} from "ag-grid-community/dist/types/src/theming/Theme";
+import type {Theme} from "ag-grid-community";
 import type {OrderBy, SortDirection, IReadonlyDataService, IDataService, SelectColumn} from '@datavysta/vysta-client';
 import {FileType} from '@datavysta/vysta-client';
 import moduleStyles from './DataGrid.module.css';

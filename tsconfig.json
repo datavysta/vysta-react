@@ -5,7 +5,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -19,7 +19,9 @@
     "declarationDir": "dist",
     "outDir": "dist",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "allowImportingTsExtensions": false,
+    "verbatimModuleSyntax": false
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

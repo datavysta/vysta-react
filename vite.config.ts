@@ -39,6 +39,8 @@ export default defineConfig({
         preserveModules: true,
         preserveModulesRoot: 'src',
         entryFileNames: '[name].js',
+        format: 'es',
+        exports: 'named',
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name || '';
           const extname = name.split('.').pop();
@@ -53,7 +55,7 @@ export default defineConfig({
       },
     },
     cssCodeSplit: false,
-    target: 'esnext',
+    target: 'es2020',
     outDir: 'dist',
   },
   css: {
