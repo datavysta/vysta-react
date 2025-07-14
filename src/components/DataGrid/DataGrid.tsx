@@ -343,11 +343,9 @@ export function DataGrid<T extends object, U extends T = T>({
 									[originalCol.field as string]: newValue
 								} as Partial<T>);
 
-								// Update the local cell value immediately for visual feedback
-								params.node.setDataValue(originalCol.field, newValue);
-
 								if (fieldConfig?.dataType !== EditableFieldType.List) {
 									params.api.stopEditing();
+									params.node.setDataValue(originalCol.field, newValue);
 								}
 								
 								try {
