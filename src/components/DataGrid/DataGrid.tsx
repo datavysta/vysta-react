@@ -333,38 +333,41 @@ export function DataGrid<T extends object, U extends T = T>({
 							// Pass getRowId so cell editors can access local edits
 							getRowId,
 							onSave: async (newValue: string) => {
-							if (!originalCol.field || !params.data) return;
-							
-							const service = editService || repository as IDataService<T, U>;
-							const id = getRowId(params.data);
-							const oldValue = rawValue; // Capture the old value before update
+								if (!originalCol.field || !params.data) return;
+								
+								const service = editService || repository as IDataService<T, U>;
+								const id = getRowId(params.data);
+								const oldValue = rawValue; // Capture the old value before update
 
-							await service.update(id, {
-								[originalCol.field as string]: newValue
-							} as Partial<T>);
+								await service.update(id, {
+									[originalCol.field as string]: newValue
+								} as Partial<T>);
 
-							if (fieldConfig?.dataType !== EditableFieldType.List) {
-								params.api.stopEditing();
-							}
-							
-							try {
-								await refreshAggregates();
-							} catch (error) {
-								console.error('Failed to refresh aggregates after cell edit:', error);
-							}
-							
-							// Call the onSaveComplete callback if provided
-							if (onSaveComplete) {
-								onSaveComplete({
-									field: originalCol.field as string,
-									oldValue,
-									newValue,
-									rowId: id,
-									rowData: params.data,
-									gridApi: params.api
-								});
-							}
-													},
+								// Update the local cell value immediately for visual feedback
+								params.node.setDataValue(originalCol.field, newValue);
+
+								if (fieldConfig?.dataType !== EditableFieldType.List) {
+									params.api.stopEditing();
+								}
+								
+								try {
+									await refreshAggregates();
+								} catch (error) {
+									console.error('Failed to refresh aggregates after cell edit:', error);
+								}
+								
+								// Call the onSaveComplete callback if provided
+								if (onSaveComplete) {
+									onSaveComplete({
+										field: originalCol.field as string,
+										oldValue,
+										newValue,
+										rowId: id,
+										rowData: params.data,
+										gridApi: params.api
+									});
+								}
+							},
 							...fieldConfig
 						};
 					}
@@ -399,7 +402,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		}, []);
 	};
 
-	const dataSource = {
+	const dataSource = useMemo(() => ({
 		getRows: async (params: IGetRowsParams) => {
 			const {startRow, endRow, sortModel} = params;
 			const limit = endRow - startRow;
@@ -457,7 +460,7 @@ export function DataGrid<T extends object, U extends T = T>({
 				}
 			}
 		}
-	};
+	}), [repository, columnDefs, filters, conditions, inputProperties, wildcardSearch, useCache, onDataFirstLoaded, onDataLoaded]);
 
 	const getRowIdHandler = useCallback((params: GetRowIdParams<U>) => {
 		return params.data ? getRowId(params.data) : '';
@@ -528,7 +531,7 @@ export function DataGrid<T extends object, U extends T = T>({
 			dataFirstLoadedRef.current = false;
 			gridApiRef.current?.updateGridOptions({datasource: dataSource});
 		}
-	}, [tick, filters, conditions, inputProperties]);
+	}, [tick, dataSource]);
 
 	const onGridReady = (params: GridReadyEvent<U>) => {
 		if (isMountedRef.current) {
