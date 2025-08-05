@@ -6,7 +6,7 @@ import { VystaConfig } from '@datavysta/vysta-client';
 import { VystaServiceProvider, useVystaServices } from '@datavysta/vysta-react';
 
 const config: VystaConfig = {
-    baseUrl: 'http://localhost:8080',
+    baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:8080',
     debug: true,
     cache: { enabled: true }
 };
