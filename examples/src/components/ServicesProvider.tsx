@@ -37,7 +37,7 @@ export const ServicesProvider: React.FC<ServicesProviderProps> = ({ client, chil
       orderService: new OrderService(client),
       supplierService: new SupplierService(client),
       fileService: new NorthwindFileService(client),
-      timezoneService: new TimezoneService(import.meta.env.VITE_API_URL ?? 'http://localhost:8080'),
+      timezoneService: new TimezoneService(client),
       client,
     });
   }, [client]);
