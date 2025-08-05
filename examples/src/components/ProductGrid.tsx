@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { DataGrid } from '../../../src/components/DataGrid/DataGrid';
+import { useMemo, useState } from 'react';
+import { DataGrid } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { ColDef } from 'ag-grid-community';
 import { Product } from '../types/Product';

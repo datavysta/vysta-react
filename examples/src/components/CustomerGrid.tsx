@@ -1,14 +1,16 @@
-import React, { useMemo, useState } from 'react';
-import { DataGrid } from '../../../src';
+import { useState } from 'react';
 import { useServices } from './ServicesProvider';
 import { Customer } from '../types/Customer';
 import { ColDef } from 'ag-grid-community';
 import './CustomerGrid.css';
 import { Modal, Button } from '@mantine/core';
-import Condition from '../../../src/components/Models/Condition';
-import FilterPanel from '../../../src/components/Filter/FilterPanel';
-import DataType from '../../../src/components/Models/DataType';
-import { FilterDefinitionsByField } from '../../../src/components/Filter/FilterDefinitionsByField';
+import {
+    DataGrid,
+    Condition,
+    FilterPanel,
+    FilterDefinitionsByField,
+    DataType
+} from "@datavysta/vysta-react"
 import { FieldComponentProvider } from '../../../src/components/datavistas/FieldComponentContext';
 
 interface CustomerGridProps {

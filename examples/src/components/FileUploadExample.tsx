@@ -1,5 +1,4 @@
-import React from 'react';
-import { FileUpload } from '../../../src/components/FileUpload/FileUpload';
+import { FileUpload } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import './FileUploadExample.css';
 

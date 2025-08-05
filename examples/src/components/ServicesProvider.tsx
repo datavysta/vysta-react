@@ -1,11 +1,11 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
 import { VystaClient } from '@datavysta/vysta-client';
+import { TimezoneService } from '@datavysta/vysta-react';
 import { ProductService } from '../services/ProductService';
 import { CustomerService } from '../services/CustomerService';
 import { OrderService } from '../services/OrderService';
 import { SupplierService } from '../services/SupplierService';
 import { NorthwindFileService } from '../services/NorthwindFileService';
-import { TimezoneService } from '../../../src/services/TimezoneService';
 import { Loader, Flex } from '@mantine/core';
 
 // Extend IServiceContext for this app

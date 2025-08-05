@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { TimezoneSelector } from '../../../src/components/TimezoneSelector';
+import { useState } from 'react';
+import { TimezoneSelector } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { Stack } from '@mantine/core';
 

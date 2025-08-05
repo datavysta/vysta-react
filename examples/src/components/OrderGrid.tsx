@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
-import { DataGrid } from '../../../src';
+import { useMemo, useState } from 'react';
+import { DataGrid } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { Order } from '../types/Order';
 import { ColDef, GridApi } from 'ag-grid-community';
-import { EditableFieldType } from '../../../src/components/DataGrid/types';
+import { EditableFieldType } from '@datavysta/vysta-react';
 import './OrderGrid.css';
 
 interface OrderGridProps {

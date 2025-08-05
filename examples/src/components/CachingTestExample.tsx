@@ -1,11 +1,10 @@
-import React, { useState, useCallback } from 'react';
-import { DataGrid } from '../../../src/components/DataGrid/DataGrid';
-import { LazyLoadList } from '../../../src/components/LazyLoadList/LazyLoadList';
+import { useState, useCallback } from 'react';
+import { DataGrid, LazyLoadList } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { ProductService } from '../services/ProductService';
 import { ColDef } from 'ag-grid-community';
 import { Product } from '../types/Product';
-import { Button, Group, Text, Paper, Stack, Switch, Badge, Table } from '@mantine/core';
+import { Button, Group, Text, Paper, Stack, Badge, Table } from '@mantine/core';
 import { IReadonlyDataService, DataResult, QueryParams } from '@datavysta/vysta-client';
 
 interface LoadTimeEntry {
@@ -211,8 +210,6 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
 
     const gridAvgCached = getAverageLoadTime('grid', true);
     const gridAvgUncached = getAverageLoadTime('grid', false);
-    const listAvgCached = getAverageLoadTime('list', true);
-    const listAvgUncached = getAverageLoadTime('list', false);
 
     return (
         <div style={{ padding: '20px' }}>
@@ -386,11 +383,11 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
                             <br />
                             2. Interact with the DataGrid or LazyLoadList to see automatic load time tracking
                             <br />
-                            3. Click "Test Load Times" to perform manual performance tests
+                            3. Click &#34;Test Load Times&#34; to perform manual performance tests
                             <br />
                             4. With caching enabled, subsequent loads should be significantly faster
                             <br />
-                            5. Click "Clear Cache" to clear all cached data and see the difference
+                            5. Click &#34;Clear Cache&#34; to clear all cached data and see the difference
                             <br />
                             6. Watch the load time history table to see detailed performance metrics
                             <br />

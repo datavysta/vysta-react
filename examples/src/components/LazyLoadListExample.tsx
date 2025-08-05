@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { LazyLoadList } from '../../../src/components/LazyLoadList/LazyLoadList';
+import { useState } from 'react';
+import {LazyLoadList } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { Product } from '../types/Product';
 import { Customer } from '../types/Customer';

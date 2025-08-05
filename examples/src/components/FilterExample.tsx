@@ -1,13 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import './FilterExample.css';
-import Condition from "../../../src/components/Models/Condition";
-import FilterPanel from "../../../src/components/Filter/FilterPanel";
-import DataType from "../../../src/components/Models/DataType";
-import { FilterDefinitionsByField } from "../../../src/components/Filter/FilterDefinitionsByField";
+import { DataType, Condition, FilterDefinitionsByField, FilterPanel } from "@datavysta/vysta-react";
 import CustomToggleComponent from '../../../src/components/datavistas/fields/CustomToggleComponent';
 import Fields from '../../../src/components/datavistas/fields';
 import { FieldComponentProvider } from '../../../src/components/datavistas/FieldComponentContext';
-import FilterRightHandSideLoaderExample from './FilterRightHandSideLoaderExample';
 import { useServices } from './ServicesProvider';
 
 interface FilterExampleProps {

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import FilterRightHandSideLoader from '../../../src/components/Filter/components/FilterRightHandSideLoader';
 import ExpressionCondition from '../../../src/components/Models/ExpressionCondition';
 import ComparisonOperator from '../../../src/components/Models/ComparisonOperator';
