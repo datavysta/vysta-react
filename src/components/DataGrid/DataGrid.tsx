@@ -1,5 +1,11 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {AgGridReact} from 'ag-grid-react';
+import React, {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
+import { AgGridReact } from 'ag-grid-react';
 import {
 	ColDef,
 	GridApi,
@@ -11,15 +17,25 @@ import {
 	GetRowIdParams,
 	ModuleRegistry,
 	InfiniteRowModelModule,
-	SortModelItem, TextEditorModule, ColumnApiModule, CustomEditorModule, RenderApiModule,
+	SortModelItem,
+	TextEditorModule,
+	ColumnApiModule,
+	CustomEditorModule,
+	RenderApiModule,
 	ColumnResizedEvent,
 	Column,
 	BodyScrollEvent,
 	ValueGetterParams
 } from 'ag-grid-community';
-import type {Theme} from "ag-grid-community";
-import type {OrderBy, SortDirection, IReadonlyDataService, IDataService, SelectColumn} from '@datavysta/vysta-client';
-import {FileType} from '@datavysta/vysta-client';
+import type { Theme } from "ag-grid-community";
+import type {
+	OrderBy,
+	SortDirection,
+	IReadonlyDataService,
+	IDataService,
+	SelectColumn
+} from '@datavysta/vysta-client';
+import { FileType } from '@datavysta/vysta-client';
 import moduleStyles from './DataGrid.module.css';
 import type Condition from '../Models/Condition';
 import { EditableTextCell } from './EditableTextCell';
@@ -28,6 +44,7 @@ import type { EditableFieldConfig } from './types';
 import { EditableNumberCell } from './cells/EditableNumberCell';
 import { EditableDateCell } from './cells/EditableDateCell';
 import { EditableListCell } from './cells/EditableListCell';
+import { useObjectReference } from "../../hooks/useObjectReference";
 
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
@@ -157,6 +174,22 @@ export function DataGrid<T extends object, U extends T = T>({
 	const [aggregateSummary, setAggregateSummary] = useState<Record<string, unknown> | null>(null);
 	const aggregateFooterRef = useRef<HTMLDivElement>(null);
 
+	// We will keep track of the events on its own object, that will allow us to:
+	// 1. Update this object only if the method changed
+	// 2. Always call the latest function(s), without having to rebuild any other
+	//    callback/object (e.g. getCells)
+	// 3. Both combined allow us to accept inline anonymous methods even if they
+	//    are changed on every render call (e.g.
+	//		<DataGrid ... onRowCountChange={{(count) => console.log(count)}}
+	//    ).
+	const delegates = useObjectReference({
+		onDataFirstLoaded,
+		onDataLoaded,
+		onRowCountChange,
+		onSaveComplete,
+		getRowId
+	});
+
 	// Track component mount status
 	useEffect(() => {
 		isMountedRef.current = true;
@@ -175,8 +208,8 @@ export function DataGrid<T extends object, U extends T = T>({
 	const actionsCellRenderer = useCallback((params: ICellRendererParams<U>) => {
 		if (!supportDelete || !params.data) return null;
 
-		const rowId = getRowId(params.data);
-		return deleteButton ? 
+		const rowId = delegates.current.getRowId(params.data);
+		return deleteButton ?
 			deleteButton(() => handleDelete(rowId)) :
 			(
 				<button
@@ -187,7 +220,7 @@ export function DataGrid<T extends object, U extends T = T>({
 					Delete
 				</button>
 			);
-	}, [supportDelete, getRowId, deleteButton]);
+	}, [supportDelete, deleteButton]);
 
 	const handleDelete = async (id: string) => {
 		if (!id) return;
@@ -225,14 +258,14 @@ export function DataGrid<T extends object, U extends T = T>({
 			const select: SelectColumn<T>[] = columnDefs
 				.filter(col => {
 					if (!col.field || col.field.startsWith('_')) return false;
-					
+
 					const cellClass = col.cellClass;
 					if (typeof cellClass === 'string') {
 						return cellClass !== 'no-download';
 					} else if (Array.isArray(cellClass)) {
 						return !cellClass.includes('no-download');
 					}
-					
+
 					return true;
 				})
 				.map(col => ({
@@ -263,7 +296,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 	}, [repository, columnDefs, filters, conditions, inputProperties, title]);
 
-	const hasEditableColumns = useMemo(() => 
+	const hasEditableColumns = useMemo(() =>
 		editableFields !== undefined && Object.keys(editableFields).length > 0,
 		[editableFields]
 	);
@@ -298,12 +331,12 @@ export function DataGrid<T extends object, U extends T = T>({
 					cellEditorPopup: fieldConfig?.dataType === EditableFieldType.List,
 					cellEditorParams: (params: ICellRendererParams<U>) => {
 						// Get the raw value from the data
-						const rawValue = originalCol.field && params.data 
+						const rawValue = originalCol.field && params.data
 							? (params.data as Record<string, unknown>)[originalCol.field]
 							: params.value;
 
-			
-						
+
+
 						// Get the display value if there's a valueGetter
 						let displayValue: unknown = undefined;
 						if (originalCol.valueGetter && typeof originalCol.valueGetter === 'function' && params.column) {
@@ -322,21 +355,21 @@ export function DataGrid<T extends object, U extends T = T>({
 								console.warn('Failed to get display value from valueGetter:', e);
 							}
 						}
-						
 
-						
+
+
 						return {
 							// Pass the raw value
 							value: rawValue,
 							// Pass the display value if it's different from raw value
 							displayValue: displayValue !== rawValue ? displayValue : undefined,
 							// Pass getRowId so cell editors can access local edits
-							getRowId,
+							getRowId: (data: T) => delegates.current.getRowId(data),
 							onSave: async (newValue: string) => {
 								if (!originalCol.field || !params.data) return;
-								
+
 								const service = editService || repository as IDataService<T, U>;
-								const id = getRowId(params.data);
+								const id = delegates.current.getRowId(params.data);
 								const oldValue = rawValue; // Capture the old value before update
 
 								await service.update(id, {
@@ -347,16 +380,16 @@ export function DataGrid<T extends object, U extends T = T>({
 									params.api.stopEditing();
 									params.node.setDataValue(originalCol.field, newValue);
 								}
-								
+
 								try {
 									await refreshAggregates();
 								} catch (error) {
 									console.error('Failed to refresh aggregates after cell edit:', error);
 								}
-								
+
 								// Call the onSaveComplete callback if provided
-								if (onSaveComplete) {
-									onSaveComplete({
+								if (delegates.current.onSaveComplete) {
+									delegates.current.onSaveComplete({
 										field: originalCol.field as string,
 										oldValue,
 										newValue,
@@ -385,7 +418,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 
 		return cols;
-	}, [columnDefs, supportDelete, editService, repository, getRowId, editableFields]);
+	}, [columnDefs, supportDelete, editService, repository, editableFields]);
 
 	const getFieldsFromColDefs = (colDefs: ColDef[]): string[] => {
 		return colDefs.reduce<string[]>((acc, col) => {
@@ -444,12 +477,12 @@ export function DataGrid<T extends object, U extends T = T>({
 				params.successCallback(result.data, lastRow);
 
 				if (!dataFirstLoadedRef.current && gridApiRef.current && isMountedRef.current) {
-					onDataFirstLoaded?.(gridApiRef.current);
+					delegates.current.onDataFirstLoaded?.(gridApiRef.current);
 					dataFirstLoadedRef.current = true;
 				}
 
-				if (gridApiRef.current && onDataLoaded && isMountedRef.current) {
-					onDataLoaded(gridApiRef.current, result.data);
+				if (gridApiRef.current && delegates.current.onDataLoaded && isMountedRef.current) {
+					delegates.current.onDataLoaded(gridApiRef.current, result.data);
 				}
 			} catch (error) {
 				console.error('Error fetching rows:', error);
@@ -458,11 +491,18 @@ export function DataGrid<T extends object, U extends T = T>({
 				}
 			}
 		}
-	}), [repository, columnDefs, filters, conditions, inputProperties, wildcardSearch, useCache, onDataFirstLoaded, onDataLoaded]);
+	}), [
+		repository,
+		columnDefs,
+		filters,
+		conditions,
+		inputProperties,
+		wildcardSearch,
+		useCache
+	]);
 
-	const getRowIdHandler = useCallback((params: GetRowIdParams<U>) => {
-		return params.data ? getRowId(params.data) : '';
-	}, [getRowId]);
+	const getRowIdHandler = useCallback((params: GetRowIdParams<U>) =>
+		params.data ? delegates.current.getRowId(params.data) : '', []);
 
 	// Helper to update footer column widths from AG Grid ColumnApi
 	const updateFooterColWidths = (api: GridApi<U>) => {
@@ -493,7 +533,7 @@ export function DataGrid<T extends object, U extends T = T>({
 
 	const actualGridOptions = useMemo<GridOptions<U>>(() => {
 		const { components: gridOptionsComponents, ...restGridOptions } = gridOptions || {};
-		
+
 		return {
 			// Defaults that can be overridden by user's gridOptions
 			cacheBlockSize: 50,
@@ -570,10 +610,10 @@ export function DataGrid<T extends object, U extends T = T>({
 	}, [refreshAggregates]);
 
 	useEffect(() => {
-		if (onRowCountChange && lastKnownRowCount >= 0) {
-			onRowCountChange(lastKnownRowCount);
+		if (lastKnownRowCount >= 0) {
+			delegates.current.onRowCountChange?.(lastKnownRowCount);
 		}
-	}, [lastKnownRowCount, onRowCountChange]);
+	}, [lastKnownRowCount]);
 
 	// Require all aggregateSelect entries to have an alias
 	if (aggregateSelect) {
@@ -643,8 +683,8 @@ export function DataGrid<T extends object, U extends T = T>({
 						</button>
 					)}
 					{supportRegularDownload && (
-						<button 
-							className={moduleStyles.downloadButton} 
+						<button
+							className={moduleStyles.downloadButton}
 							style={styles.downloadButton}
 							onClick={handleDownload}
 						>
