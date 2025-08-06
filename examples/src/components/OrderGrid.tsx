@@ -6,11 +6,7 @@ import { ColDef, GridApi } from 'ag-grid-community';
 import { EditableFieldType } from '@datavysta/vysta-react';
 import './OrderGrid.css';
 
-interface OrderGridProps {
-    tick: number;
-}
-
-export function OrderGrid({ tick }: OrderGridProps) {
+export function OrderGrid() {
     const { orderService, customerService } = useServices();
     const [logs, setLogs] = useState<string[]>([]);
     const [useFilter, setUseFilter] = useState(false);

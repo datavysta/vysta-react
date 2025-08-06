@@ -1,4 +1,3 @@
-import React from 'react';
 import { ProductGrid } from './ProductGrid';
 import { CustomerGrid } from './CustomerGrid';
 import { OrderGrid } from './OrderGrid';
@@ -99,23 +98,23 @@ export function PageController({ currentView, onViewChange, tick }: PageControll
                 {(() => {
                     switch (currentView) {
                         case 'products':
-                            return <ProductGrid {...commonProps} />;
+                            return <ProductGrid />;
                         case 'customers':
                             return <CustomerGrid {...commonProps} />;
                         case 'orders':
-                            return <OrderGrid {...commonProps} />;
+                            return <OrderGrid />;
                         case 'filter':
-                            return <FilterExample {...commonProps} />;
+                            return <FilterExample />;
                         case 'lazyloadlist':
-                            return <LazyLoadListExample {...commonProps} />;
+                            return <LazyLoadListExample />;
                         case 'editablegrid':
                             return <EditableGridExample {...commonProps} />;
                         case 'fileupload':
-                            return <FileUploadExample {...commonProps} />;
+                            return <FileUploadExample />;
                         case 'userprofile':
                             return <ExampleUserProfile />;
                         case 'timezone':
-                            return <TimezoneSelectorExample {...commonProps} />;
+                            return <TimezoneSelectorExample />;
                         case 'cachingtest':
                             return <CachingTestExample {...commonProps} />;
                         default:

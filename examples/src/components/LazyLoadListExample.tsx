@@ -6,11 +6,7 @@ import { Customer } from '../types/Customer';
 import { Order } from '../types/Order';
 import { Stack } from '@mantine/core';
 
-interface LazyLoadListExampleProps {
-    tick: number;
-}
-
-export function LazyLoadListExample({ tick }: LazyLoadListExampleProps) {
+export function LazyLoadListExample() {
     const [selectedProductId, setSelectedProductId] = useState<string | null>("1");
     const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);

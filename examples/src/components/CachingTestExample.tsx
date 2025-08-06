@@ -1,11 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { DataGrid, LazyLoadList } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { ProductService } from '../services/ProductService';
-import { ColDef } from 'ag-grid-community';
+import type { ColDef, GridApi } from 'ag-grid-community';
 import { Product } from '../types/Product';
-import { Button, Group, Text, Paper, Stack, Badge, Table } from '@mantine/core';
-import { IReadonlyDataService, DataResult, QueryParams } from '@datavysta/vysta-client';
+import { Badge, Button, Group, Paper, Stack, Table, Text } from '@mantine/core';
+import { DataResult, FileType, IReadonlyDataService, QueryParams } from '@datavysta/vysta-client';
 
 interface LoadTimeEntry {
     id: string;
@@ -80,14 +80,13 @@ class PerformanceTrackingService<T> implements IReadonlyDataService<T, T> {
         }
     }
 
-    async download(params: QueryParams<T> = {}, fileType?: any): Promise<Blob> {
+    async download(params: QueryParams<T> = {}, fileType?: FileType): Promise<Blob> {
         return this.service.download(params, fileType);
     }
 }
 
 interface CachingTestExampleProps {
     tick: number;
-    onViewChange: (view: any) => void;
 }
 
 export function CachingTestExample({ tick }: CachingTestExampleProps) {
@@ -175,9 +174,10 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
         setIsLoading(false);
     }, [gridProductService, listProductService, gridCacheEnabled, listCacheEnabled, addLoadTime]);
 
-    const handleGridDataLoaded = useCallback((gridApi: any, data: Product[]) => {
+    const handleGridDataLoaded = useCallback((gridApi: GridApi<Product>, data: Product[]) => {
         // This will be called by DataGrid when data is loaded
         // The performance tracking is now handled by the wrapper service
+        console.log('Grid data loaded:', data.length, gridApi.getGridId());
     }, []);
 
     const clearCache = useCallback(async () => {
@@ -369,7 +369,7 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
                             </Table>
                         ) : (
                             <Text size="sm" c="dimmed">
-                                No load times recorded yet. Interact with the components or click "Test Load Times" to start measuring.
+                                No load times recorded yet. Interact with the components or click &#34;Test Load Times&#34; to start measuring.
                             </Text>
                         )}
                     </Stack>

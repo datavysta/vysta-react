@@ -6,10 +6,6 @@ import Fields from '../../../src/components/datavistas/fields';
 import { FieldComponentProvider } from '../../../src/components/datavistas/FieldComponentContext';
 import { useServices } from './ServicesProvider';
 
-interface FilterExampleProps {
-    tick: number;
-}
-
 const productFilterDefinitions: FilterDefinitionsByField = [
     {
         targetFieldName: "productName",
@@ -61,7 +57,7 @@ const orderFilterDefinitions: FilterDefinitionsByField = [
     }
 ];
 
-export function FilterExample({ tick }: FilterExampleProps) {
+export function FilterExample() {
     const [conditions, setConditions] = useState<Condition[]>([]);
     const [showFilterPanel, setShowFilterPanel] = useState(true);
     const [useProductFilters, setUseProductFilters] = useState(true);

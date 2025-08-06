@@ -56,7 +56,7 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
             valueGetter: (params) => {
                 const supplierId = params.data?.supplierId;
                 if (!supplierId) return '';
-                
+
                 // Return the company name from our cached map
                 // Try both number and string keys since AG Grid might pass either
                 return supplierMap[supplierId] || supplierMap[String(supplierId)] || `Supplier ${supplierId}`;
@@ -94,7 +94,7 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
                         },
                         supplierId: {
                             dataType: EditableFieldType.List,
-                            listService: supplierService as any,
+                            listService: supplierService,
                             displayColumn: 'companyName',
                             clearable: true,
                             useCache: false,
