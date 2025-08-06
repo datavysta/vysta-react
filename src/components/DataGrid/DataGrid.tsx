@@ -45,6 +45,7 @@ import { EditableNumberCell } from './cells/EditableNumberCell';
 import { EditableDateCell } from './cells/EditableDateCell';
 import { EditableListCell } from './cells/EditableListCell';
 import { useObjectReference } from "../../hooks/useObjectReference";
+import { useMemoizedColumnDefs } from "../../hooks/useMemoizedColumnDefs";
 
 ModuleRegistry.registerModules([
 	InfiniteRowModelModule,
@@ -174,6 +175,9 @@ export function DataGrid<T extends object, U extends T = T>({
 	const [aggregateSummary, setAggregateSummary] = useState<Record<string, unknown> | null>(null);
 	const aggregateFooterRef = useRef<HTMLDivElement>(null);
 
+	// Memoize columnDefs to prevent unnecessary re-renders when content hasn't changed
+	const memoizedColumnDefs = useMemoizedColumnDefs(columnDefs);
+
 	// We will keep track of the events on its own object, that will allow us to:
 	// 1. Update this object only if the method changed
 	// 2. Always call the latest function(s), without having to rebuild any other
@@ -255,7 +259,7 @@ export function DataGrid<T extends object, U extends T = T>({
 				}
 			}
 
-			const select: SelectColumn<T>[] = columnDefs
+			const select: SelectColumn<T>[] = memoizedColumnDefs
 				.filter(col => {
 					if (!col.field || col.field.startsWith('_')) return false;
 
@@ -294,7 +298,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		} catch (error) {
 			console.error('Download failed:', error);
 		}
-	}, [repository, columnDefs, filters, conditions, inputProperties, title]);
+	}, [repository, memoizedColumnDefs, filters, conditions, inputProperties, title]);
 
 	const hasEditableColumns = useMemo(() =>
 		editableFields !== undefined && Object.keys(editableFields).length > 0,
@@ -306,7 +310,7 @@ export function DataGrid<T extends object, U extends T = T>({
 	}
 
 	const modifiedColDefs = useMemo(() => {
-		const cols = columnDefs.map(col => {
+		const cols = memoizedColumnDefs.map(col => {
 			const originalCol = { ...col };
 			if (originalCol.field && editableFields?.[(originalCol.field as unknown) as keyof U]) {
 				const fieldConfig = editableFields[(originalCol.field as unknown) as keyof U];
@@ -418,7 +422,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 
 		return cols;
-	}, [columnDefs, supportDelete, editService, repository, editableFields]);
+	}, [memoizedColumnDefs, supportDelete, editService, repository, editableFields]);
 
 	const getFieldsFromColDefs = (colDefs: ColDef[]): string[] => {
 		return colDefs.reduce<string[]>((acc, col) => {
@@ -449,7 +453,7 @@ export function DataGrid<T extends object, U extends T = T>({
 
 				const primaryKey = (repository as unknown as Record<string, unknown>).primaryKey as keyof T | Array<keyof T>;
 				const select = [...new Set([
-					...getFieldsFromColDefs(columnDefs),
+					...getFieldsFromColDefs(memoizedColumnDefs),
 					...(primaryKey ? (Array.isArray(primaryKey) ? primaryKey : [primaryKey]) : [])
 				])] as (keyof T)[];
 
@@ -493,7 +497,7 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 	}), [
 		repository,
-		columnDefs,
+		memoizedColumnDefs,
 		filters,
 		conditions,
 		inputProperties,
