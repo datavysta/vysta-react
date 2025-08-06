@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
-import { TimezoneSelector } from '../../../src/components/TimezoneSelector';
+import { useState } from 'react';
+import { TimezoneSelector } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { Stack } from '@mantine/core';
 
-interface TimezoneSelectorExampleProps {
-  tick: number;
-}
-
-export function TimezoneSelectorExample({ tick }: TimezoneSelectorExampleProps) {
+export function TimezoneSelectorExample() {
   const [selectedTimezone, setSelectedTimezone] = useState<string | null>(null);
   const [selectedTimezoneNoGroup, setSelectedTimezoneNoGroup] = useState<string | null>(null);
   

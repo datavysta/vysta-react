@@ -1,12 +1,11 @@
-import React, { useState, useCallback } from 'react';
-import { DataGrid } from '../../../src/components/DataGrid/DataGrid';
-import { LazyLoadList } from '../../../src/components/LazyLoadList/LazyLoadList';
+import { useCallback, useMemo, useState } from 'react';
+import { DataGrid, LazyLoadList } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { ProductService } from '../services/ProductService';
-import { ColDef } from 'ag-grid-community';
+import type { ColDef, GridApi } from 'ag-grid-community';
 import { Product } from '../types/Product';
-import { Button, Group, Text, Paper, Stack, Switch, Badge, Table } from '@mantine/core';
-import { IReadonlyDataService, DataResult, QueryParams } from '@datavysta/vysta-client';
+import { Badge, Button, Group, Paper, Stack, Table, Text } from '@mantine/core';
+import { DataResult, FileType, IReadonlyDataService, QueryParams } from '@datavysta/vysta-client';
 
 interface LoadTimeEntry {
     id: string;
@@ -81,14 +80,13 @@ class PerformanceTrackingService<T> implements IReadonlyDataService<T, T> {
         }
     }
 
-    async download(params: QueryParams<T> = {}, fileType?: any): Promise<Blob> {
+    async download(params: QueryParams<T> = {}, fileType?: FileType): Promise<Blob> {
         return this.service.download(params, fileType);
     }
 }
 
 interface CachingTestExampleProps {
     tick: number;
-    onViewChange: (view: any) => void;
 }
 
 export function CachingTestExample({ tick }: CachingTestExampleProps) {
@@ -99,8 +97,6 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
     const [loadTimes, setLoadTimes] = useState<LoadTimeEntry[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const baseProductService = new ProductService(client);
-
     const addLoadTime = useCallback((entry: Omit<LoadTimeEntry, 'id' | 'timestamp'>) => {
         const newEntry: LoadTimeEntry = {
             ...entry,
@@ -110,18 +106,20 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
         setLoadTimes(prev => [newEntry, ...prev.slice(0, 19)]); // Keep last 20 entries
     }, []);
 
+    const baseProductService = useMemo(() => new ProductService(client), [client]);
+
     // Create performance tracking services
-    const gridProductService = new PerformanceTrackingService(
+    const gridProductService = useMemo(() => new PerformanceTrackingService(
         baseProductService,
         addLoadTime,
         'grid'
-    );
+    ), [baseProductService]);
 
-    const listProductService = new PerformanceTrackingService(
+    const listProductService = useMemo(() => new PerformanceTrackingService(
         baseProductService,
         addLoadTime,
         'list'
-    );
+    ), [baseProductService]);
 
     const columnDefs: ColDef<Product>[] = [
         { field: 'productId', headerName: 'ID', width: 80 },
@@ -176,9 +174,10 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
         setIsLoading(false);
     }, [gridProductService, listProductService, gridCacheEnabled, listCacheEnabled, addLoadTime]);
 
-    const handleGridDataLoaded = useCallback((gridApi: any, data: Product[]) => {
+    const handleGridDataLoaded = useCallback((gridApi: GridApi<Product>, data: Product[]) => {
         // This will be called by DataGrid when data is loaded
         // The performance tracking is now handled by the wrapper service
+        console.log('Grid data loaded:', data.length, gridApi.getGridId());
     }, []);
 
     const clearCache = useCallback(async () => {
@@ -211,8 +210,6 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
 
     const gridAvgCached = getAverageLoadTime('grid', true);
     const gridAvgUncached = getAverageLoadTime('grid', false);
-    const listAvgCached = getAverageLoadTime('list', true);
-    const listAvgUncached = getAverageLoadTime('list', false);
 
     return (
         <div style={{ padding: '20px' }}>
@@ -372,7 +369,7 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
                             </Table>
                         ) : (
                             <Text size="sm" c="dimmed">
-                                No load times recorded yet. Interact with the components or click "Test Load Times" to start measuring.
+                                No load times recorded yet. Interact with the components or click &#34;Test Load Times&#34; to start measuring.
                             </Text>
                         )}
                     </Stack>
@@ -386,11 +383,11 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
                             <br />
                             2. Interact with the DataGrid or LazyLoadList to see automatic load time tracking
                             <br />
-                            3. Click "Test Load Times" to perform manual performance tests
+                            3. Click &#34;Test Load Times&#34; to perform manual performance tests
                             <br />
                             4. With caching enabled, subsequent loads should be significantly faster
                             <br />
-                            5. Click "Clear Cache" to clear all cached data and see the difference
+                            5. Click &#34;Clear Cache&#34; to clear all cached data and see the difference
                             <br />
                             6. Watch the load time history table to see detailed performance metrics
                             <br />

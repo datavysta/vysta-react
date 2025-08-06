@@ -1,18 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import { DataGrid } from '../../../src/components/DataGrid/DataGrid';
+import { useMemo, useState } from 'react';
+import { DataGrid } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { ColDef } from 'ag-grid-community';
 import { Product } from '../types/Product';
 import './ProductGrid.css';
-import { PageView } from '../types/PageView';
 import { Aggregate, SelectColumn } from '@datavysta/vysta-client';
 
-interface ProductGridProps {
-    onViewChange: (view: PageView) => void;
-    tick: number;
-}
-
-export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
+export function ProductGrid() {
     const { productService } = useServices();
     const [rowCount, setRowCount] = useState<number>(0);
 
@@ -58,7 +52,6 @@ export function ProductGrid({ onViewChange, tick }: ProductGridProps) {
                     columnDefs={columnDefs}
                     gridOptions={{ defaultColDef }}
                     getRowId={(product) => product.productId.toString()}
-                    tick={tick}
                     aggregateSelect={aggregateSelect}
                     onRowCountChange={(count) => {
                         console.log('Row count changed:', count);

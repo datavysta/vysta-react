@@ -222,7 +222,7 @@ const FilterConditionRow: FC<IFilterProps> = ({
 					ComparisonOperator.In ||
 				expressionCondition.comparisonOperator ===
 					ComparisonOperator.NotIn) &&
-			filterDefinition?.repository;
+			!!filterDefinition?.repository;
 
 		if (useLoader) {
 			return (

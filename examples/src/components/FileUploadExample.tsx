@@ -1,13 +1,8 @@
-import React from 'react';
-import { FileUpload } from '../../../src/components/FileUpload/FileUpload';
+import { FileUpload } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import './FileUploadExample.css';
 
-interface FileUploadExampleProps {
-    tick: number;
-}
-
-export function FileUploadExample({ tick }: FileUploadExampleProps) {
+export function FileUploadExample() {
     const { fileService } = useServices();
 
     return (

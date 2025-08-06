@@ -21,7 +21,7 @@ export const ExampleUserProfile: React.FC = () => {
     <div style={{ padding: 24, maxWidth: 500 }}>
       <h2>User Profile Example</h2>
       {loading && <div>Loading...</div>}
-      {error && <div style={{ color: 'red' }}>Error: {String(error)}</div>}
+      {!!error && <div style={{ color: 'red' }}>Error: {String(error)}</div>}
       {profile && (
         <div>
           <h3>Profile</h3>

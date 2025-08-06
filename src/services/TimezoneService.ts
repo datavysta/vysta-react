@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { VystaClient } from "@datavysta/vysta-client";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -16,17 +17,25 @@ export interface TimezoneWithGroup extends Timezone {
 }
 
 export class TimezoneService {
-  private baseUrl: string;
-  private basePath = 'api/admin/i18n/timezone';
+  private readonly translationUrl: string;
 
-  constructor(baseUrl: string = '') {
-    this.baseUrl = baseUrl;
+  /**
+   * Create a new instance of the time zone service.
+   * @param client - Data Vysta client, or a base URL string.
+   */
+  constructor(client: string | VystaClient) {
+    const path = 'api/admin/i18n/timezone';
+    if (typeof client === 'string') {
+      this.translationUrl = `${client}/${path}`;
+    }
+    else {
+      this.translationUrl = client.getBackendUrl(path);
+    }
   }
 
   async getAllTimezones(): Promise<TimezoneWithGroup[]> {
     try {
-      const url = `${this.baseUrl}/${this.basePath}`;
-      const timezonesResponse = await fetch(url);
+      const timezonesResponse = await fetch(this.translationUrl);
       
       if (!timezonesResponse.ok) {
         throw new Error(`HTTP ${timezonesResponse.status}: ${timezonesResponse.statusText}`);

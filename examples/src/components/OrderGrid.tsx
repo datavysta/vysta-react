@@ -1,20 +1,17 @@
-import React, { useMemo, useState } from 'react';
-import { DataGrid } from '../../../src';
+import { useMemo, useState } from 'react';
+import { DataGrid } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
 import { Order } from '../types/Order';
 import { ColDef, GridApi } from 'ag-grid-community';
-import { EditableFieldType } from '../../../src/components/DataGrid/types';
+import { EditableFieldType } from '@datavysta/vysta-react';
 import './OrderGrid.css';
 
-interface OrderGridProps {
-    tick: number;
-}
-
-export function OrderGrid({ tick }: OrderGridProps) {
+export function OrderGrid() {
     const { orderService, customerService } = useServices();
     const [logs, setLogs] = useState<string[]>([]);
     const [useFilter, setUseFilter] = useState(false);
     const [useInputProps, setUseInputProps] = useState(false);
+    const [useLogs, setUseLogs] = useState(true);
     const [localTick, setLocalTick] = useState(0);
     const [searchText, setSearchText] = useState('');
 
@@ -22,7 +19,7 @@ export function OrderGrid({ tick }: OrderGridProps) {
     const inputProperties = useMemo(() => useInputProps ? { test: 'value' } : undefined, [useInputProps]);
 
     const addLog = (message: string) => {
-        setLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+        setLogs(prev => [`${new Date().toLocaleTimeString()}: ${message}`, ...prev]);
     };
 
     const columnDefs: ColDef<Order>[] = [
@@ -42,6 +39,9 @@ export function OrderGrid({ tick }: OrderGridProps) {
                 </button>
                 <button onClick={() => setUseInputProps(prev => !prev)} style={{ marginRight: '10px' }}>
                     Toggle Input Props: {useInputProps ? 'ON' : 'OFF'}
+                </button>
+                <button onClick={() => setUseLogs(prev => !prev)} style={{ marginRight: '10px' }}>
+                    Toggle Logs: { useLogs ? 'ON' : 'OFF' }
                 </button>
                 <button onClick={() => setLocalTick(t => t + 1)} style={{ marginRight: '10px' }}>
                     Increment Tick: {localTick}
@@ -116,7 +116,7 @@ export function OrderGrid({ tick }: OrderGridProps) {
                     supportDelete
                     supportRegularDownload
                     deleteButton={(onDelete) => (
-                        <button 
+                        <button
                             onClick={onDelete}
                             style={{
                                 padding: '2px 8px',
@@ -130,12 +130,15 @@ export function OrderGrid({ tick }: OrderGridProps) {
                             ×
                         </button>
                     )}
-                    onDataFirstLoaded={(api: GridApi<Order>) => {
+                    onDataFirstLoaded={useLogs ? () => {
                         addLog('onDataFirstLoaded called');
-                    }}
-                    onDataLoaded={(api: GridApi<Order>, data: Order[]) => {
+                    } : () => console.log('onDataFirstLoaded called')}
+                    onDataLoaded={useLogs ? (_api: GridApi<Order>, data: Order[]) => {
                         addLog(`onDataLoaded called with ${data.length} rows`);
-                    }}
+                    } : () => console.log('onDataLoaded called')}
+                    onRowCountChange={useLogs ? (count) => {
+                        addLog(`onRowCountChange called with ${count} rows`);
+                    } : () => console.log('onRowCountChange called')}
                 />
             </div>
         </div>

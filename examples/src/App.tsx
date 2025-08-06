@@ -1,20 +1,20 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { MantineProvider } from '@mantine/core';
 import { PageController, PageView } from './components/PageController';
 import { ServicesProvider } from './components/ServicesProvider';
 import { VystaConfig } from '@datavysta/vysta-client';
-import { VystaServiceProvider, useVystaServices } from '../../src';
+import { VystaServiceProvider, useVystaServices } from '@datavysta/vysta-react';
 
 const config: VystaConfig = {
-    baseUrl: 'http://localhost:8080',
+    baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:8080',
     debug: true,
-    cache: true,
+    cache: { enabled: true }
 };
 
 function AppContent() {
     const { auth } = useVystaServices();
     const [error, setError] = useState<string | null>(null);
-    const [tick, setTick] = useState(0);
+    const [tick, ] = useState(0);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentView, setCurrentView] = useState<PageView>('products');
 
@@ -37,7 +37,7 @@ function AppContent() {
         try {
             await auth.logout();
             setIsAuthenticated(false);
-        } catch (err) {
+        } catch {
             setError('Failed to logout.');
         }
     }, [auth]);

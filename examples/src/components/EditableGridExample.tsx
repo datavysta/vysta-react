@@ -1,9 +1,8 @@
-import React, { useMemo, useEffect, useState } from 'react';
-import { DataGrid } from '../../../src';
+import { useMemo, useEffect, useState } from 'react';
+import { DataGrid, EditableFieldType } from '@datavysta/vysta-react';
 import { useServices } from './ServicesProvider';
-import { Products } from '../types/Product';
+import { Product } from '../types/Product';
 import { ColDef } from 'ag-grid-community';
-import { EditableFieldType } from '../../../src/components/DataGrid/types';
 import './EditableGridExample.css';
 
 interface EditableGridExampleProps {
@@ -38,7 +37,7 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
         loadSuppliers();
     }, [supplierService]);
 
-    const columnDefs = useMemo<ColDef<Products>[]>(() => [
+    const columnDefs = useMemo<ColDef<Product>[]>(() => [
         { 
             field: 'productId',
             headerName: 'ID',
@@ -57,7 +56,7 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
             valueGetter: (params) => {
                 const supplierId = params.data?.supplierId;
                 if (!supplierId) return '';
-                
+
                 // Return the company name from our cached map
                 // Try both number and string keys since AG Grid might pass either
                 return supplierMap[supplierId] || supplierMap[String(supplierId)] || `Supplier ${supplierId}`;
@@ -83,7 +82,7 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
     return (
         <div className="example-container">
             <div className="grid-container">
-                <DataGrid<Products>
+                <DataGrid<Product>
                     title="Editable Products"
                     noun="product"
                     repository={productService}
@@ -95,7 +94,7 @@ export function EditableGridExample({ tick }: EditableGridExampleProps) {
                         },
                         supplierId: {
                             dataType: EditableFieldType.List,
-                            listService: supplierService as any,
+                            listService: supplierService,
                             displayColumn: 'companyName',
                             clearable: true,
                             useCache: false,

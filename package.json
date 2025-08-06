@@ -72,7 +72,7 @@
     }
   },
   "dependencies": {
-    "@datavysta/vysta-client": "^1.0.43",
+    "@datavysta/vysta-client": "^1.0.45",
     "@uppy/core": "^4.4.2",
     "@uppy/dashboard": "^4.3.2",
     "@uppy/drag-drop": "^4.1.1",
