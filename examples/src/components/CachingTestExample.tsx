@@ -97,8 +97,6 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
     const [loadTimes, setLoadTimes] = useState<LoadTimeEntry[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const baseProductService = new ProductService(client);
-
     const addLoadTime = useCallback((entry: Omit<LoadTimeEntry, 'id' | 'timestamp'>) => {
         const newEntry: LoadTimeEntry = {
             ...entry,
@@ -108,18 +106,20 @@ export function CachingTestExample({ tick }: CachingTestExampleProps) {
         setLoadTimes(prev => [newEntry, ...prev.slice(0, 19)]); // Keep last 20 entries
     }, []);
 
+    const baseProductService = useMemo(() => new ProductService(client), [client]);
+
     // Create performance tracking services
-    const gridProductService = new PerformanceTrackingService(
+    const gridProductService = useMemo(() => new PerformanceTrackingService(
         baseProductService,
         addLoadTime,
         'grid'
-    );
+    ), [baseProductService]);
 
-    const listProductService = new PerformanceTrackingService(
+    const listProductService = useMemo(() => new PerformanceTrackingService(
         baseProductService,
         addLoadTime,
         'list'
-    );
+    ), [baseProductService]);
 
     const columnDefs: ColDef<Product>[] = [
         { field: 'productId', headerName: 'ID', width: 80 },
