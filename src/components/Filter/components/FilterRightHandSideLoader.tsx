@@ -1,20 +1,19 @@
-import { FC } from 'react';
 import ExpressionCondition from "../../Models/ExpressionCondition";
-import { FilterDefinitionWrapper } from "../FilterDefinitionsByField";
+import { FilterDefinition } from "../FilterDefinitionsByField";
 import { useTranslationContext } from '../TranslationContext';
 import { LazyLoadList } from '../../LazyLoadList/LazyLoadList';
 import ComparisonOperator from '../../Models/ComparisonOperator';
 
-interface Props {
-	filterDefinition: FilterDefinitionWrapper;
+interface Props<T extends object, TSummary extends T = T> {
+	filterDefinition: FilterDefinition<T, TSummary>;
 	expressionCondition: ExpressionCondition;
 	onChange: (expressionCondition: ExpressionCondition) => void;
 }
 
-const FilterRightHandSideLoader: FC<Props> = ({ filterDefinition, expressionCondition, onChange }) => {
+export default function FilterRightHandSideLoader<T extends object, TSummary extends T = T>({ filterDefinition, expressionCondition, onChange }: Props<T, TSummary>) {
 	const { t } = useTranslationContext();
 	const repository = filterDefinition.repository;
-	const loaderColumns = filterDefinition.loaderColumns || ["id", "name"];
+	const loaderColumns = filterDefinition.loaderColumns || ["id", "name"] as (keyof T)[];
 	const labelField = loaderColumns[1] || loaderColumns[0];
 
 	// Determine if multi-select is needed
@@ -55,11 +54,11 @@ const FilterRightHandSideLoader: FC<Props> = ({ filterDefinition, expressionCond
 		return (
 			<div className="vysta-select-wrapper">
 				<div style={{ color: 'red', marginBottom: 8 }}>{t('Multi-select is not yet implemented for this filter.')}</div>
-				<LazyLoadList
+				<LazyLoadList<T>
 					repository={repository}
 					value={currentValue.length > 0 ? currentValue[0] : null}
 					onChange={handleChange}
-					displayColumn={labelField as keyof Record<string, unknown>}
+					displayColumn={labelField}
 					label={filterDefinition.label || t('Select value')}
 				/>
 			</div>
@@ -72,11 +71,9 @@ const FilterRightHandSideLoader: FC<Props> = ({ filterDefinition, expressionCond
 				repository={repository}
 				value={currentValue.length > 0 ? currentValue[0] : null}
 				onChange={handleChange}
-				displayColumn={labelField as keyof Record<string, unknown>}
+				displayColumn={labelField}
 				label={filterDefinition.label || t('Select value')}
 			/>
 		</div>
 	);
-};
-
-export default FilterRightHandSideLoader;
+}

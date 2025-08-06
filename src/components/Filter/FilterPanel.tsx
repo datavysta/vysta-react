@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState, useEffect } from 'react';
+import { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslationContext } from './TranslationContext';
 import Condition from '../Models/Condition';
 import ExpressionCondition from '../Models/ExpressionCondition';
@@ -57,17 +57,16 @@ const FilterPanel: FC<IFilterProps> = ({
 
 			const definition = filterDefinitions.find(def => def.targetFieldName === condition.columnName);
 			if (definition?.repository) {
-				const selectColumns = definition.loaderColumns || ["id", "name"];
+				const selectColumns = definition.loaderColumns || ["id", "name"] as Array<keyof Record<string, unknown>>;
 				try {
 					const options = await definition.repository.getAll({ limit: 5000, select: selectColumns });
 					const validValues = options.data.map((option: Record<string, unknown>) => {
 						const key = selectColumns[0] as keyof typeof option;
 						return option[key];
 					});
-					const filteredValues = condition.values.filter(value =>
+					condition.values = condition.values.filter(value =>
 						validValues.map(String).includes(String(value))
 					);
-					condition.values = filteredValues;
 				} catch (error) {
 					console.error('Error loading options for validation:', error);
 				}
@@ -199,7 +198,7 @@ const FilterPanel: FC<IFilterProps> = ({
 		setSavedFilters(filters);
 	}, []);
 
-	const handleFilterSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+	const handleFilterSelect = (event: ChangeEvent<HTMLSelectElement>) => {
 		const selectedFilter = savedFilters.find(f => f.name === event.target.value);
 		if (selectedFilter) {
 			setCurrentConditions(selectedFilter.conditions);

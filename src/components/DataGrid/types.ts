@@ -10,11 +10,11 @@ export enum EditableFieldType {
     List = 'list'
 }
 
-export interface EditableFieldConfig {
+export interface EditableFieldConfig<TField extends object = never, UField extends TField = TField> {
     dataType: EditableFieldType;
     // For list type
-    listService?: IReadonlyDataService<Record<string, unknown>>;
-    displayColumn?: string;
+    listService?: IReadonlyDataService<TField, UField>;
+    displayColumn?: keyof TField;
     clearable?: boolean;
     useCache?: boolean;
     listOptions?: Partial<LazyLoadListProps<Record<string, unknown>>>;

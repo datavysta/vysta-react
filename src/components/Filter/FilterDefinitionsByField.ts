@@ -1,9 +1,10 @@
 import type { IReadonlyDataService } from '@datavysta/vysta-client';
 import DataType from "../Models/DataType";
 
-export type FilterDefinition<TBase, TSummary extends TBase> = {
+export type FilterDefinition<TBase extends object, TSummary extends TBase = TBase> = {
     repository?: IReadonlyDataService<TBase, TSummary>;
-    loaderColumns?: string[]; // Custom column names (e.g., ["id", "code", "siteGroupName", "name"])
+    // Custom column names (e.g., ["id", "code", "siteGroupName", "name"])
+    loaderColumns?: (keyof TBase)[];
     targetFieldName?: string;
     label?: string;
     dataType?: DataType;
@@ -12,6 +13,6 @@ export type FilterDefinition<TBase, TSummary extends TBase> = {
     staticData?: boolean;
 };
 
-export type FilterDefinitionWrapper = FilterDefinition<Record<string, unknown>, Record<string, unknown>>;
+export type FilterDefinitionWrapper = FilterDefinition<never>;
 
 export type FilterDefinitionsByField = FilterDefinitionWrapper[];

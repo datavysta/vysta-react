@@ -2,9 +2,9 @@ import { LazyLoadList } from '../../LazyLoadList/LazyLoadList';
 import { BaseEditableCell } from './BaseEditableCell';
 import type { IReadonlyDataService } from '@datavysta/vysta-client';
 
-interface ListConfig {
-    listService: IReadonlyDataService<Record<string, unknown>>;
-    displayColumn: string;
+interface ListConfig<T extends object = never> {
+    listService: IReadonlyDataService<T>;
+    displayColumn: keyof T;
     clearable?: boolean;
     useCache?: boolean;
 }
@@ -32,7 +32,7 @@ export class EditableListCell extends BaseEditableCell {
         if (newValue === this.state.value) {
             return;
         }
-        
+
         this.setState({ value: newValue || '' }, () => {
             if (this.isDirty) {
                 this.handleSave().then(() => {
@@ -48,17 +48,15 @@ export class EditableListCell extends BaseEditableCell {
     render() {
         const { listService, displayColumn, clearable, useCache } = this.props as unknown as ListConfig;
         const options = (this.props as Record<string, unknown>).listOptions || {};
-        
+
         // Get the column width from AG Grid
         const columnWidth = this.props.column?.getActualWidth() || 200;
 
         // Get the actual value from the data using our getValue method
         const currentValue = this.getValue();
-        
+
         // Get the display value from props if it was passed by DataGrid
         const initialDisplayValue = (this.props as Record<string, unknown>).displayValue as string | undefined;
-        
-
 
         return (
             <LazyLoadList
