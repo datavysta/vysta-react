@@ -245,6 +245,41 @@ export function DataGrid<T extends object, U extends T = T>({
 		}
 	};
 
+	// Helper function to recursively extract columns for download
+	const extractColumnsForDownload = (colDefs: ColDef<U>[]): SelectColumn<T>[] => {
+		const columns: SelectColumn<T>[] = [];
+
+		const processColumn = (col: ColDef<U>) => {
+			// Process children recursively if they exist
+			if ('children' in col && Array.isArray(col.children)) {
+				col.children.forEach(childCol => processColumn(childCol));
+			}
+
+			// Process the column itself if it has a field
+			if (col.field && !col.field.startsWith('_')) {
+				const cellClass = col.cellClass;
+				const shouldInclude = (() => {
+					if (typeof cellClass === 'string') {
+						return cellClass !== 'no-download';
+					} else if (Array.isArray(cellClass)) {
+						return !cellClass.includes('no-download');
+					}
+					return true;
+				})();
+
+				if (shouldInclude) {
+					columns.push({
+						name: String(col.field) as keyof T,
+						alias: (col.headerName || String(col.field)).replace(/,/g, '')
+					});
+				}
+			}
+		};
+
+		colDefs.forEach(col => processColumn(col));
+		return columns;
+	};
+
 	const handleDownload = useCallback(async () => {
 		try {
 			const order: OrderBy<T> = {};
@@ -259,23 +294,7 @@ export function DataGrid<T extends object, U extends T = T>({
 				}
 			}
 
-			const select: SelectColumn<T>[] = memoizedColumnDefs
-				.filter(col => {
-					if (!col.field || col.field.startsWith('_')) return false;
-
-					const cellClass = col.cellClass;
-					if (typeof cellClass === 'string') {
-						return cellClass !== 'no-download';
-					} else if (Array.isArray(cellClass)) {
-						return !cellClass.includes('no-download');
-					}
-
-					return true;
-				})
-				.map(col => ({
-					name: String(col.field) as keyof T,
-					alias: (col.headerName || String(col.field)).replace(/,/g, '')
-				}));
+			const select: SelectColumn<T>[] = extractColumnsForDownload(memoizedColumnDefs);
 
 			const blob = await repository.download({
 				select,
@@ -309,107 +328,117 @@ export function DataGrid<T extends object, U extends T = T>({
 		throw new Error('Grid has editable columns but no edit capability. Either provide an editService or use a repository that supports updates');
 	}
 
-	const modifiedColDefs = useMemo(() => {
-		const cols = memoizedColumnDefs.map(col => {
-			const originalCol = { ...col };
-			if (originalCol.field && editableFields?.[(originalCol.field as unknown) as keyof U]) {
-				const fieldConfig = editableFields[(originalCol.field as unknown) as keyof U];
-				const cellEditor = (() => {
-					switch (fieldConfig?.dataType) {
-						case EditableFieldType.Number:
-							return EditableNumberCell;
-						case EditableFieldType.Date:
-							return EditableDateCell;
-						case EditableFieldType.List:
-							return EditableListCell;
-						case EditableFieldType.Text:
-						default:
-							return EditableTextCell;
-					}
-				})();
+	// Helper function to recursively process columns and their children
+	const processColumnForEditing = (col: ColDef<U>): ColDef<U> => {
+		const originalCol = { ...col };
 
-				return {
-					...originalCol,
-					editable: true,
-					cellEditor,
-					cellEditorPopup: fieldConfig?.dataType === EditableFieldType.List,
-					cellEditorParams: (params: ICellRendererParams<U>) => {
-						// Get the raw value from the data
-						const rawValue = originalCol.field && params.data
-							? (params.data as Record<string, unknown>)[originalCol.field]
-							: params.value;
+		// Process children recursively if they exist
+		if ('children' in originalCol && Array.isArray(originalCol.children)) {
+			originalCol.children = originalCol.children.map(childCol => processColumnForEditing(childCol));
+		}
+
+		// Process the column itself if it has a field and is configured as editable
+		if (originalCol.field && editableFields?.[(originalCol.field as unknown) as keyof U]) {
+			const fieldConfig = editableFields[(originalCol.field as unknown) as keyof U];
+			const cellEditor = (() => {
+				switch (fieldConfig?.dataType) {
+					case EditableFieldType.Number:
+						return EditableNumberCell;
+					case EditableFieldType.Date:
+						return EditableDateCell;
+					case EditableFieldType.List:
+						return EditableListCell;
+					case EditableFieldType.Text:
+					default:
+						return EditableTextCell;
+				}
+			})();
+
+			return {
+				...originalCol,
+				editable: true,
+				cellEditor,
+				cellEditorPopup: fieldConfig?.dataType === EditableFieldType.List,
+				cellEditorParams: (params: ICellRendererParams<U>) => {
+					// Get the raw value from the data
+					const rawValue = originalCol.field && params.data
+						? (params.data as Record<string, unknown>)[originalCol.field]
+						: params.value;
 
 
 
-						// Get the display value if there's a valueGetter
-						let displayValue: unknown = undefined;
-						if (originalCol.valueGetter && typeof originalCol.valueGetter === 'function' && params.column) {
-							try {
-								// Create a ValueGetterParams object with the required getValue function
-								const valueGetterParams = {
-									...params,
-									column: params.column,
-									getValue: (field: string) => {
-										return params.data ? (params.data as Record<string, unknown>)[field] : undefined;
-									}
-								};
-								displayValue = originalCol.valueGetter(valueGetterParams as ValueGetterParams<U>);
-							} catch (e) {
-								// If valueGetter fails, we'll just not have a display value
-								console.warn('Failed to get display value from valueGetter:', e);
-							}
+					// Get the display value if there's a valueGetter
+					let displayValue: unknown = undefined;
+					if (originalCol.valueGetter && typeof originalCol.valueGetter === 'function' && params.column) {
+						try {
+							// Create a ValueGetterParams object with the required getValue function
+							const valueGetterParams = {
+								...params,
+								column: params.column,
+								getValue: (field: string) => {
+									return params.data ? (params.data as Record<string, unknown>)[field] : undefined;
+								}
+							};
+							displayValue = originalCol.valueGetter(valueGetterParams as ValueGetterParams<U>);
+						} catch (e) {
+							// If valueGetter fails, we'll just not have a display value
+							console.warn('Failed to get display value from valueGetter:', e);
 						}
-
-
-
-						return {
-							// Pass the raw value
-							value: rawValue,
-							// Pass the display value if it's different from raw value
-							displayValue: displayValue !== rawValue ? displayValue : undefined,
-							// Pass getRowId so cell editors can access local edits
-							getRowId: (data: T) => delegates.current.getRowId(data),
-							onSave: async (newValue: string) => {
-								if (!originalCol.field || !params.data) return;
-
-								const service = editService || repository as IDataService<T, U>;
-								const id = delegates.current.getRowId(params.data);
-								const oldValue = rawValue; // Capture the old value before update
-
-								await service.update(id, {
-									[originalCol.field as string]: newValue
-								} as Partial<T>);
-
-								if (fieldConfig?.dataType !== EditableFieldType.List) {
-									params.api.stopEditing();
-									params.node.setDataValue(originalCol.field, newValue);
-								}
-
-								try {
-									await refreshAggregates();
-								} catch (error) {
-									console.error('Failed to refresh aggregates after cell edit:', error);
-								}
-
-								// Call the onSaveComplete callback if provided
-								if (delegates.current.onSaveComplete) {
-									delegates.current.onSaveComplete({
-										field: originalCol.field as string,
-										oldValue,
-										newValue,
-										rowId: id,
-										rowData: params.data,
-										gridApi: params.api
-									});
-								}
-							},
-							...fieldConfig
-						};
 					}
-				};
-			}
-			return originalCol;  // Return the column with wrapped valueGetter
-		});
+
+
+
+					return {
+						// Pass the raw value
+						value: rawValue,
+						// Pass the display value if it's different from raw value
+						displayValue: displayValue !== rawValue ? displayValue : undefined,
+						// Pass getRowId so cell editors can access local edits
+						getRowId: (data: T) => delegates.current.getRowId(data),
+						onSave: async (newValue: string) => {
+							if (!originalCol.field || !params.data) return;
+
+							const service = editService || repository as IDataService<T, U>;
+							const id = delegates.current.getRowId(params.data);
+							const oldValue = rawValue; // Capture the old value before update
+
+							await service.update(id, {
+								[originalCol.field as string]: newValue
+							} as Partial<T>);
+
+							if (fieldConfig?.dataType !== EditableFieldType.List) {
+								params.api.stopEditing();
+								params.node.setDataValue(originalCol.field, newValue);
+							}
+
+							try {
+								await refreshAggregates();
+							} catch (error) {
+								console.error('Failed to refresh aggregates after cell edit:', error);
+							}
+
+							// Call the onSaveComplete callback if provided
+							if (delegates.current.onSaveComplete) {
+								delegates.current.onSaveComplete({
+									field: originalCol.field as string,
+									oldValue,
+									newValue,
+									rowId: id,
+									rowData: params.data,
+									gridApi: params.api
+								});
+							}
+						},
+						...fieldConfig
+					};
+				}
+			};
+		}
+		return originalCol;
+	};
+
+	const modifiedColDefs = useMemo(() => {
+		const cols = memoizedColumnDefs.map(col => processColumnForEditing(col));
 
 		if (supportDelete) {
 			cols.push({

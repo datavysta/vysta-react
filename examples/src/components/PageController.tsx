@@ -4,13 +4,14 @@ import { OrderGrid } from './OrderGrid';
 import { FilterExample } from './FilterExample';
 import { LazyLoadListExample } from './LazyLoadListExample';
 import { EditableGridExample } from './EditableGridExample';
+import { EditableGridWithGroupsExample } from './EditableGridWithGroupsExample';
 import { FileUploadExample } from './FileUploadExample';
 import { ExampleUserProfile } from './ExampleUserProfile';
 import { TimezoneSelectorExample } from './TimezoneSelectorExample';
 import { CachingTestExample } from './CachingTestExample';
 import './PageController.css';
 
-export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'fileupload' | 'userprofile' | 'timezone' | 'cachingtest';
+export type PageView = 'products' | 'customers' | 'orders' | 'filter' | 'lazyloadlist' | 'editablegrid' | 'editablegridgroups' | 'fileupload' | 'userprofile' | 'timezone' | 'cachingtest';
 
 interface PageControllerProps {
     currentView: PageView;
@@ -51,11 +52,17 @@ function Navigation({ currentView, onViewChange }: { currentView: PageView; onVi
             >
                 Lazy Load List
             </button>
-            <button 
+            <button
                 onClick={() => onViewChange('editablegrid')}
                 disabled={currentView === 'editablegrid'}
             >
                 Editable Grid
+            </button>
+            <button
+                onClick={() => onViewChange('editablegridgroups')}
+                disabled={currentView === 'editablegridgroups'}
+            >
+                Editable Grid Groups
             </button>
             <button 
                 onClick={() => onViewChange('fileupload')}
@@ -109,6 +116,8 @@ export function PageController({ currentView, onViewChange, tick }: PageControll
                             return <LazyLoadListExample />;
                         case 'editablegrid':
                             return <EditableGridExample {...commonProps} />;
+                        case 'editablegridgroups':
+                            return <EditableGridWithGroupsExample {...commonProps} />;
                         case 'fileupload':
                             return <FileUploadExample />;
                         case 'userprofile':
