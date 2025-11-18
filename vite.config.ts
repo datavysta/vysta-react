@@ -33,7 +33,8 @@ export default defineConfig({
         'ag-grid-react',
         'ag-grid-community',
         '@mantine/core',
-        '@mantine/hooks'
+        '@mantine/hooks',
+        '@mantine/dates'
       ],
       output: {
         preserveModules: true,
